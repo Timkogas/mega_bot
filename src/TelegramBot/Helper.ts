@@ -38,14 +38,19 @@ class Helper {
     * @returns Обновленный объект пользователя
     */
     static async setButtons(dbUser: IUserDb, newButtons: InlineKeyboardButton[][]): Promise<void> {
-        if (dbUser) {
+        try {
+            if (dbUser) {
+                await Db.query('UPDATE users SET buttons = ? WHERE id = ?', [JSON.stringify(newButtons), dbUser.id]);
 
-            await Db.query('UPDATE users SET buttons = ? WHERE id = ?', [JSON.stringify(newButtons), dbUser.id]);
-
-            const updatedUser = await Db.query('SELECT * FROM users WHERE id = ?', [dbUser.id]);
-            return updatedUser[0];
-        } else {
-            Logger.error('[Helper] No user for setting buttons');
+                const updatedUser = await Db.query('SELECT * FROM users WHERE id = ?', [dbUser.id]);
+                return updatedUser[0];
+            } else {
+                Logger.error('[Helper] No user for setting buttons');
+            }
+        }
+        catch (error) {
+            Logger.error('[Helper] Error set buttons:', error);
+            return null;
         }
     }
 
@@ -68,7 +73,7 @@ class Helper {
                 }
             }
 
-            return null; 
+            return null;
         } catch (error) {
             Logger.error('[Helper] Error getting buttons:', error);
             return null;
