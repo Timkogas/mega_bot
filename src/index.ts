@@ -59,11 +59,13 @@ class App {
         sent TINYINT DEFAULT 0,
         buttons JSON DEFAULT NULL,
         web_app TINYINT DEFAULT 0,
+        refs INT DEFAULT 0,
+        activity VARCHAR(50) DEFAULT 'buttons',
         score INT,
         time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
     `
-      await Db.query(table)
+    await Db.query(table)
   }
 
   private async _createTableChecks(): Promise<void> {
@@ -74,7 +76,7 @@ class App {
         data JSON
     );
     `
-      await Db.query(table)
+    await Db.query(table)
   }
 
 
@@ -85,7 +87,21 @@ class App {
         id INT PRIMARY KEY AUTO_INCREMENT
     );
     `
-      await Db.query(table)
+
+    const insertTasksQueries = [
+      "INSERT IGNORE INTO tasks (id) VALUES (1);",
+      "INSERT IGNORE INTO tasks (id) VALUES (2);",
+      "INSERT IGNORE INTO tasks (id) VALUES (3);",
+      "INSERT IGNORE INTO tasks (id) VALUES (4);",
+      "INSERT IGNORE INTO tasks (id) VALUES (5);",
+    ];
+
+    await Db.query(table)
+
+    for (const query of insertTasksQueries) {
+      await Db.query(query);
+    }
+    
   }
 
 
@@ -101,7 +117,7 @@ class App {
         FOREIGN KEY (task_id) REFERENCES tasks(id)
     );
     `
-      await Db.query(table)
+    await Db.query(table)
   }
 }
 

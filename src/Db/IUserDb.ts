@@ -1,3 +1,5 @@
+
+
 export interface IUserDb {
     id: number;
     username: string;
@@ -9,4 +11,12 @@ export interface IUserDb {
     web_app?: number;
     score?: number;
     time?: string; // Assuming TIMESTAMP is stored as a string
+    refs: number
+    activity: EActivity
   }
+
+export enum EActivity {
+    BUTTONS = 'buttons',
+    CODE = 'code',
+    PROBLEM = 'problem'
+};
