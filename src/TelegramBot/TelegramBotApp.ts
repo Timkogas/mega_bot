@@ -1,4 +1,4 @@
-import TelegramBot, { CallbackQuery, InlineKeyboardButton, Message } from 'node-telegram-bot-api';
+import TelegramBot, { CallbackQuery, InlineKeyboardButton, InputMediaPhoto, Message } from 'node-telegram-bot-api';
 import dotenv from 'dotenv';
 import Logger from '../Logger/Logger';
 import path from 'path';
@@ -31,6 +31,20 @@ export enum EMessages {
     SKIP_CONFIRM = 'skip_confirm',
     PROBLEM = 'problem',
     PROBLEM_CONFIRM = 'problem_confirm',
+
+    SUBSCRIBE = 'subscribe',
+    SUBSCRIBE_CHECK = "subscribe_check",
+    SUBSCRIBE_CONFIRM = "subscribe_confirm",
+    SUBSCRIBE_ERROR = "subscribe_error",
+
+    WHERE_MASTERS = "where_masters",
+
+    AUTHORIZATION = 'authorization',
+    AUTHORIZATION_CONFIRM = 'authorization_confirm',
+    AUTHORIZATION_WRITE = 'authorization_write',
+    AUTHORIZATION_SKIP = ' authorization_skip',
+    AUTHORIZATION_GUIDE = 'authorization_guide',
+    AUTHORIZATION_INCORRECT = 'authorization_incorrect',
 
     CODE_INCORRECT = 'code_incorrect',
     // не используются в callback_query
@@ -66,12 +80,23 @@ export default class TelegramBotApp {
     private _setupListeners(): void {
         try {
             this.bot.on('message', async (message) => {
-                const tgUser = message.from
+                const tgUser = message?.from
                 const dbUser = await Helper.checkUser(tgUser)
-                const text = message.text
-                const chatId = message.chat.id
+                const text = message?.text
+                const chatId = message?.chat?.id
 
                 if (text.includes('/start')) {
+
+                    const textArr = text?.split(' ')
+                    if (textArr.length === 2) {
+                        if (/^\d+$/.test(textArr[1])) {
+                            Helper.checkReferral(dbUser, Number(textArr[1]), this.bot)
+                        } else {
+                            Logger.debug('stats')
+                        }
+
+
+                    }
                     return await this._sendMessageOnStart(chatId, dbUser)
                 }
 
@@ -79,15 +104,23 @@ export default class TelegramBotApp {
                     case EActivity.BUTTONS:
                         return await this._sendMessageOnNoCommand(chatId, dbUser)
                     case EActivity.CODE:
-                        const check = Helper.checkCode(text)
+                        const checkCode = Helper.checkCode(text)
 
-                        if (check) {
+                        if (checkCode) {
                             return await this._sendMessageOnTaskCorrect(chatId, dbUser)
                         } else {
                             return await this._sendMessageOnCodeIncorrect(chatId, dbUser)
                         }
                     case EActivity.PROBLEM:
                         return await this._sendMessageOnProblemConfirm(chatId, dbUser)
+                    case EActivity.AUTHORIZATION:
+                        const checkAuthorization = Helper.checkCode(text)
+
+                        if (checkAuthorization) {
+                            return await this._sendMessageOnAuthorizationConfirm(chatId, dbUser)
+                        } else {
+                            return await this._sendMessageOnAuthorizationIncorrect(chatId, dbUser)
+                        }
                 }
             })
 
@@ -105,7 +138,7 @@ export default class TelegramBotApp {
         const dbUser = await Helper.checkUser(tgUser)
         await Helper.changeUserActivity(dbUser.id, EActivity.BUTTONS)
 
-        const chatId = message.chat.id
+        const chatId = message?.chat?.id
 
         switch (data) {
             case EMessages.START:
@@ -126,8 +159,14 @@ export default class TelegramBotApp {
                 return await this._sendMessageOnTasks(chatId, dbUser)
             case EMessages.TASK_1:
                 return await this._sendMessageOnTaskOne(chatId, dbUser)
-            case EMessages.TASK_2:
-                return await this._sendMessageOnTaskTwo(chatId, dbUser)
+            case EMessages.SUBSCRIBE:
+                return await this._sendMessageOnSubscribe(chatId, dbUser)
+            case EMessages.SUBSCRIBE_CHECK:
+                return await this._sendMessageSubscribeCheck(chatId, dbUser)
+            case EMessages.SUBSCRIBE_CONFIRM:
+                return await this._sendMessageSubscribeConfirm(chatId, dbUser)
+            case EMessages.SUBSCRIBE_ERROR:
+                return await this._sendMessageSubscribeError(chatId, dbUser)
             case EMessages.WHERE_STATION:
                 return await this._sendMessageOnWhereStation(chatId, dbUser)
             case EMessages.WRITE_CODE:
@@ -140,6 +179,20 @@ export default class TelegramBotApp {
                 return await this._sendMessageOnProblem(chatId, dbUser)
             case EMessages.CODE_INCORRECT:
                 return await this._sendMessageOnCodeIncorrect(chatId, dbUser)
+            case EMessages.TASK_2:
+                return await this._sendMessageOnTaskTwo(chatId, dbUser)
+            case EMessages.WHERE_MASTERS:
+                return await this._sendMessageOnWhereMasters(chatId, dbUser)
+            case EMessages.AUTHORIZATION:
+                return await this._sendMessageOnAuthorization(chatId, dbUser)
+            case EMessages.AUTHORIZATION_GUIDE:
+                return await this._sendMessageOnAuthorizationGuide(chatId, dbUser)
+            case EMessages.AUTHORIZATION_SKIP:
+                return await this._sendMessageOnAuthorizationSkip(chatId, dbUser)
+            case EMessages.AUTHORIZATION_WRITE:
+                return await this._sendMessageOnAuthorizationWrite(chatId, dbUser)
+            case EMessages.AUTHORIZATION_INCORRECT:
+                return await this._sendMessageOnAuthorizationIncorrect(chatId, dbUser)
         }
     }
 
@@ -265,13 +318,14 @@ export default class TelegramBotApp {
 
     private async _sendMessageOnMenu(chatId: number, dbUser: IUserDb): Promise<void> {
         try {
-             
+
             let taskData
             const hasTasks = await Helper.getHasPendingTask(dbUser.id)
 
             if (hasTasks) {
                 taskData = await Helper.getLastPendingTask(dbUser.id)
             }
+
 
             const buttons: InlineKeyboardButton[][] = [
                 [{ text: 'Задания', callback_data: hasTasks ? taskData.type : EMessages.TASKS }],
@@ -396,16 +450,41 @@ export default class TelegramBotApp {
 
     private async _sendMessageOnTaskCorrect(chatId: number, dbUser: IUserDb): Promise<void> {
         try {
-            const videoPath = path.join(__dirname, '../assets/videos/video1.mp4')
-             
-            await Helper.confirmLastTask(dbUser.id)
-            await Helper.addPointsToUser(dbUser.id, 10)
+            let videoPath
+            let text
+            let buttons: InlineKeyboardButton[][]
 
-            const buttons: InlineKeyboardButton[][] = [
-                [{ text: 'Следующее задание', callback_data: EMessages.TASK_2 }],
-                [{ text: 'Назад', callback_data: EMessages.MENU }],
-            ]
-            const text = `<b>Код принят.</b> Спасибо за твой вклад в заботу о планете и людях! ☘️\n\nНа твой игровой счет начислено <b>10 баллов</b>. Поздравляем! Играем дальше?`
+            const task = await Helper.getLastPendingTask(dbUser.id)
+            await Helper.confirmLastTask(dbUser.id)
+            await Helper.addPointsToUser(dbUser, 10)
+            await this._sendMessageOnReferralComplete(dbUser)
+            await Helper.changeUserActivity(dbUser.id, EActivity.BUTTONS)
+
+            switch (task.type) {
+                case EMessages.TASK_1:
+                    buttons = [
+                        [{ text: 'Следующее задание', callback_data: EMessages.SUBSCRIBE }],
+                        [{ text: 'Назад', callback_data: EMessages.MENU }],
+                    ]
+                    text = `<b>Код принят.</b> Спасибо за твой вклад в заботу о планете и людях! ☘️\n\nНа твой игровой счет начислено <b>10 баллов</b>. Поздравляем! Играем дальше?`
+                    videoPath = path.join(__dirname, '../assets/videos/video1.mp4')
+                    break;
+                case EMessages.TASK_2:
+                    buttons = [
+                        [{ text: 'Следующее задание', callback_data: EMessages.AUTHORIZATION }],
+                        [{ text: 'Назад', callback_data: EMessages.MENU }],
+                    ]
+                    text = `<b>Код принят.</b> Надеемся, тебе понравился наш мастер-класс! 😍\n\nНа твой игровой счет начислено <b>10 баллов</b>.\nПоздравляем! Играем дальше?`
+                    videoPath = path.join(__dirname, '../assets/videos/video1.mp4')
+                    break;
+                case EMessages.TASK_3:
+                    break;
+                case EMessages.TASK_4:
+                    break;
+                case EMessages.TASK_5:
+                    break;
+            }
+
 
             await this.bot.sendVideo(chatId, videoPath)
             await this.bot.sendMessage(chatId, text, {
@@ -423,7 +502,7 @@ export default class TelegramBotApp {
 
     private async _sendMessageOnCodeIncorrect(chatId: number, dbUser: IUserDb): Promise<void> {
         try {
-             
+            await Helper.changeUserActivity(dbUser.id, EActivity.BUTTONS)
 
             const buttons: InlineKeyboardButton[][] = [
                 [{ text: 'Попробовать ещё раз', callback_data: EMessages.WRITE_CODE }],
@@ -447,13 +526,13 @@ export default class TelegramBotApp {
 
     private async _sendMessageOnWhereStation(chatId: number, dbUser: IUserDb): Promise<void> {
         try {
-             
+
             const imgPath = path.join(__dirname, '../assets/images/img1.jpg')
 
             const buttons: InlineKeyboardButton[][] = [
                 [{ text: 'Ввести код', callback_data: EMessages.WRITE_CODE }],
                 [{ text: 'Пропустить задание', callback_data: EMessages.SKIP_TASK }],
-                [{ text: 'Назад', callback_data: EMessages.MENU }],
+                [{ text: 'Назад', callback_data: EMessages.TASK_1 }],
             ]
 
             const text = `<b>Станция «Разделяй с МЕГОЙ»</b> расположена на внешней парковке, столбик Б1. К ней удобно подъехать на машине со стороны улицы Металлургов и сразу выгрузить все отходы.`
@@ -475,12 +554,33 @@ export default class TelegramBotApp {
     private async _sendMessageOnWriteCode(chatId: number, dbUser: IUserDb): Promise<void> {
         try {
             await Helper.changeUserActivity(dbUser.id, EActivity.CODE)
+            const task = await Helper.getLastPendingTask(dbUser.id)
 
-            const buttons: InlineKeyboardButton[][] = [
-                [{ text: 'Где найти станцию?', callback_data: EMessages.WHERE_STATION }],
-                [{ text: 'Пропустить задание', callback_data: EMessages.SKIP_TASK }],
-                [{ text: 'Назад', callback_data: EMessages.MENU }],
-            ]
+            let buttons: InlineKeyboardButton[][]
+
+            switch (task.type) {
+                case EMessages.TASK_1:
+                    buttons = [
+                        [{ text: 'Где найти станцию?', callback_data: EMessages.WHERE_STATION }],
+                        [{ text: 'Пропустить задание', callback_data: EMessages.SKIP_TASK }],
+                        [{ text: 'Назад', callback_data: EMessages.MENU }],
+                    ]
+                    break;
+                case EMessages.TASK_2:
+                    buttons = [
+                        [{ text: 'Где находятся мастер-классы?', callback_data: EMessages.WHERE_MASTERS }],
+                        [{ text: 'Пропустить задание', callback_data: EMessages.SKIP_TASK }],
+                        [{ text: 'Назад', callback_data: EMessages.MENU }],
+                    ]
+                    break;
+                case EMessages.TASK_3:
+                    buttons = [
+                        [{ text: 'Где находятся мастер-классы?', callback_data: EMessages.WHERE_MASTERS }],
+                        [{ text: 'Пропустить задание', callback_data: EMessages.SKIP_TASK }],
+                        [{ text: 'Назад', callback_data: EMessages.MENU }],
+                    ]
+                    break;
+            }
 
             const text = `Введи уникальный код ниже 👇🏻 (1 - correct)`
 
@@ -499,7 +599,7 @@ export default class TelegramBotApp {
 
     private async _sendMessageOnSkipTask(chatId: number, dbUser: IUserDb): Promise<void> {
         try {
-             
+
             const taskData = await Helper.getLastPendingTask(dbUser.id)
 
             const buttons: InlineKeyboardButton[][] = [
@@ -524,26 +624,27 @@ export default class TelegramBotApp {
 
     private async _sendMessageOnSkipConfirm(chatId: number, dbUser: IUserDb): Promise<void> {
         try {
-            await Helper.confirmLastTask(dbUser.id)
             const taskData = await Helper.getLastPendingTask(dbUser.id)
+            await Helper.confirmLastTask(dbUser.id)
             switch (taskData.type) {
                 case EMessages.TASK_1:
-                    return await this._sendMessageOnTaskOne(chatId, dbUser)
+                    return await this._sendMessageOnSubscribe(chatId, dbUser)
                 case EMessages.TASK_2:
-                    return await this._sendMessageOnTaskTwo(chatId, dbUser)
+                    return await this._sendMessageOnAuthorization(chatId, dbUser)
             }
         } catch (e) {
             Logger.error('[BOT] sendMessageOnSkipConfirm error', e)
         }
     }
 
-    private async _sendMessageOnTaskTwo(chatId: number, dbUser: IUserDb): Promise<void> {
+    private async _sendMessageOnSubscribe(chatId: number, dbUser: IUserDb): Promise<void> {
         try {
             const taskData = await Helper.getLastPendingTask(dbUser.id)
 
             const buttons: InlineKeyboardButton[][] = [
-                [{ text: 'Проверить подписку', callback_data: EMessages.MENU }],
-                [{ text: 'Следующее задание', callback_data: EMessages.MENU }],
+                [{ text: 'Проверить подписку (succes)', callback_data: EMessages.SUBSCRIBE_CONFIRM }],
+                [{ text: 'Проверить подписку (error)', callback_data: EMessages.SUBSCRIBE_ERROR }],
+                [{ text: 'Следующее задание', callback_data: EMessages.TASK_2 }],
                 [{ text: 'Назад', callback_data: EMessages.MENU }],
             ]
 
@@ -558,16 +659,98 @@ export default class TelegramBotApp {
 
             await Helper.setButtons(dbUser, buttons)
         } catch (e) {
-            Logger.error('[BOT] sendMessageOnTaskTwo error', e)
+            Logger.error('[BOT] sendMessageOnSubscribe error', e)
+        }
+    }
+
+    private async _sendMessageSubscribeCheck(chatId: number, dbUser: IUserDb): Promise<void> {
+        try {
+            // const data = await this.bot.getChatMember('-1001793675054', dbUser.id)
+            // console.log(data)
+            // const buttons: InlineKeyboardButton[][] = [
+            //     [{ text: 'Проверить подписку', callback_data: EMessages.SUBSCRIBE_CHECK }],
+            //     [{ text: 'Следующее задание', callback_data: EMessages.TASK_2 }],
+            //     [{ text: 'Назад', callback_data: EMessages.MENU }],
+            // ]
+
+            // const text = `Хочешь получить <b>+5 бонусных баллов?</b> 😊\nСкорее подписывайся на наш <a href="https://t.me/megaekat">Телеграм-канал!</a>\n\nВ нем ты найдешь крутые идеи для покупок, информацию об акциях и скидках магазинов МЕГИ, розыгрыши и многое другое!`
+
+            // await this.bot.sendMessage(chatId, text, {
+            //     parse_mode: 'HTML',
+            //     reply_markup: {
+            //         inline_keyboard: buttons,
+            //     }
+            // })
+
+            // await Helper.setButtons(dbUser, buttons)
+        } catch (e) {
+            Logger.error('[BOT] sendMessageSubscribeCheck error', e)
+        }
+    }
+
+    private async _sendMessageSubscribeConfirm(chatId: number, dbUser: IUserDb): Promise<void> {
+        try {
+            await Helper.addPointsToUser(dbUser, 5)
+            await Helper.updateSubscribeStatus(dbUser.id)
+
+            const buttons: InlineKeyboardButton[][] = [
+                [{ text: 'Следующее задание', callback_data: EMessages.TASK_2 }],
+                [{ text: 'Назад', callback_data: EMessages.MENU }],
+            ]
+
+            const text = `Видим твою подписку! Спасибо!\n\nЛови <b>+5 бонусных баллов</b> на свой игровой счет.`
+
+            await this.bot.sendMessage(chatId, text, {
+                parse_mode: 'HTML',
+                reply_markup: {
+                    inline_keyboard: buttons,
+                }
+            })
+
+            await Helper.setButtons(dbUser, buttons)
+        } catch (e) {
+            Logger.error('[BOT] sendMessageSubscribeConfirm error', e)
+        }
+    }
+
+    private async _sendMessageSubscribeError(chatId: number, dbUser: IUserDb): Promise<void> {
+        try {
+            const buttons: InlineKeyboardButton[][] = [
+                [{ text: 'Проверить подписку', callback_data: EMessages.SUBSCRIBE_CHECK }],
+                [{ text: 'Следующее задание', callback_data: EMessages.TASK_2 }],
+                [{ text: 'Назад', callback_data: EMessages.MENU }],
+            ]
+
+            const text = `Кажется, ты всё еще не наш подписчик. Переходи в <a href="https://t.me/megaekat">Телеграм-канал</a> и жми «Подписаться»`
+
+            await this.bot.sendMessage(chatId, text, {
+                parse_mode: 'HTML',
+                reply_markup: {
+                    inline_keyboard: buttons,
+                }
+            })
+
+            await Helper.setButtons(dbUser, buttons)
+        } catch (e) {
+            Logger.error('[BOT] sendMessageSubscribeError error', e)
         }
     }
 
     private async _sendMessageOnProblem(chatId: number, dbUser: IUserDb): Promise<void> {
         try {
             await Helper.changeUserActivity(dbUser.id, EActivity.PROBLEM)
+            let backType
+            switch (dbUser?.buttons[0][0]?.callback_data) {
+                case EMessages.WRITE_CODE:
+                    backType = EMessages.CODE_INCORRECT;
+                    break;
+                case EMessages.AUTHORIZATION_WRITE:
+                    backType = EMessages.AUTHORIZATION_INCORRECT;
+                    break;
+            }
 
             const buttons: InlineKeyboardButton[][] = [
-                [{ text: 'Назад', callback_data: EMessages.CODE_INCORRECT }],
+                [{ text: 'Назад', callback_data: backType }],
             ]
 
             const text = `Напиши в чат-бот о своей проблеме, и мы постараемся оперативно её решить. Если у тебя есть скриншот, фото или видео, демонстрирующие проблему, можешь также прикрепить к сообщению.\n\nПеред отправкой проверь, указано ли в твоем аккаунте Telegram имя пользователя (@nickmane). Без него мы не сможем с тобой связаться.`
@@ -581,14 +764,12 @@ export default class TelegramBotApp {
 
             await Helper.setButtons(dbUser, buttons)
         } catch (e) {
-            Logger.error('[BOT] sendMessageOnSkipTask error', e)
+            Logger.error('[BOT] sendMessageOnProblem error', e)
         }
     }
 
     private async _sendMessageOnProblemConfirm(chatId: number, dbUser: IUserDb): Promise<void> {
         try {
-             
-
             const buttons: InlineKeyboardButton[][] = [
                 [{ text: 'Назад', callback_data: EMessages.MENU }],
             ]
@@ -604,7 +785,242 @@ export default class TelegramBotApp {
 
             await Helper.setButtons(dbUser, buttons)
         } catch (e) {
-            Logger.error('[BOT] sendMessageOnSkipTask error', e)
+            Logger.error('[BOT] sendMessageOnProblemConfirm error', e)
+        }
+    }
+
+    private async _sendMessageOnReferralComplete(currentUser: IUserDb): Promise<void> {
+        try {
+            const referralId = currentUser?.referral
+            if (referralId > 0) {
+                const buttons = await Helper.getButtons(referralId)
+                const referralUser = await Helper.getUserById(referralId)
+                await Helper.updateSentStatus(currentUser.id)
+                if (referralUser && currentUser.sent !== 1) {
+                    await Helper.addPointsToUser(referralUser, 5)
+                    const text = `Кто-то из твоих друзей присоединился к путешествию в МЕГА Экополис! За это мы начисляем тебе +5 баллов 😎\n\nПродолжим?`
+
+                    await this.bot.sendMessage(referralId, text, {
+                        parse_mode: 'HTML',
+                        reply_markup: {
+                            inline_keyboard: buttons,
+                        }
+                    })
+                }
+            }
+        } catch (e) {
+            Logger.error('[BOT] sendMessageOnReferralComplete error', e)
+        }
+    }
+
+    private async _sendMessageOnTaskTwo(chatId: number, dbUser: IUserDb): Promise<void> {
+        try {
+            const videoPath = path.join(__dirname, '../assets/videos/video1.mp4')
+
+            const buttons: InlineKeyboardButton[][] = [
+                [{ text: 'Ввести код', callback_data: EMessages.WRITE_CODE }],
+                [{ text: 'Где находятся мастер-классы?', callback_data: EMessages.WHERE_MASTERS }],
+                [{ text: 'Пропустить задание', callback_data: EMessages.SKIP_TASK }],
+                [{ text: 'Назад', callback_data: EMessages.MENU }],
+            ]
+
+            const text = `<b>Задание #2. МЕГА Место</b>\n\nАпсайклинг, кастомизация одежды совместно с художником и многое другое ждет тебя в МЕГА Месте!\n\n<b>Записывайся на мастер-классы по ссылке или в МЕГЕ, прими участие хотя бы в одном</b> и получи уникальный код от куратора, чтобы заработать баллы.\n\nРасписание мастер-классов и запись: <a href="https://megamesto.ru/">https://megamesto.ru/</a>\n\nДоверься МЕГЕ! 👐`
+
+            await this.bot.sendVideo(chatId, videoPath)
+            await this.bot.sendMessage(chatId, text, {
+                parse_mode: 'HTML',
+                disable_web_page_preview: true,
+                reply_markup: {
+                    inline_keyboard: buttons,
+                }
+            })
+
+            await Helper.setButtons(dbUser, buttons)
+        } catch (e) {
+            Logger.error('[BOT] sendMessageOnTaskTwo error', e)
+        }
+    }
+
+    private async _sendMessageOnWhereMasters(chatId: number, dbUser: IUserDb): Promise<void> {
+        try {
+            const buttons: InlineKeyboardButton[][] = [
+                [{ text: 'Ввести код', callback_data: EMessages.WRITE_CODE }],
+                [{ text: 'Пропустить задание', callback_data: EMessages.SKIP_TASK }],
+                [{ text: 'Назад', callback_data: EMessages.TASK_2 }],
+            ]
+
+            const text = `Мастер-классы проходят в открытом общественном пространстве МЕГА\n{Место}`
+
+            await this.bot.sendMessage(chatId, text, {
+                parse_mode: 'HTML',
+                reply_markup: {
+                    inline_keyboard: buttons,
+                }
+            })
+
+            await Helper.setButtons(dbUser, buttons)
+        } catch (e) {
+            Logger.error('[BOT] sendMessageOnWhereMasters error', e)
+        }
+    }
+
+    private async _sendMessageOnAuthorization(chatId: number, dbUser: IUserDb): Promise<void> {
+        try {
+            const videoPath = path.join(__dirname, '../assets/videos/video1.mp4')
+
+            const buttons: InlineKeyboardButton[][] = [
+                [{ text: 'Ввести User ID MEGA Friends', callback_data: EMessages.AUTHORIZATION_WRITE }],
+                [{ text: 'Где найти User ID?', callback_data: EMessages.AUTHORIZATION_GUIDE }],
+                [{ text: 'Пропустить', callback_data: EMessages.AUTHORIZATION_SKIP }],
+                [{ text: 'Назад', callback_data: EMessages.MENU }],
+            ]
+
+            const text = `Настало время вырваться вперед! Мы даем тебе уникальную возможность <b>умножить свои баллы!</b>\n\nЗарегистрируйся или авторизуйся в программе лояльности MEGA Friends по ссылке или в мобильном приложении МЕГА: <a href='https://clck.ru/36absA'>https://clck.ru/36absA</a>\n\nНайди в личном кабинете свой код User ID, введи в чат-бот и получи <b>множитель x1,5 баллов за выполнение будущих заданий!</b> 😯`
+
+            await this.bot.sendVideo(chatId, videoPath)
+            await this.bot.sendMessage(chatId, text, {
+                parse_mode: 'HTML',
+                reply_markup: {
+                    inline_keyboard: buttons,
+                }
+            })
+
+            await Helper.setButtons(dbUser, buttons)
+        } catch (e) {
+            Logger.error('[BOT] sendMessageOnAuthorization error', e)
+        }
+    }
+
+    private async _sendMessageOnAuthorizationGuide(chatId: number, dbUser: IUserDb): Promise<void> {
+        try {
+            const imgPath1 = path.join(__dirname, '../assets/images/img1.jpg');
+            const imgPath2 = path.join(__dirname, '../assets/images/img1.jpg');
+            const imgPath3 = path.join(__dirname, '../assets/images/img1.jpg');
+            const imgPath4 = path.join(__dirname, '../assets/images/img1.jpg');
+
+            const media: InputMediaPhoto[] = [
+                { type: 'photo', media: imgPath1 },
+                { type: 'photo', media: imgPath2 },
+                { type: 'photo', media: imgPath3 },
+                { type: 'photo', media: imgPath4 },
+            ];
+
+            const buttons: InlineKeyboardButton[][] = [
+                [{ text: 'Ввести User ID MEGA Friends', callback_data: EMessages.AUTHORIZATION_WRITE }],
+                [{ text: 'Пропустить', callback_data: EMessages.AUTHORIZATION_SKIP }],
+                [{ text: 'Назад', callback_data: EMessages.AUTHORIZATION }],
+            ]
+
+            const text = `Итак, инструкция:\n\n1. Перейди по ссылке или скачай мобильное приложение МЕГА и пройди процедуру авторизации или регистрации: <a href="https://clck.ru/36absA">https://clck.ru/36absA</a>\n\n2. В личном кабинете или приложении МЕГА найди кнопку «Твой QR-code» и нажми на неё\n\n3. Под QR-кодом ты увидишь уникальный код, который выглядит примерно так: f0f08565-13e4-47e4-ab75-b a4850611da3\n\n4. Скопируй и введи этот код в чат-бот, нажав по кнопке ниже`
+
+            await this.bot.sendMediaGroup(chatId, media)
+            await this.bot.sendMessage(chatId, text, {
+                parse_mode: 'HTML',
+                reply_markup: {
+                    inline_keyboard: buttons,
+                }
+            })
+
+            await Helper.setButtons(dbUser, buttons)
+        } catch (e) {
+            Logger.error('[BOT] sendMessageOnAuthorizationGuide error', e)
+        }
+    }
+
+    private async _sendMessageOnAuthorizationSkip(chatId: number, dbUser: IUserDb): Promise<void> {
+        try {
+            const buttons: InlineKeyboardButton[][] = [
+                [{ text: 'Да, пропустить', callback_data: EMessages.TASK_3 }],
+                [{ text: 'Нет, сейчас авторизуюсь', callback_data: EMessages.AUTHORIZATION }],
+            ]
+
+            const text = `Ты уверен(а), что хочешь пропустить задание? В таком случае мы не начислим тебе множитель на баллы, и <b>шансы выиграть приз уменьшатся</b> 😔`
+
+            await this.bot.sendMessage(chatId, text, {
+                parse_mode: 'HTML',
+                reply_markup: {
+                    inline_keyboard: buttons,
+                }
+            })
+
+            await Helper.setButtons(dbUser, buttons)
+        } catch (e) {
+            Logger.error('[BOT] sendMessageOnAuthorizationSkip error', e)
+        }
+    }
+
+    private async _sendMessageOnAuthorizationWrite(chatId: number, dbUser: IUserDb): Promise<void> {
+        try {
+            await Helper.changeUserActivity(dbUser.id, EActivity.AUTHORIZATION)
+
+            const buttons: InlineKeyboardButton[][] = [
+                [{ text: 'Где найти User ID?', callback_data: EMessages.AUTHORIZATION_GUIDE }],
+                [{ text: 'Пропустить', callback_data: EMessages.AUTHORIZATION_SKIP }],
+                [{ text: 'Назад', callback_data: EMessages.AUTHORIZATION }],
+            ]
+
+            const text = `Скопируй и введи сюда свой код User ID. (1 - correct)`
+
+            await this.bot.sendMessage(chatId, text, {
+                parse_mode: 'HTML',
+                reply_markup: {
+                    inline_keyboard: buttons,
+                }
+            })
+
+            await Helper.setButtons(dbUser, buttons)
+        } catch (e) {
+            Logger.error('[BOT] sendMessageOnAuthorizationWrite error', e)
+        }
+    }
+
+    private async _sendMessageOnAuthorizationConfirm(chatId: number, dbUser: IUserDb): Promise<void> {
+        try {
+            await Helper.changeUserActivity(dbUser.id, EActivity.BUTTONS)
+            await Helper.updateAuthorizationStatus(dbUser.id)
+
+            const buttons: InlineKeyboardButton[][] = [
+                [{ text: 'Следующее задание', callback_data: EMessages.TASK_3 }],
+                [{ text: 'Назад', callback_data: EMessages.MENU }],
+            ]
+
+            const text = `Ура! Теперь ты наш МЕГА ДРУГ! <b>Все твои будущие баллы будут начисляться с множителем x1,5</b>\n\n<b>Как это работает?</b>\n\nДопустим, следующее задание стоит 10 баллов. Пользователи, которые не прошли авторизацию в программе лояльности, при успешном выполнении задания получат ровно 10 баллов. А ты – 10х1,5 = 15 баллов!\n\nКруто же? <b>Твои возможности выиграть главный приз стали еще ближе!</b>`
+
+            await this.bot.sendMessage(chatId, text, {
+                parse_mode: 'HTML',
+                reply_markup: {
+                    inline_keyboard: buttons,
+                }
+            })
+
+            await Helper.setButtons(dbUser, buttons)
+        } catch (e) {
+            Logger.error('[BOT] sendMessageOnAuthorizationCorrect error', e)
+        }
+    }
+
+    private async _sendMessageOnAuthorizationIncorrect(chatId: number, dbUser: IUserDb): Promise<void> {
+        try {
+            await Helper.changeUserActivity(dbUser.id, EActivity.BUTTONS)
+
+            const buttons: InlineKeyboardButton[][] = [
+                [{ text: 'Попробовать ещё раз', callback_data: EMessages.AUTHORIZATION_WRITE }],
+                [{ text: 'Сообщить о проблеме', callback_data: EMessages.PROBLEM }],
+                [{ text: 'Пропустить', callback_data: EMessages.AUTHORIZATION_SKIP }],
+            ]
+
+            const text = `Что-то пошло не так.<b>Попробуй ввести код User ID</b> или сообщи нам о проблеме.`
+
+            await this.bot.sendMessage(chatId, text, {
+                parse_mode: 'HTML',
+                reply_markup: {
+                    inline_keyboard: buttons,
+                }
+            })
+
+            await Helper.setButtons(dbUser, buttons)
+        } catch (e) {
+            Logger.error('[BOT] sendMessageOnAuthorizationIncorrect error', e)
         }
     }
 }

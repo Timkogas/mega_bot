@@ -1,4 +1,4 @@
-import { InlineKeyboardButton, User } from "node-telegram-bot-api";
+import TelegramBot, { InlineKeyboardButton, User } from "node-telegram-bot-api";
 import Logger from "../Logger/Logger";
 import Db from "../Db/Db";
 import { EActivity, IUserDb } from "../Db/IUserDb";
@@ -33,6 +33,25 @@ class Helper {
     }
 
     /**
+     * Получение пользователя по ID из базы данных
+     * @param userId - ID пользователя
+     */
+    static async getUserById(userId: number): Promise<IUserDb | null> {
+        try {
+            const dbUser = await Db.query('SELECT * FROM users WHERE id = ?', [userId]);
+
+            if (Array.isArray(dbUser) && dbUser.length > 0) {
+                return dbUser[0];
+            }
+
+            return null;
+        } catch (error) {
+            Logger.error('[Helper] Error getting user by ID:', error);
+            return null;
+        }
+    }
+
+    /**
     * Функция для установки кнопок для пользователя
     * @param dbUser - Пользователь из базы данных
     * @param newButtons - Новые кнопки в формате JSON
@@ -52,6 +71,73 @@ class Helper {
         catch (error) {
             Logger.error('[Helper] Error set buttons:', error);
             return null;
+        }
+    }
+
+    /**
+    * Функция для проверки реферала и установки связи между пользователями
+    * @param  currentUser - Текущий пользователь
+    * @param  referralId - Идентификатор реферала
+    */
+    static async checkReferral(currentUser: IUserDb, referralId: number, bot: TelegramBot): Promise<void> {
+        try {
+            const dbUser = await Db.query('SELECT * FROM users WHERE id = ?', [referralId]);
+
+            if (Array.isArray(dbUser) && dbUser.length === 1 && referralId !== null && referralId !== currentUser.id) {
+                const referralCount = await Db.query('SELECT refs FROM users WHERE id = ?', [referralId]);
+                const currentRefs = referralCount[0]?.refs
+                if (referralCount[0].refs < 10) {
+                    await Db.query('UPDATE users SET referral = ? WHERE id = ?', [referralId, currentUser.id]);
+                    await Db.query('UPDATE users SET refs = ? WHERE id = ?', [currentRefs + 1, referralId]);
+                } else {
+                    const refUser = await Db.query('SELECT * FROM users WHERE id = ?', [referralId]);
+                    const text = 'Ты пригласил всех друзей! Лимит на использование реферальной ссылки закончился.'
+                    bot.sendMessage(referralId, text, {
+                        parse_mode: 'HTML',
+                        reply_markup: {
+                            inline_keyboard: refUser[0].buttons,
+                        }
+                    })
+                }
+            }
+        } catch (error) {
+            Logger.error('[Helper] Error checking referral:', error);
+        }
+    }
+
+    /**
+   * Обновление свойства sent у пользователя по ID в базе данных
+   * @param userId - ID пользователя
+   */
+    static async updateSentStatus(userId: number): Promise<void> {
+        try {
+            await Db.query('UPDATE users SET sent = 1 WHERE id = ?', [userId]);
+        } catch (error) {
+            Logger.error('[Helper] Error updating sent status:', error);
+        }
+    }
+
+    /**
+    * Обновление свойства authorization у пользователя по ID в базе данных
+    * @param userId - ID пользователя
+    */
+    static async updateAuthorizationStatus(userId: number): Promise<void> {
+        try {
+            await Db.query('UPDATE users SET authorization = 1 WHERE id = ?', [userId]);
+        } catch (error) {
+            Logger.error('[Helper] Error updating sent status:', error);
+        }
+    }
+
+    /**
+    * Обновление свойства subscribe у пользователя по ID в базе данных
+    * @param userId - ID пользователя
+    */
+    static async updateSubscribeStatus(userId: number): Promise<void> {
+        try {
+            await Db.query('UPDATE users SET subscribe = 1 WHERE id = ?', [userId]);
+        } catch (error) {
+            Logger.error('[Helper] Error updating sent status:', error);
         }
     }
 
@@ -96,6 +182,8 @@ class Helper {
         }
     }
 
+
+
     /**
      * Функция для проверки наличия у пользователя задачи со статусом 0
      * @param userId - ID пользователя из базы данных
@@ -126,21 +214,27 @@ class Helper {
 
             if (lastTask && lastTask.length > 0) {
                 return {
-                    id: lastTask[0].id,
-                    type: taskIdToEMessagesMap[lastTask[0].id] || null,
+                    id: lastTask[0].task_id,
+                    type: taskIdToEMessagesMap[lastTask[0].task_id] || null,
                 };
             }
 
+            // Получение последней задачи пользователя
+            const lastUserTask = await Db.query('SELECT MAX(task_id) as lastTaskId FROM users_tasks WHERE user_id = ?', [userId]);
+
+            // Определение следующего task_id
+            const nextTaskId = lastUserTask && lastUserTask.length > 0 ? lastUserTask[0].lastTaskId + 1 : 1;
+
             // Если нет задач со статусом 0, создаем новую задачу со статусом 0
-            const newTaskId = await Db.query('INSERT INTO users_tasks (user_id, status) VALUES (?, 0)', [userId]);
+            const newTaskId = await Db.query('INSERT INTO users_tasks (user_id, status, task_id) VALUES (?, 0, ?)', [userId, nextTaskId]);
 
             // Получаем информацию о только что созданной задаче
             const newTask = await Db.query('SELECT * FROM users_tasks WHERE id = ?', [newTaskId.insertId]);
 
             if (newTask && newTask.length > 0) {
                 return {
-                    id: newTask[0].id,
-                    type: taskIdToEMessagesMap[newTask[0].id] || null,
+                    id: newTask.task_id,
+                    type: taskIdToEMessagesMap[newTask[0].task_id] || null,
                 };
             }
 
@@ -188,16 +282,13 @@ class Helper {
     * @param userId - ID пользователя из базы данных
     * @param pointsToAdd - Количество очков для добавления
     */
-    static async addPointsToUser(userId: number, pointsToAdd: number): Promise<void> {
+    static async addPointsToUser(user: IUserDb, pointsToAdd: number): Promise<void> {
         try {
-            // Получение текущего количества очков пользователя
-            const user = await Db.query('SELECT * FROM users WHERE id = ?', [userId]);
-
-            if (user && user.length > 0) {
-                const currentPoints = user[0].score || 0;
+            if (user) {
+                const currentPoints = user.score || 0;
 
                 // Обновление количества очков пользователя
-                await Db.query('UPDATE users SET score = ?, time = NOW() WHERE id = ?', [currentPoints + pointsToAdd, userId]);
+                await Db.query('UPDATE users SET score = ?, time = NOW() WHERE id = ?', [currentPoints + pointsToAdd, user.id]);
             }
         } catch (error) {
             Logger.error('[Helper] Error adding points to user:', error);

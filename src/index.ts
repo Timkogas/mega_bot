@@ -60,6 +60,8 @@ class App {
         buttons JSON DEFAULT NULL,
         web_app TINYINT DEFAULT 0,
         refs INT DEFAULT 0,
+        subscribe TINYINT DEFAULT 0,
+        authorization TINYINT DEFAULT 0,
         activity VARCHAR(50) DEFAULT 'buttons',
         score INT,
         time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
