@@ -141,6 +141,18 @@ class Helper {
         }
     }
 
+    /**
+   * Обновление свойства final у пользователя по ID в базе данных
+   * @param userId - ID пользователя
+   */
+    static async updateFinalStatus(userId: number): Promise<void> {
+        try {
+            await Db.query('UPDATE users SET final = 1 WHERE id = ?', [userId]);
+        } catch (error) {
+            Logger.error('[Helper] Error updating sent status:', error);
+        }
+    }
+
 
     /**
     * Метод для изменения activity у пользователя
@@ -155,6 +167,7 @@ class Helper {
             Logger.error('[Helper] Error changing user activity:', error);
         }
     }
+
 
 
     /**
@@ -224,7 +237,10 @@ class Helper {
 
             // Определение следующего task_id
             const nextTaskId = lastUserTask && lastUserTask.length > 0 ? lastUserTask[0].lastTaskId + 1 : 1;
-
+            if (nextTaskId > 5) return {
+                id: 6,
+                type: EMessages.FINAL,
+            };
             // Если нет задач со статусом 0, создаем новую задачу со статусом 0
             const newTaskId = await Db.query('INSERT INTO users_tasks (user_id, status, task_id) VALUES (?, 0, ?)', [userId, nextTaskId]);
 
@@ -254,15 +270,17 @@ class Helper {
         try {
             // Получение последней задачи со статусом 0
             const lastTask = await Db.query('SELECT * FROM users_tasks WHERE user_id = ? AND status = 0 ORDER BY id DESC LIMIT 1', [userId]);
-
+            console.log(lastTask)
             if (lastTask && lastTask.length > 0) {
                 const taskId = lastTask[0].id;
-
                 // Обновление статуса последней задачи на 1
                 await Db.query('UPDATE users_tasks SET status = 1 WHERE id = ?', [taskId]);
+
             }
+
         } catch (error) {
             Logger.error('[Helper] Error confirm last task:', error);
+
         }
     }
 
@@ -285,10 +303,10 @@ class Helper {
     static async addPointsToUser(user: IUserDb, pointsToAdd: number): Promise<void> {
         try {
             if (user) {
-                const currentPoints = user.score || 0;
-
+                const currentUser = await this.getUserById(user.id)
+                const currentPoints = currentUser.score || 0;
                 // Обновление количества очков пользователя
-                await Db.query('UPDATE users SET score = ?, time = NOW() WHERE id = ?', [currentPoints + pointsToAdd, user.id]);
+                await Db.query('UPDATE users SET score = ?, time = NOW() WHERE id = ?', [Number(currentPoints) + Number(pointsToAdd), currentUser.id]);
             }
         } catch (error) {
             Logger.error('[Helper] Error adding points to user:', error);

@@ -62,6 +62,7 @@ class App {
         refs INT DEFAULT 0,
         subscribe TINYINT DEFAULT 0,
         authorization TINYINT DEFAULT 0,
+        final TINYINT DEFAULT 0,
         activity VARCHAR(50) DEFAULT 'buttons',
         score INT,
         time TIMESTAMP DEFAULT CURRENT_TIMESTAMP

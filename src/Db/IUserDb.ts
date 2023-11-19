@@ -15,6 +15,7 @@ export interface IUserDb {
     refs: number
     authorization: number
     activity: EActivity
+    final: number
   }
 
 export enum EActivity {

@@ -46,9 +46,18 @@ export enum EMessages {
     AUTHORIZATION_GUIDE = 'authorization_guide',
     AUTHORIZATION_INCORRECT = 'authorization_incorrect',
 
+    WHERE_FOOD = "where_food",
+    WHERE_STORK = "where_stork",
+
+    SCAN_INCORRECT = "scan_incorrect",
+
+    WHERE_SHOPPERS = "where_shoppers",
+    SHOPS = "shops",
+    FINAL = 'final',
+    INVITE_FINAL = 'invite_final',
+
     CODE_INCORRECT = 'code_incorrect',
-    // не используются в callback_query
-    TASK_1_CORRECT = 'task_1_correct',
+    TASK_CORRECT = 'task_correct',
 }
 
 export const taskIdToEMessagesMap = {
@@ -193,6 +202,26 @@ export default class TelegramBotApp {
                 return await this._sendMessageOnAuthorizationWrite(chatId, dbUser)
             case EMessages.AUTHORIZATION_INCORRECT:
                 return await this._sendMessageOnAuthorizationIncorrect(chatId, dbUser)
+            case EMessages.TASK_3:
+                return await this._sendMessageOnTaskThree(chatId, dbUser)
+            case EMessages.WHERE_FOOD:
+                return await this._sendMessageOnWhereFood(chatId, dbUser)
+            case EMessages.TASK_4:
+                return await this._sendMessageOnTaskFour(chatId, dbUser)
+            case EMessages.WHERE_STORK:
+                return await this._sendMessageOnWhereStork(chatId, dbUser)
+            case EMessages.SCAN_INCORRECT:
+                return await this._sendMessageOnScanIncorrect(chatId, dbUser)
+            case EMessages.TASK_5:
+                return await this._sendMessageOnTaskFive(chatId, dbUser)
+            case EMessages.WHERE_SHOPPERS:
+                return await this._sendMessageOnWhereShoppers(chatId, dbUser)
+            case EMessages.SHOPS:
+                return await this._sendMessageOnShops(chatId, dbUser)
+            case EMessages.TASK_CORRECT:
+                return await this._sendMessageOnTaskCorrect(chatId, dbUser)
+            case EMessages.FINAL:
+                return await this._sendMessageOnFinal(chatId, dbUser)
         }
     }
 
@@ -269,7 +298,7 @@ export default class TelegramBotApp {
             const imgPath = path.join(__dirname, '../assets/images/img1.jpg')
 
             const buttons: InlineKeyboardButton[][] = [
-                [{ text: 'Назад', callback_data: EMessages.START_SHORT }],
+                [{ text: 'Назад', callback_data: dbUser.final === 1 ? EMessages.FINAL : EMessages.START_SHORT }],
             ]
 
             const text = `🌍 <b>«МЕГА Экополис»</b> — акция от МЕГИ Екатеринбург, посвященная заботе о планете и людях через сервисы, услуги и решения, применяемые в центрах.\n\nПравила нашей акции ориентированы на выполнение 5 заданий:\n1. Задание 1. Разделяй с МЕГОЙ\n2. Задание 2. МЕГА Место\n3. Задание 3. МЕГА Станция\n4. Задание 4. МЕГА Благотворительность\n5. Задание 4. МЕГА Эко шопинг\n\nЗа каждое выполненное задание пользователю начисляются игровые баллы. Система начисления и количество баллов, призовой фонд и условия проведения определяются настоящими <a href='https://ru.wikipedia.org/wiki/%D0%A1%D1%81%D1%8B%D0%BB%D0%BA%D0%B0'>правилами акции.</a>\n\n<i>Организатор акции — ООО «Юрлицо». Реквизиты</i>\n\n© Все права защищены`
@@ -353,7 +382,7 @@ export default class TelegramBotApp {
     private async _sendMessageOnPrizes(chatId: number, dbUser: IUserDb): Promise<void> {
         try {
             const buttons: InlineKeyboardButton[][] = [
-                [{ text: 'Назад', callback_data: EMessages.MENU }],
+                [{ text: 'Назад', callback_data: dbUser.final === 1 ? EMessages.FINAL : EMessages.MENU }],
             ]
 
             const text = `Победители акции «МЕГА Экополис» смогут претендовать на главный приз — <b>сказочные выходные в глэмпинге и эко-тур по Уралу для всей семьи</b> ⛰️🌲❄️\n\nТоп-50 пользователей также получат ценные призы:\n● Приз1\n● Приз2\n● Приз3\n● Приз4\n● Приз5\n\nПобедители и призеры будут зафиксированы и объявлены 23 декабря на праздничном концерте в МЕГЕ с участием нашего амбассадора – Мариты Плиевой.\n\nСледите за новостями в нашем канале и чат-боте!`
@@ -375,7 +404,7 @@ export default class TelegramBotApp {
     private async _sendMessageOnInvite(chatId: number, dbUser: IUserDb): Promise<void> {
         try {
             const buttons: InlineKeyboardButton[][] = [
-                [{ text: 'Назад', callback_data: EMessages.MENU }],
+                [{ text: 'Назад', callback_data: dbUser.final === 1 ? EMessages.FINAL : EMessages.MENU }],
             ]
 
             const text = `<b>Пригласи друзей в МЕГА Экополис</b>, чтобы получить больше баллов к рейтингу!\n\nКак это сделать?\n👉🏻 <b>Скопируй ссылку и отправь друзьям.</b> Приглашать в бота можно не более 10 человек;\n👉🏻 Как только кто-то из друзей запустит бота и выполнит одно задание, тебе будет начислено <b>5 бонусных баллов.</b>\n\nВот ссылка, по которой можно пригласить друзей:\n<code>http://t.me/mega_ekb_bot?start=${dbUser.id}</code>`
@@ -453,35 +482,72 @@ export default class TelegramBotApp {
             let videoPath
             let text
             let buttons: InlineKeyboardButton[][]
+            let points
 
             const task = await Helper.getLastPendingTask(dbUser.id)
-            await Helper.confirmLastTask(dbUser.id)
-            await Helper.addPointsToUser(dbUser, 10)
+
             await this._sendMessageOnReferralComplete(dbUser)
             await Helper.changeUserActivity(dbUser.id, EActivity.BUTTONS)
 
             switch (task.type) {
                 case EMessages.TASK_1:
+                    await Helper.confirmLastTask(dbUser.id)
                     buttons = [
                         [{ text: 'Следующее задание', callback_data: EMessages.SUBSCRIBE }],
                         [{ text: 'Назад', callback_data: EMessages.MENU }],
                     ]
                     text = `<b>Код принят.</b> Спасибо за твой вклад в заботу о планете и людях! ☘️\n\nНа твой игровой счет начислено <b>10 баллов</b>. Поздравляем! Играем дальше?`
                     videoPath = path.join(__dirname, '../assets/videos/video1.mp4')
+                    await Helper.addPointsToUser(dbUser, 10)
                     break;
                 case EMessages.TASK_2:
+                    await Helper.confirmLastTask(dbUser.id)
                     buttons = [
                         [{ text: 'Следующее задание', callback_data: EMessages.AUTHORIZATION }],
                         [{ text: 'Назад', callback_data: EMessages.MENU }],
                     ]
                     text = `<b>Код принят.</b> Надеемся, тебе понравился наш мастер-класс! 😍\n\nНа твой игровой счет начислено <b>10 баллов</b>.\nПоздравляем! Играем дальше?`
                     videoPath = path.join(__dirname, '../assets/videos/video1.mp4')
+                    await Helper.addPointsToUser(dbUser, 10)
                     break;
                 case EMessages.TASK_3:
+                    await Helper.confirmLastTask(dbUser.id)
+                    buttons = [
+                        [{ text: 'Следующее задание', callback_data: EMessages.TASK_4 }],
+                        [{ text: 'Назад', callback_data: EMessages.MENU }],
+                    ]
+                    if (dbUser.authorization === 1) points = Number((10 * 1.5)).toFixed()
+                    else points = 10
+                    text = `<b>Код принят.</b> Теперь ты умеешь правильно сортировать отходы! ♻️.\n\nНа твой игровой счет начислено ${points} баллов. Поздравляем!`
+                    videoPath = path.join(__dirname, '../assets/videos/video1.mp4')
+                    await Helper.addPointsToUser(dbUser, points)
                     break;
                 case EMessages.TASK_4:
+                    await Helper.confirmLastTask(dbUser.id)
+                    buttons = [
+                        [{ text: 'Следующее задание', callback_data: EMessages.TASK_5 }],
+                        [{ text: 'Назад', callback_data: EMessages.MENU }],
+                    ]
+                    if (dbUser.authorization === 1) points =  Number((10 * 1.5)).toFixed()
+                    else points = 10
+                    text = `<b>Чек принят.</b> Это был увлекательный шопинг! 🤗\n\nНа твой игровой счет начислено ${points} баллов.\n\nПоздравляем! Играем дальше?`
+                    videoPath = path.join(__dirname, '../assets/videos/video1.mp4')
+                    await Helper.addPointsToUser(dbUser, points)
                     break;
                 case EMessages.TASK_5:
+                    const webApp = 'https://html.skorit.ru/qr.html'
+                    buttons = [
+                        [{ text: 'Сканировать еще один чек', web_app: { url: webApp } }],
+                        [{ text: 'Где найти шопперы?', callback_data: EMessages.WHERE_SHOPPERS }],
+                        [{ text: 'Какие магазины участвуют?', callback_data: EMessages.SHOPS }],
+                        [{ text: 'Завершить задание', callback_data: EMessages.FINAL }],
+                        [{ text: 'Назад', callback_data: EMessages.MENU }],
+                    ]
+                    if (dbUser.authorization === 1) points = Number((10 * 1.5)).toFixed()
+                    else points = 10
+                    text = `<b>Чек принят.</b> Как тебе покупки с шоппером? Скажи, правда приятно? 🌳\n\nНа твой игровой счет начислено ${points} баллов.\n\nПоздравляем!`
+                    videoPath = path.join(__dirname, '../assets/videos/video1.mp4')
+                    await Helper.addPointsToUser(dbUser, points)
                     break;
             }
 
@@ -575,7 +641,7 @@ export default class TelegramBotApp {
                     break;
                 case EMessages.TASK_3:
                     buttons = [
-                        [{ text: 'Где находятся мастер-классы?', callback_data: EMessages.WHERE_MASTERS }],
+                        [{ text: 'Где находится фудкорт?', callback_data: EMessages.WHERE_FOOD }],
                         [{ text: 'Пропустить задание', callback_data: EMessages.SKIP_TASK }],
                         [{ text: 'Назад', callback_data: EMessages.MENU }],
                     ]
@@ -626,11 +692,18 @@ export default class TelegramBotApp {
         try {
             const taskData = await Helper.getLastPendingTask(dbUser.id)
             await Helper.confirmLastTask(dbUser.id)
+            await Helper.getLastPendingTask(dbUser.id)
             switch (taskData.type) {
                 case EMessages.TASK_1:
                     return await this._sendMessageOnSubscribe(chatId, dbUser)
                 case EMessages.TASK_2:
                     return await this._sendMessageOnAuthorization(chatId, dbUser)
+                case EMessages.TASK_3:
+                    return await this._sendMessageOnTaskFour(chatId, dbUser)
+                case EMessages.TASK_4:
+                    return await this._sendMessageOnTaskFive(chatId, dbUser)
+                case EMessages.TASK_5:
+                    return await this._sendMessageOnFinal(chatId, dbUser)
             }
         } catch (e) {
             Logger.error('[BOT] sendMessageOnSkipConfirm error', e)
@@ -747,6 +820,8 @@ export default class TelegramBotApp {
                 case EMessages.AUTHORIZATION_WRITE:
                     backType = EMessages.AUTHORIZATION_INCORRECT;
                     break;
+                default:
+                    backType = EMessages.SCAN_INCORRECT
             }
 
             const buttons: InlineKeyboardButton[][] = [
@@ -1023,4 +1098,287 @@ export default class TelegramBotApp {
             Logger.error('[BOT] sendMessageOnAuthorizationIncorrect error', e)
         }
     }
+
+    private async _sendMessageOnTaskThree(chatId: number, dbUser: IUserDb): Promise<void> {
+        try {
+            const videoPath = path.join(__dirname, '../assets/videos/video1.mp4')
+
+            const buttons: InlineKeyboardButton[][] = [
+                [{ text: 'Ввести код', callback_data: EMessages.WRITE_CODE }],
+                [{ text: 'Где находится фудкорт?', callback_data: EMessages.WHERE_FOOD }],
+                [{ text: 'Пропустить задание', callback_data: EMessages.SKIP_TASK }],
+                [{ text: 'Назад', callback_data: EMessages.MENU }],
+            ]
+
+            const text = `<b>Задание #3. Посети станцию раздельного сбора отходов на «Вкусном бульваре» и введи уникальный код.</b>\n\nРешил(а) перекусить на фудкорте в перерыве между поиском новогодних подарков? Приятного аппетита! Только после этого, не забудь зайти на станцию раздельного сбора отходов.\n\n<b>Раздели и выброси отходы и введи уникальный код рядом со станцией в чат-бот.</b>`
+
+            await this.bot.sendVideo(chatId, videoPath)
+            await this.bot.sendMessage(chatId, text, {
+                parse_mode: 'HTML',
+                disable_web_page_preview: true,
+                reply_markup: {
+                    inline_keyboard: buttons,
+                }
+            })
+
+            await Helper.setButtons(dbUser, buttons)
+        } catch (e) {
+            Logger.error('[BOT] sendMessageOnTaskThree error', e)
+        }
+    }
+
+    private async _sendMessageOnWhereFood(chatId: number, dbUser: IUserDb): Promise<void> {
+        try {
+            const imgPath = path.join(__dirname, '../assets/images/img1.jpg')
+
+            const buttons: InlineKeyboardButton[][] = [
+                [{ text: 'Ввести код', callback_data: EMessages.WRITE_CODE }],
+                [{ text: 'Пропустить задание', callback_data: EMessages.SKIP_TASK }],
+                [{ text: 'Назад', callback_data: EMessages.MENU }],
+            ]
+
+            const text = `<b>Вкусный бульвар</b> расположен в центре МЕГИ напротив магазина АШАН`
+
+            await this.bot.sendPhoto(chatId, imgPath, {
+                caption: text,
+                parse_mode: 'HTML',
+                reply_markup: {
+                    inline_keyboard: buttons,
+                }
+            })
+
+            await Helper.setButtons(dbUser, buttons)
+        } catch (e) {
+            Logger.error('[BOT] sendMessageOnWhereFood error', e)
+        }
+    }
+
+    private async _sendMessageOnTaskFour(chatId: number, dbUser: IUserDb): Promise<void> {
+        try {
+            const videoPath = path.join(__dirname, '../assets/videos/video1.mp4')
+            const webApp = 'https://html.skorit.ru/qr.html'
+
+            const buttons: InlineKeyboardButton[][] = [
+                [{ text: 'Загрузить чек', web_app: { url: webApp } }],
+                [{ text: 'Загрузить чек (success)', callback_data: EMessages.TASK_CORRECT }],
+                [{ text: 'Загрузить чек (failed)', callback_data: EMessages.SCAN_INCORRECT }],
+                [{ text: 'Где находится Аистенок?', callback_data: EMessages.WHERE_STORK }],
+                [{ text: 'Пропустить задание', callback_data: EMessages.SKIP_TASK }],
+                [{ text: 'Назад', callback_data: EMessages.MENU }],
+            ]
+
+            const text = `<b>Задание #4. Посети благотворительный магазин в МЕГЕ и загрузи чек не менее, чем на 100 рублей</b>\n\nНовый год уже совсем близко, а значит настало время подарков. Прими участие в создании новогоднего чуда для других людей и планеты! 🎄\n\nВ МЕГА Экополисе есть много мест, где можно внести свой вклад в чей-то праздник. <b>Посети благотворительный магазин «Аистенок» в МЕГЕ и загрузи чек, чтобы получить баллы!</b>\n\nКаждые 100 рублей в чеке будут равняться 10 игровым баллам, которые мы начислим тебе на игровой счет.\n\nПоехали? 🎁`
+
+            await this.bot.sendVideo(chatId, videoPath)
+            await this.bot.sendMessage(chatId, text, {
+                parse_mode: 'HTML',
+                disable_web_page_preview: true,
+                reply_markup: {
+                    inline_keyboard: buttons,
+                }
+            })
+
+            await Helper.setButtons(dbUser, buttons)
+        } catch (e) {
+            Logger.error('[BOT] sendMessageOnTaskFour error', e)
+        }
+    }
+
+    private async _sendMessageOnWhereStork(chatId: number, dbUser: IUserDb): Promise<void> {
+        try {
+            const imgPath = path.join(__dirname, '../assets/images/img1.jpg')
+            const webApp = 'https://html.skorit.ru/qr.html'
+
+            const buttons: InlineKeyboardButton[][] = [
+                [{ text: 'Загрузить чек', web_app: { url: webApp } }],
+                [{ text: 'Пропустить задание', callback_data: EMessages.SKIP_TASK }],
+                [{ text: 'Назад', callback_data: EMessages.MENU }],
+            ]
+
+            const text = `<b>«Аистенок» можно найти на…</b>\n\n<b>Обрати внимание:</b> на чеке должен обязательно присутствовать QR-код. Без него отсканировать чек и заработать баллы не получится 😢`
+
+            await this.bot.sendPhoto(chatId, imgPath, {
+                caption: text,
+                parse_mode: 'HTML',
+                reply_markup: {
+                    inline_keyboard: buttons,
+                }
+            })
+
+            await Helper.setButtons(dbUser, buttons)
+        } catch (e) {
+            Logger.error('[BOT] sendMessageOnWhereStork error', e)
+        }
+    }
+
+    private async _sendMessageOnScanIncorrect(chatId: number, dbUser: IUserDb): Promise<void> {
+        try {
+            await Helper.changeUserActivity(dbUser.id, EActivity.BUTTONS)
+            const webApp = 'https://html.skorit.ru/qr.html'
+
+            const buttons: InlineKeyboardButton[][] = [
+                [{ text: 'Попробовать ещё раз', web_app: { url: webApp } }],
+                [{ text: 'Сообщить о проблеме', callback_data: EMessages.PROBLEM }],
+                [{ text: 'Пропустить', callback_data: EMessages.SKIP_TASK }],
+            ]
+
+            const text = `Что-то пошло не так. <b>Чек не был принят.</b> Возможно, чек уже был использован, либо магазин, в котором была совершена покупка, не участвует в акции.\n\nПопробуй еще раз или сообщи нам о проблеме.`
+
+            await this.bot.sendMessage(chatId, text, {
+                parse_mode: 'HTML',
+                reply_markup: {
+                    inline_keyboard: buttons,
+                }
+            })
+
+            await Helper.setButtons(dbUser, buttons)
+        } catch (e) {
+            Logger.error('[BOT] _sendMessageOnScanIncorrect error', e)
+        }
+    }
+
+
+    private async _sendMessageOnTaskFive(chatId: number, dbUser: IUserDb): Promise<void> {
+        try {
+            const videoPath = path.join(__dirname, '../assets/videos/video1.mp4')
+            const webApp = 'https://html.skorit.ru/qr.html'
+
+            const buttons: InlineKeyboardButton[][] = [
+                [{ text: 'Загрузить чек', web_app: { url: webApp } }],
+                [{ text: 'Загрузить чек (success)', callback_data: EMessages.TASK_CORRECT }],
+                [{ text: 'Загрузить чек (failed)', callback_data: EMessages.SCAN_INCORRECT }],
+                [{ text: 'Где найти шопперы?', callback_data: EMessages.WHERE_SHOPPERS }],
+                [{ text: 'Какие магазины участвуют?', callback_data: EMessages.SHOPS }],
+                [{ text: 'Пропустить задание', callback_data: EMessages.SKIP_TASK }],
+                [{ text: 'Назад', callback_data: EMessages.MENU }],
+            ]
+
+            const text = `<b>Задание #5. Сходите в магазин с шоппером и загрузите чек на N рублей без позиции «пакет»</b>\n\n🛍️ Собрался(ась) за покупками? Мы помогаем сделать шаг навстречу экологичному образу жизни <b>— получи от МЕГИ в подарок шоппер на столе информации, посети любой магазин и загрузи чек без пакета, чтобы получить баллы.</b>\n\nЕсли ты действительно хочешь вносить свой вклад в экологию и приобщиться к осознанному потреблению, то использование качественного шоппера вместо пакета из пластика — это хорошее начало! ⚡`
+
+            await this.bot.sendVideo(chatId, videoPath)
+            await this.bot.sendMessage(chatId, text, {
+                parse_mode: 'HTML',
+                disable_web_page_preview: true,
+                reply_markup: {
+                    inline_keyboard: buttons,
+                }
+            })
+
+            await Helper.setButtons(dbUser, buttons)
+        } catch (e) {
+            Logger.error('[BOT] sendMessageOnTaskFive error', e)
+        }
+    }
+
+    private async _sendMessageOnWhereShoppers(chatId: number, dbUser: IUserDb): Promise<void> {
+        try {
+            const imgPath = path.join(__dirname, '../assets/images/img1.jpg')
+            const webApp = 'https://html.skorit.ru/qr.html'
+
+            const buttons: InlineKeyboardButton[][] = [
+                [{ text: 'Загрузить чек', web_app: { url: webApp } }],
+                [{ text: 'Какие магазины участвуют?', callback_data: EMessages.SHOPS }],
+                [{ text: 'Пропустить задание', callback_data: EMessages.SKIP_TASK }],
+                [{ text: 'Назад', callback_data: EMessages.MENU }],
+            ]
+
+            const text = `<b>МЕГА шопперы можно получить на стойке информации,</b> которая расположена перед Центральным входом в МЕГЕ`
+
+            await this.bot.sendPhoto(chatId, imgPath, {
+                caption: text,
+                parse_mode: 'HTML',
+                reply_markup: {
+                    inline_keyboard: buttons,
+                }
+            })
+
+            await Helper.setButtons(dbUser, buttons)
+        } catch (e) {
+            Logger.error('[BOT] sendMessageOnWhereShoppers error', e)
+        }
+    }
+
+    private async _sendMessageOnShops(chatId: number, dbUser: IUserDb): Promise<void> {
+        try {
+            const webApp = 'https://html.skorit.ru/qr.html'
+
+            const buttons: InlineKeyboardButton[][] = [
+                [{ text: 'Загрузить чек', web_app: { url: webApp } }],
+                [{ text: 'Где найти шопперы?', callback_data: EMessages.WHERE_SHOPPERS }],
+                [{ text: 'Пропустить задание', callback_data: EMessages.SKIP_TASK }],
+                [{ text: 'Назад', callback_data: EMessages.MENU }],
+            ]
+
+            const text = `В МЕГА Экополисе ты сможешь посетить и заработать баллы в следующих магазинах:\n\n●  Магазин 1\n\n●  Магазин 2\n\n●  Магазин 3\n\n●  Магазин 4\n\nОбрати внимание: на чеке должен обязательно присутствовать QR-код. Без него отсканировать чек и заработать баллы не получится`
+
+            await this.bot.sendMessage(chatId, text, {
+                parse_mode: 'HTML',
+                disable_web_page_preview: true,
+                reply_markup: {
+                    inline_keyboard: buttons,
+                }
+            })
+
+            await Helper.setButtons(dbUser, buttons)
+        } catch (e) {
+            Logger.error('[BOT] sendMessageOnWhereShops error', e)
+        }
+    }
+
+
+    private async _sendMessageOnFinal(chatId: number, dbUser: IUserDb): Promise<void> {
+        try {
+            const videoPath = path.join(__dirname, '../assets/videos/video1.mp4')
+            await Helper.confirmLastTask(dbUser.id)
+            const currentUser = await Helper.getUserById(dbUser.id)
+            await Helper.updateFinalStatus(dbUser.id)
+
+            const buttons: InlineKeyboardButton[][] = [
+                [{ text: 'Пригласить друга', callback_data: EMessages.INVITE }],
+                [{ text: 'Таблица лидеров', web_app: { url: 'https://ya.ru' } }],
+                [{ text: 'Призы', callback_data: EMessages.PRIZES }],
+                [{ text: 'Об акции', callback_data: EMessages.ABOUT }],
+            ]
+
+            const text = `<b> Твоё путешествие по МЕГА Экополису закончилось!</b> 🥳\n\nЭто был увлекательный путь. Тебе удалось подарить вещам новую жизнь, научиться сортировать отходы, принятие участие в благотворительности и приобрести классный шопер! ❤️‍🔥\n\nСпасибо! <b>За всё время тебе удалось набрать ${currentUser.score || 0} баллов.</b> Смотри свою позицию среди всех участников конкурса в таблице лидеров.\n\n💃🏻🕺🏽 Приглашаем тебя на праздничный концерт в МЕГУ 23 декабря в NN:NN, на котором мы подведем итоги и наградим победителей и призеров Экополиса! Гость концерта – наша несравненная Марита Плиева.\n\nДо встречи!`
+
+            await this.bot.sendVideo(chatId, videoPath)
+            await this.bot.sendMessage(chatId, text, {
+                parse_mode: 'HTML',
+                disable_web_page_preview: true,
+                reply_markup: {
+                    inline_keyboard: buttons,
+                }
+            })
+
+            await Helper.setButtons(dbUser, buttons)
+
+            if (currentUser.final === 1) await this._sendMessageOnInviteFinal(chatId, dbUser)
+        } catch (e) {
+            Logger.error('[BOT] sendMessageOnFinal error', e)
+        }
+    }
+
+
+    private async _sendMessageOnInviteFinal(chatId: number, dbUser: IUserDb): Promise<void> {
+        try {
+            const imgPath = path.join(__dirname, '../assets/images/img1.jpg')
+
+            const text = `Поделись этим сообщением с другом 👇`
+            const textTwo = `<b>Мне так понравилось путешествовать по МЕГА Экополису! Приглашаю попробовать вместе со мной!</b>\n\n<a href="http://t.me/mega_ekb_bot?start=${dbUser.id}">Скорее запускай бота!</a>`
+
+            await this.bot.sendMessage(chatId, text, {
+                parse_mode: 'HTML',
+            })
+
+            await this.bot.sendPhoto(chatId, imgPath, {
+                caption: textTwo,
+                parse_mode: 'HTML',
+            })
+        } catch (e) {
+            Logger.error('[BOT] sendMessageOnFinal error', e)
+        }
+    }
+
+
 }
