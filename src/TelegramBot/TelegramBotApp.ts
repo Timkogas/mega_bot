@@ -3,7 +3,8 @@ import dotenv from 'dotenv';
 import Logger from '../Logger/Logger';
 import path from 'path';
 import Helper from './Helper';
-import { EActivity, IUserDb } from '../Db/IUserDb';
+import { EActivity, EAuthorization, EFinal, IUserDb } from '../Db/User';
+import { ETaskStatus } from '../Db/Task';
 
 dotenv.config();
 process.env["NTBA_FIX_350"] = '1';
@@ -94,19 +95,21 @@ export default class TelegramBotApp {
                 const text = message?.text
                 const chatId = message?.chat?.id
 
-                if (text.includes('/start')) {
+                if (text) {
+                    if (text.includes('/start')) {
 
-                    const textArr = text?.split(' ')
-                    if (textArr.length === 2) {
-                        if (/^\d+$/.test(textArr[1])) {
-                            Helper.checkReferral(dbUser, Number(textArr[1]), this.bot)
-                        } else {
-                            Logger.debug('stats')
+                        const textArr = text?.split(' ')
+                        if (textArr.length === 2) {
+                            if (/^\d+$/.test(textArr[1])) {
+                                Helper.checkReferral(dbUser, Number(textArr[1]), this.bot)
+                            } else {
+                                Logger.debug('stats')
+                            }
+
+
                         }
-
-
+                        return await this._sendMessageOnStart(chatId, dbUser)
                     }
-                    return await this._sendMessageOnStart(chatId, dbUser)
                 }
 
                 switch (dbUser.activity) {
@@ -121,7 +124,7 @@ export default class TelegramBotApp {
                             return await this._sendMessageOnCodeIncorrect(chatId, dbUser)
                         }
                     case EActivity.PROBLEM:
-                        return await this._sendMessageOnProblemConfirm(chatId, dbUser)
+                        return await this._onProblemSend(message, chatId, dbUser)
                     case EActivity.AUTHORIZATION:
                         const checkAuthorization = Helper.checkCode(text)
 
@@ -225,7 +228,6 @@ export default class TelegramBotApp {
         }
     }
 
-
     private async _sendMessageOnNoCommand(chatId: number, dbUser: IUserDb): Promise<void> {
         try {
             const text = `Пожалуйста, пользуйся кнопками.`
@@ -274,7 +276,7 @@ export default class TelegramBotApp {
                     }
                 })
             } else {
-                await this.bot.sendVideo(chatId, videoPath)
+                await this.bot.sendVideoNote(chatId, videoPath)
                 await this.bot.sendMessage(chatId, textFirstMessage, { parse_mode: 'HTML' })
                 await this.bot.sendMessage(chatId, textSecondMessage, {
                     parse_mode: 'HTML',
@@ -298,12 +300,12 @@ export default class TelegramBotApp {
             const imgPath = path.join(__dirname, '../assets/images/img1.jpg')
 
             const buttons: InlineKeyboardButton[][] = [
-                [{ text: 'Назад', callback_data: dbUser.final === 1 ? EMessages.FINAL : EMessages.START_SHORT }],
+                [{ text: 'Назад', callback_data: dbUser.final === EFinal.COMPLETE ? EMessages.FINAL : EMessages.START_SHORT }],
             ]
 
             const text = `🌍 <b>«МЕГА Экополис»</b> — акция от МЕГИ Екатеринбург, посвященная заботе о планете и людях через сервисы, услуги и решения, применяемые в центрах.\n\nПравила нашей акции ориентированы на выполнение 5 заданий:\n1. Задание 1. Разделяй с МЕГОЙ\n2. Задание 2. МЕГА Место\n3. Задание 3. МЕГА Станция\n4. Задание 4. МЕГА Благотворительность\n5. Задание 4. МЕГА Эко шопинг\n\nЗа каждое выполненное задание пользователю начисляются игровые баллы. Система начисления и количество баллов, призовой фонд и условия проведения определяются настоящими <a href='https://ru.wikipedia.org/wiki/%D0%A1%D1%81%D1%8B%D0%BB%D0%BA%D0%B0'>правилами акции.</a>\n\n<i>Организатор акции — ООО «Юрлицо». Реквизиты</i>\n\n© Все права защищены`
 
-            await this.bot.sendVideo(chatId, videoPath)
+            await this.bot.sendVideoNote(chatId, videoPath)
             await this.bot.sendPhoto(chatId, imgPath, {
                 caption: text,
                 parse_mode: 'HTML',
@@ -330,7 +332,7 @@ export default class TelegramBotApp {
 
             const text = `В нашем конкурсе нет ничего сложного и небезопасного. Ты можешь <b>внимательно ознакомиться с <a href="https://ru.wikipedia.org/wiki/%D0%A1%D1%81%D1%8B%D0%BB%D0%BA%D0%B0">правилами</a></b> и принять решение: играть или нет 🧐\n\n🔒 <b>Участие в акции является добровольным.</b> Организатор не хранит и не передает персональные данные и иные сведения о пользователях, принимающих согласие на коммуникацию с чат-ботом «Доверься МЕГЕ. Экспедиция в Экополис», в пользу третьих лиц.`
 
-            await this.bot.sendVideo(chatId, videoPath)
+            await this.bot.sendVideoNote(chatId, videoPath)
             await this.bot.sendMessage(chatId, text, {
                 parse_mode: 'HTML',
                 disable_web_page_preview: true,
@@ -382,7 +384,7 @@ export default class TelegramBotApp {
     private async _sendMessageOnPrizes(chatId: number, dbUser: IUserDb): Promise<void> {
         try {
             const buttons: InlineKeyboardButton[][] = [
-                [{ text: 'Назад', callback_data: dbUser.final === 1 ? EMessages.FINAL : EMessages.MENU }],
+                [{ text: 'Назад', callback_data: dbUser.final === EFinal.COMPLETE ? EMessages.FINAL : EMessages.MENU }],
             ]
 
             const text = `Победители акции «МЕГА Экополис» смогут претендовать на главный приз — <b>сказочные выходные в глэмпинге и эко-тур по Уралу для всей семьи</b> ⛰️🌲❄️\n\nТоп-50 пользователей также получат ценные призы:\n● Приз1\n● Приз2\n● Приз3\n● Приз4\n● Приз5\n\nПобедители и призеры будут зафиксированы и объявлены 23 декабря на праздничном концерте в МЕГЕ с участием нашего амбассадора – Мариты Плиевой.\n\nСледите за новостями в нашем канале и чат-боте!`
@@ -404,7 +406,7 @@ export default class TelegramBotApp {
     private async _sendMessageOnInvite(chatId: number, dbUser: IUserDb): Promise<void> {
         try {
             const buttons: InlineKeyboardButton[][] = [
-                [{ text: 'Назад', callback_data: dbUser.final === 1 ? EMessages.FINAL : EMessages.MENU }],
+                [{ text: 'Назад', callback_data: dbUser.final === EFinal.COMPLETE ? EMessages.FINAL : EMessages.MENU }],
             ]
 
             const text = `<b>Пригласи друзей в МЕГА Экополис</b>, чтобы получить больше баллов к рейтингу!\n\nКак это сделать?\n👉🏻 <b>Скопируй ссылку и отправь друзьям.</b> Приглашать в бота можно не более 10 человек;\n👉🏻 Как только кто-то из друзей запустит бота и выполнит одно задание, тебе будет начислено <b>5 бонусных баллов.</b>\n\nВот ссылка, по которой можно пригласить друзей:\n<code>http://t.me/mega_ekb_bot?start=${dbUser.id}</code>`
@@ -435,7 +437,7 @@ export default class TelegramBotApp {
 
             const text = `🤕 Ежегодно только в России территория свалок увеличивается на 250 000 гектаров! Сортируя и сдавая на переработку свои отходы, ты сможешь сократить количество мусора и внести свой вклад в заботе о нашей планете.\n\nМЕГА в партнерстве с Немузеем мусора открыла станцию по приему вторсырья. Если ты уже сортируешь отходы дома, приноси их на нашу станцию. Если ты только новичок в сортировке, предлагаем начать с малого: выдели хотя бы 1 фракцию перерабатываемых отходов (например, незагрязненная бумага или ПЭТ-бутылки из-под воды) и помести данную фракцию в подходящий контейнер на станции.\n\nА если у тебя есть одежда в хорошем состоянии, которую ты хочешь выкинуть, то тебе точно <b>нужно посетить станцию раздельного сбора</b>. Все вещи, которые попадут в контейнер, пойдут на благотворительность 🥰\n\n<b>Помещай вещи в контейнер, находи уникальный код рядом со станцией, вводи его в чат-бот и получай игровые баллы!</b>`
 
-            await this.bot.sendVideo(chatId, videoPath)
+            await this.bot.sendVideoNote(chatId, videoPath)
             await this.bot.sendMessage(chatId, text, {
                 parse_mode: 'HTML',
                 disable_web_page_preview: true,
@@ -491,7 +493,8 @@ export default class TelegramBotApp {
 
             switch (task.type) {
                 case EMessages.TASK_1:
-                    await Helper.confirmLastTask(dbUser.id)
+                    points = 10
+                    await Helper.confirmLastTask(dbUser.id, ETaskStatus.COMPLETE, points)
                     buttons = [
                         [{ text: 'Следующее задание', callback_data: EMessages.SUBSCRIBE }],
                         [{ text: 'Назад', callback_data: EMessages.MENU }],
@@ -501,7 +504,8 @@ export default class TelegramBotApp {
                     await Helper.addPointsToUser(dbUser, 10)
                     break;
                 case EMessages.TASK_2:
-                    await Helper.confirmLastTask(dbUser.id)
+                    points = 10
+                    await Helper.confirmLastTask(dbUser.id, ETaskStatus.COMPLETE, points)
                     buttons = [
                         [{ text: 'Следующее задание', callback_data: EMessages.AUTHORIZATION }],
                         [{ text: 'Назад', callback_data: EMessages.MENU }],
@@ -511,48 +515,50 @@ export default class TelegramBotApp {
                     await Helper.addPointsToUser(dbUser, 10)
                     break;
                 case EMessages.TASK_3:
-                    await Helper.confirmLastTask(dbUser.id)
+                    points = 10
                     buttons = [
                         [{ text: 'Следующее задание', callback_data: EMessages.TASK_4 }],
                         [{ text: 'Назад', callback_data: EMessages.MENU }],
                     ]
-                    if (dbUser.authorization === 1) points = Number((10 * 1.5)).toFixed()
+                    if (dbUser.authorization === EAuthorization.COMPLETE) points = Number((10 * 1.5)).toFixed()
                     else points = 10
                     text = `<b>Код принят.</b> Теперь ты умеешь правильно сортировать отходы! ♻️.\n\nНа твой игровой счет начислено ${points} баллов. Поздравляем!`
                     videoPath = path.join(__dirname, '../assets/videos/video1.mp4')
+                    await Helper.confirmLastTask(dbUser.id, ETaskStatus.COMPLETE, points)
                     await Helper.addPointsToUser(dbUser, points)
                     break;
                 case EMessages.TASK_4:
-                    await Helper.confirmLastTask(dbUser.id)
                     buttons = [
                         [{ text: 'Следующее задание', callback_data: EMessages.TASK_5 }],
                         [{ text: 'Назад', callback_data: EMessages.MENU }],
                     ]
-                    if (dbUser.authorization === 1) points =  Number((10 * 1.5)).toFixed()
+                    if (dbUser.authorization === EAuthorization.COMPLETE) points = Number((10 * 1.5)).toFixed()
                     else points = 10
                     text = `<b>Чек принят.</b> Это был увлекательный шопинг! 🤗\n\nНа твой игровой счет начислено ${points} баллов.\n\nПоздравляем! Играем дальше?`
                     videoPath = path.join(__dirname, '../assets/videos/video1.mp4')
+                    await Helper.confirmLastTask(dbUser.id, ETaskStatus.COMPLETE, points)
                     await Helper.addPointsToUser(dbUser, points)
                     break;
                 case EMessages.TASK_5:
                     const webApp = 'https://html.skorit.ru/qr.html'
                     buttons = [
                         [{ text: 'Сканировать еще один чек', web_app: { url: webApp } }],
+                        [{ text: 'Загрузить чек (success)', callback_data: EMessages.TASK_CORRECT }],
                         [{ text: 'Где найти шопперы?', callback_data: EMessages.WHERE_SHOPPERS }],
                         [{ text: 'Какие магазины участвуют?', callback_data: EMessages.SHOPS }],
                         [{ text: 'Завершить задание', callback_data: EMessages.FINAL }],
                         [{ text: 'Назад', callback_data: EMessages.MENU }],
                     ]
-                    if (dbUser.authorization === 1) points = Number((10 * 1.5)).toFixed()
+                    if (dbUser.authorization === EAuthorization.COMPLETE) points = Number((10 * 1.5)).toFixed()
                     else points = 10
                     text = `<b>Чек принят.</b> Как тебе покупки с шоппером? Скажи, правда приятно? 🌳\n\nНа твой игровой счет начислено ${points} баллов.\n\nПоздравляем!`
                     videoPath = path.join(__dirname, '../assets/videos/video1.mp4')
-                    await Helper.addPointsToUser(dbUser, points)
+                    await Helper.addPointsToUser(dbUser, points, true)
                     break;
             }
 
 
-            await this.bot.sendVideo(chatId, videoPath)
+            await this.bot.sendVideoNote(chatId, videoPath)
             await this.bot.sendMessage(chatId, text, {
                 parse_mode: 'HTML',
                 reply_markup: {
@@ -691,7 +697,7 @@ export default class TelegramBotApp {
     private async _sendMessageOnSkipConfirm(chatId: number, dbUser: IUserDb): Promise<void> {
         try {
             const taskData = await Helper.getLastPendingTask(dbUser.id)
-            await Helper.confirmLastTask(dbUser.id)
+            await Helper.confirmLastTask(dbUser.id, ETaskStatus.SKIP, 0)
             await Helper.getLastPendingTask(dbUser.id)
             switch (taskData.type) {
                 case EMessages.TASK_1:
@@ -813,6 +819,7 @@ export default class TelegramBotApp {
         try {
             await Helper.changeUserActivity(dbUser.id, EActivity.PROBLEM)
             let backType
+
             switch (dbUser?.buttons[0][0]?.callback_data) {
                 case EMessages.WRITE_CODE:
                     backType = EMessages.CODE_INCORRECT;
@@ -845,8 +852,22 @@ export default class TelegramBotApp {
 
     private async _sendMessageOnProblemConfirm(chatId: number, dbUser: IUserDb): Promise<void> {
         try {
+            await Helper.changeUserActivity(dbUser.id, EActivity.BUTTONS)
+            let backType
+            console.log(dbUser?.buttons[0][0]?.callback_data)
+            switch (dbUser?.buttons[0][0]?.callback_data) {
+                case EMessages.CODE_INCORRECT:
+                    backType = EMessages.CODE_INCORRECT;
+                    break;
+                case EMessages.AUTHORIZATION_INCORRECT:
+                    backType = EMessages.AUTHORIZATION_INCORRECT;
+                    break;
+                default:
+                    backType = EMessages.SCAN_INCORRECT
+            }
+
             const buttons: InlineKeyboardButton[][] = [
-                [{ text: 'Назад', callback_data: EMessages.MENU }],
+                [{ text: 'Назад', callback_data: backType }],
             ]
 
             const text = `Обращение принято. Мы постараемся вернуться к тебе с решением в течение 48 часов.`
@@ -901,7 +922,7 @@ export default class TelegramBotApp {
 
             const text = `<b>Задание #2. МЕГА Место</b>\n\nАпсайклинг, кастомизация одежды совместно с художником и многое другое ждет тебя в МЕГА Месте!\n\n<b>Записывайся на мастер-классы по ссылке или в МЕГЕ, прими участие хотя бы в одном</b> и получи уникальный код от куратора, чтобы заработать баллы.\n\nРасписание мастер-классов и запись: <a href="https://megamesto.ru/">https://megamesto.ru/</a>\n\nДоверься МЕГЕ! 👐`
 
-            await this.bot.sendVideo(chatId, videoPath)
+            await this.bot.sendVideoNote(chatId, videoPath)
             await this.bot.sendMessage(chatId, text, {
                 parse_mode: 'HTML',
                 disable_web_page_preview: true,
@@ -952,7 +973,7 @@ export default class TelegramBotApp {
 
             const text = `Настало время вырваться вперед! Мы даем тебе уникальную возможность <b>умножить свои баллы!</b>\n\nЗарегистрируйся или авторизуйся в программе лояльности MEGA Friends по ссылке или в мобильном приложении МЕГА: <a href='https://clck.ru/36absA'>https://clck.ru/36absA</a>\n\nНайди в личном кабинете свой код User ID, введи в чат-бот и получи <b>множитель x1,5 баллов за выполнение будущих заданий!</b> 😯`
 
-            await this.bot.sendVideo(chatId, videoPath)
+            await this.bot.sendVideoNote(chatId, videoPath)
             await this.bot.sendMessage(chatId, text, {
                 parse_mode: 'HTML',
                 reply_markup: {
@@ -1052,7 +1073,7 @@ export default class TelegramBotApp {
     private async _sendMessageOnAuthorizationConfirm(chatId: number, dbUser: IUserDb): Promise<void> {
         try {
             await Helper.changeUserActivity(dbUser.id, EActivity.BUTTONS)
-            await Helper.updateAuthorizationStatus(dbUser.id)
+            await Helper.updateAuthorizationStatus(dbUser.id, EAuthorization.COMPLETE)
 
             const buttons: InlineKeyboardButton[][] = [
                 [{ text: 'Следующее задание', callback_data: EMessages.TASK_3 }],
@@ -1084,7 +1105,7 @@ export default class TelegramBotApp {
                 [{ text: 'Пропустить', callback_data: EMessages.AUTHORIZATION_SKIP }],
             ]
 
-            const text = `Что-то пошло не так.<b>Попробуй ввести код User ID</b> или сообщи нам о проблеме.`
+            const text = `Что-то пошло не так. <b>Попробуй ввести код User ID</b> или сообщи нам о проблеме.`
 
             await this.bot.sendMessage(chatId, text, {
                 parse_mode: 'HTML',
@@ -1101,6 +1122,7 @@ export default class TelegramBotApp {
 
     private async _sendMessageOnTaskThree(chatId: number, dbUser: IUserDb): Promise<void> {
         try {
+            await Helper.authorizationCheck(dbUser.id)
             const videoPath = path.join(__dirname, '../assets/videos/video1.mp4')
 
             const buttons: InlineKeyboardButton[][] = [
@@ -1112,7 +1134,7 @@ export default class TelegramBotApp {
 
             const text = `<b>Задание #3. Посети станцию раздельного сбора отходов на «Вкусном бульваре» и введи уникальный код.</b>\n\nРешил(а) перекусить на фудкорте в перерыве между поиском новогодних подарков? Приятного аппетита! Только после этого, не забудь зайти на станцию раздельного сбора отходов.\n\n<b>Раздели и выброси отходы и введи уникальный код рядом со станцией в чат-бот.</b>`
 
-            await this.bot.sendVideo(chatId, videoPath)
+            await this.bot.sendVideoNote(chatId, videoPath)
             await this.bot.sendMessage(chatId, text, {
                 parse_mode: 'HTML',
                 disable_web_page_preview: true,
@@ -1169,7 +1191,7 @@ export default class TelegramBotApp {
 
             const text = `<b>Задание #4. Посети благотворительный магазин в МЕГЕ и загрузи чек не менее, чем на 100 рублей</b>\n\nНовый год уже совсем близко, а значит настало время подарков. Прими участие в создании новогоднего чуда для других людей и планеты! 🎄\n\nВ МЕГА Экополисе есть много мест, где можно внести свой вклад в чей-то праздник. <b>Посети благотворительный магазин «Аистенок» в МЕГЕ и загрузи чек, чтобы получить баллы!</b>\n\nКаждые 100 рублей в чеке будут равняться 10 игровым баллам, которые мы начислим тебе на игровой счет.\n\nПоехали? 🎁`
 
-            await this.bot.sendVideo(chatId, videoPath)
+            await this.bot.sendVideoNote(chatId, videoPath)
             await this.bot.sendMessage(chatId, text, {
                 parse_mode: 'HTML',
                 disable_web_page_preview: true,
@@ -1255,7 +1277,7 @@ export default class TelegramBotApp {
 
             const text = `<b>Задание #5. Сходите в магазин с шоппером и загрузите чек на N рублей без позиции «пакет»</b>\n\n🛍️ Собрался(ась) за покупками? Мы помогаем сделать шаг навстречу экологичному образу жизни <b>— получи от МЕГИ в подарок шоппер на столе информации, посети любой магазин и загрузи чек без пакета, чтобы получить баллы.</b>\n\nЕсли ты действительно хочешь вносить свой вклад в экологию и приобщиться к осознанному потреблению, то использование качественного шоппера вместо пакета из пластика — это хорошее начало! ⚡`
 
-            await this.bot.sendVideo(chatId, videoPath)
+            await this.bot.sendVideoNote(chatId, videoPath)
             await this.bot.sendMessage(chatId, text, {
                 parse_mode: 'HTML',
                 disable_web_page_preview: true,
@@ -1329,7 +1351,7 @@ export default class TelegramBotApp {
     private async _sendMessageOnFinal(chatId: number, dbUser: IUserDb): Promise<void> {
         try {
             const videoPath = path.join(__dirname, '../assets/videos/video1.mp4')
-            await Helper.confirmLastTask(dbUser.id)
+            await Helper.confirmLastTask(dbUser.id, ETaskStatus.COMPLETE, 0)
             const currentUser = await Helper.getUserById(dbUser.id)
             await Helper.updateFinalStatus(dbUser.id)
 
@@ -1342,7 +1364,7 @@ export default class TelegramBotApp {
 
             const text = `<b> Твоё путешествие по МЕГА Экополису закончилось!</b> 🥳\n\nЭто был увлекательный путь. Тебе удалось подарить вещам новую жизнь, научиться сортировать отходы, принятие участие в благотворительности и приобрести классный шопер! ❤️‍🔥\n\nСпасибо! <b>За всё время тебе удалось набрать ${currentUser.score || 0} баллов.</b> Смотри свою позицию среди всех участников конкурса в таблице лидеров.\n\n💃🏻🕺🏽 Приглашаем тебя на праздничный концерт в МЕГУ 23 декабря в NN:NN, на котором мы подведем итоги и наградим победителей и призеров Экополиса! Гость концерта – наша несравненная Марита Плиева.\n\nДо встречи!`
 
-            await this.bot.sendVideo(chatId, videoPath)
+            await this.bot.sendVideoNote(chatId, videoPath)
             await this.bot.sendMessage(chatId, text, {
                 parse_mode: 'HTML',
                 disable_web_page_preview: true,
@@ -1353,7 +1375,7 @@ export default class TelegramBotApp {
 
             await Helper.setButtons(dbUser, buttons)
 
-            if (currentUser.final === 1) await this._sendMessageOnInviteFinal(chatId, dbUser)
+            if (currentUser.final === EFinal.COMPLETE) await this._sendMessageOnInviteFinal(chatId, dbUser)
         } catch (e) {
             Logger.error('[BOT] sendMessageOnFinal error', e)
         }
@@ -1377,6 +1399,64 @@ export default class TelegramBotApp {
             })
         } catch (e) {
             Logger.error('[BOT] sendMessageOnFinal error', e)
+        }
+    }
+
+    private async _onProblemSend(message: Message, chatId: number, dbUser: IUserDb): Promise<void> {
+        const uploadsPath = path.join(__dirname, '../uploads')
+        console.log(message)
+        if (message?.text || message?.caption) {
+            if (message?.text) {
+                await Helper.saveProblem(dbUser.id, message?.text)
+            }
+
+            if (message?.caption) {
+                const mediaId = message?.media_group_id || message?.message_id.toString()
+                await Helper.saveProblem(dbUser.id, message?.caption, mediaId)
+                let fileLink
+                let fileName
+                if (message?.photo) {
+                    fileLink = await this.bot.getFileLink(message?.photo[message?.photo?.length - 1]?.file_id);
+                    const fileFullPath = await this.bot.downloadFile(message?.photo[message?.photo?.length - 1]?.file_id, uploadsPath)
+                    fileName = path.basename(fileFullPath);
+                }
+                if (message?.video) {
+                    fileLink = await this.bot.getFileLink(message.video?.file_id);
+                    const fileFullPath = await this.bot.downloadFile(message.video?.file_id, uploadsPath)
+                    fileName = path.basename(fileFullPath);
+                }
+                if (message?.animation) {
+                    fileLink = await this.bot.getFileLink(message.animation?.file_id);
+                    const fileFullPath = await this.bot.downloadFile(message.animation?.file_id, uploadsPath)
+                    fileName = path.basename(fileFullPath);
+                }
+
+                await Helper.saveProblemFile(fileLink, mediaId, fileName)
+            }
+            return await this._sendMessageOnProblemConfirm(chatId, dbUser)
+        }
+
+        if (message?.media_group_id) {
+            let fileLink
+            let fileName
+            if (message?.photo) {
+                fileLink = await this.bot.getFileLink(message?.photo[message?.photo?.length - 1]?.file_id);
+                const fileFullPath = await this.bot.downloadFile(message?.photo[message?.photo?.length - 1]?.file_id, uploadsPath)
+                fileName = path.basename(fileFullPath);
+            }
+            if (message?.video) {
+                fileLink = await this.bot.getFileLink(message.video?.file_id);
+                const fileFullPath = await this.bot.downloadFile(message.video?.file_id, uploadsPath)
+                fileName = path.basename(fileFullPath);
+            }
+            if (message?.animation) {
+                fileLink = await this.bot.getFileLink(message.animation?.file_id);
+                const fileFullPath = await this.bot.downloadFile(message.animation?.file_id, uploadsPath)
+                fileName = path.basename(fileFullPath);
+            }
+
+            await Helper.saveProblemFile(fileLink, message?.media_group_id, fileName)
+            return
         }
     }
 

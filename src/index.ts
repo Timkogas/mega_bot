@@ -5,6 +5,9 @@ import * as core from 'express-serve-static-core';
 import Db from './Db/Db';
 import Logger from './Logger/Logger';
 import TelegramBot from './TelegramBot/TelegramBotApp';
+import path from 'path';
+import Routes from './routes';
+import cors from 'cors';
 
 dotenv.config();
 
@@ -35,6 +38,8 @@ class App {
     await this._createTableChecks()
     await this._createTableTasks()
     await this._createTableUsersTasks()
+    await this._createTableProblems()
+    await this._createTableProblemsFiles()
   }
 
   private async _initBot(): Promise<void> {
@@ -42,6 +47,15 @@ class App {
   }
 
   private _startServer(): void {
+
+    this._app.use(express.json());
+    this._app.use(express.urlencoded({ extended: true }));
+    this._app.use(cors());
+    this._app.use('/uploads', express.static(__dirname + '/uploads'));
+    this._app.set('views', path.join(__dirname, 'views'));
+    this._app.set('view engine', 'ejs');
+
+    new Routes(this._app);
     this._server.listen(process.env.PORT, (): void => {
       Logger.debug('Server started on port ' + process.env.PORT);
     });
@@ -60,8 +74,8 @@ class App {
         buttons JSON DEFAULT NULL,
         web_app TINYINT DEFAULT 0,
         refs INT DEFAULT 0,
-        subscribe TINYINT DEFAULT 0,
-        authorization TINYINT DEFAULT 0,
+        subscribe INT DEFAULT 0,
+        authorization INT DEFAULT 0,
         final TINYINT DEFAULT 0,
         activity VARCHAR(50) DEFAULT 'buttons',
         score INT,
@@ -104,7 +118,7 @@ class App {
     for (const query of insertTasksQueries) {
       await Db.query(query);
     }
-    
+
   }
 
 
@@ -115,12 +129,43 @@ class App {
         id INT PRIMARY KEY AUTO_INCREMENT,
         user_id BIGINT,
         task_id INT,
-        status TINYINT,
+        status INT DEFAULT 0,
+        score INT DEFAULT 0,
         FOREIGN KEY (user_id) REFERENCES users(id),
         FOREIGN KEY (task_id) REFERENCES tasks(id)
     );
     `
     await Db.query(table)
+  }
+
+  private async _createTableProblems(): Promise<void> {
+    const table =
+      `
+    CREATE TABLE IF NOT EXISTS problems (
+        id INT PRIMARY KEY AUTO_INCREMENT,
+        user_id BIGINT,
+        text TEXT,
+        time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        group_id VARCHAR(250) DEFAULT NULL,
+        INDEX idx_group_id (group_id),
+        FOREIGN KEY (user_id) REFERENCES users(id)
+    );
+    `;
+    await Db.query(table);
+  }
+
+  private async _createTableProblemsFiles(): Promise<void> {
+    const table =
+      `
+    CREATE TABLE IF NOT EXISTS problems_files (
+        id INT PRIMARY KEY AUTO_INCREMENT,
+        url VARCHAR(250),
+        group_id VARCHAR(100) DEFAULT NULL,
+        name VARCHAR(100),
+        INDEX idx_group_id (group_id)
+    );
+    `;
+    await Db.query(table);
   }
 }
 

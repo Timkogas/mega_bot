@@ -24,3 +24,22 @@ export enum EActivity {
     PROBLEM = 'problem',
     AUTHORIZATION = "authorization"
 };
+
+export enum EAuthorization {
+  NO = 0,
+  COMPLETE = 1,
+  SKIP = 2,
+};
+
+export enum EFinal {
+  NO = 0,
+  COMPLETE = 1,
+};
+
+export enum ESubscribe {
+  NO = 0,
+  COMPLETE = 1,
+  SKIP = 2,
+};
+
+

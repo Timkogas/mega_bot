@@ -1,8 +1,9 @@
 import TelegramBot, { InlineKeyboardButton, User } from "node-telegram-bot-api";
 import Logger from "../Logger/Logger";
 import Db from "../Db/Db";
-import { EActivity, IUserDb } from "../Db/IUserDb";
+import { EActivity, EAuthorization, IUserDb } from "../Db/User";
 import { EMessages, taskIdToEMessagesMap } from "./TelegramBotApp";
+import { ETaskStatus } from "../Db/Task";
 
 class Helper {
 
@@ -121,11 +122,29 @@ class Helper {
     * Обновление свойства authorization у пользователя по ID в базе данных
     * @param userId - ID пользователя
     */
-    static async updateAuthorizationStatus(userId: number): Promise<void> {
+    static async updateAuthorizationStatus(userId: number, status: EAuthorization): Promise<void> {
         try {
-            await Db.query('UPDATE users SET authorization = 1 WHERE id = ?', [userId]);
+            await Db.query('UPDATE users SET authorization = ? WHERE id = ?', [status, userId]);
         } catch (error) {
-            Logger.error('[Helper] Error updating sent status:', error);
+            Logger.error('[Helper] Error updateAuthorizationStatus:', error);
+        }
+    }
+
+    /**
+    * Функция для проверки и обновления статуса авторизации пользователя
+    * Если статус авторизации равен 0, обновляет его на 2
+    * @param userId - ID пользователя
+    */
+    static async authorizationCheck(userId: number): Promise<void> {
+        try {
+            const user = await this.getUserById(userId);
+
+            if (user && user.authorization === EAuthorization.NO) {
+                // Если статус авторизации равен 0, обновляем его на 2
+                await this.updateAuthorizationStatus(userId, EAuthorization.SKIP);
+            }
+        } catch (error) {
+            Logger.error('[Helper] Error in authorizationCheck:', error);
         }
     }
 
@@ -137,7 +156,7 @@ class Helper {
         try {
             await Db.query('UPDATE users SET subscribe = 1 WHERE id = ?', [userId]);
         } catch (error) {
-            Logger.error('[Helper] Error updating sent status:', error);
+            Logger.error('[Helper] Error updateSubscribeStatus:', error);
         }
     }
 
@@ -149,7 +168,7 @@ class Helper {
         try {
             await Db.query('UPDATE users SET final = 1 WHERE id = ?', [userId]);
         } catch (error) {
-            Logger.error('[Helper] Error updating sent status:', error);
+            Logger.error('[Helper] Error updateFinalStatus:', error);
         }
     }
 
@@ -266,16 +285,19 @@ class Helper {
     * @param userId - ID пользователя из базы данных
     * @returns Объект с айди и типом завершенной задачи
     */
-    static async confirmLastTask(userId: number): Promise<void> {
+    static async confirmLastTask(userId: number, status: ETaskStatus, score: number): Promise<void> {
         try {
             // Получение последней задачи со статусом 0
             const lastTask = await Db.query('SELECT * FROM users_tasks WHERE user_id = ? AND status = 0 ORDER BY id DESC LIMIT 1', [userId]);
-            console.log(lastTask)
+
             if (lastTask && lastTask.length > 0) {
                 const taskId = lastTask[0].id;
                 // Обновление статуса последней задачи на 1
-                await Db.query('UPDATE users_tasks SET status = 1 WHERE id = ?', [taskId]);
-
+                if (taskId === 5) {
+                    await Db.query('UPDATE users_tasks SET status = ? WHERE id = ?', [status, taskId]);
+                } else {
+                    await Db.query('UPDATE users_tasks SET status = ?, score = ? WHERE id = ?', [status, score, taskId]);
+                }
             }
 
         } catch (error) {
@@ -299,8 +321,9 @@ class Helper {
     * Функция для добавления очков пользователю
     * @param userId - ID пользователя из базы данных
     * @param pointsToAdd - Количество очков для добавления
+    * @param last - Флаг, указывающий, что это последняя задача
     */
-    static async addPointsToUser(user: IUserDb, pointsToAdd: number): Promise<void> {
+    static async addPointsToUser(user: IUserDb, pointsToAdd: number, last?: boolean): Promise<void> {
         try {
             if (user) {
                 const currentUser = await this.getUserById(user.id)
@@ -308,8 +331,48 @@ class Helper {
                 // Обновление количества очков пользователя
                 await Db.query('UPDATE users SET score = ?, time = NOW() WHERE id = ?', [Number(currentPoints) + Number(pointsToAdd), currentUser.id]);
             }
+
+            if (last) {
+                // Добавление score для последней задачи в таблице users_tasks
+                const lastTask = await Db.query('SELECT * FROM users_tasks WHERE user_id = ? AND status = 0 ORDER BY id DESC LIMIT 1', [user.id]);
+                if (lastTask && lastTask.length > 0) {
+                    const taskId = lastTask[0].id;
+                    const currentTaskScore = lastTask[0].score || 0;
+                    // Добавление очков к уже имеющимся
+                    await Db.query('UPDATE users_tasks SET score = ? WHERE id = ?', [Number(currentTaskScore) + Number(pointsToAdd), taskId]);
+                }
+            }
         } catch (error) {
             Logger.error('[Helper] Error adding points to user:', error);
+        }
+    }
+
+    /**
+     * Метод для сохранения проблемы в базе данных
+     * @param userId - ID пользователя из базы данных
+     * @param text - Текст проблемы
+     * @param groupId - ID медиагруппы
+     */
+    static async saveProblem(userId: number, text: string, groupId?: string): Promise<void> {
+        try {
+            // Вставка новой проблемы в таблицу problems
+            await Db.query('INSERT INTO problems (user_id, text, group_id) VALUES (?, ?, ?)', [userId, text, groupId || null]);
+        } catch (error) {
+            Logger.error('[Helper] Error saving problem:', error);
+        }
+    }
+
+    /**
+    * Метод для сохранения данных файла в таблице problems_files
+    * @param url - URL файла
+    * @param groupId - Групповой идентификатор (опционально)
+    * @param name - название файла
+    */
+    static async saveProblemFile(url: string, groupId: string, name: string): Promise<void> {
+        try {
+            await Db.query('INSERT INTO problems_files (url, group_id, name) VALUES (?, ?, ?)', [url, groupId, name]);
+        } catch (error) {
+            Logger.error('[Helper] Error saving problem file:', error);
         }
     }
 
