@@ -91,16 +91,16 @@ export default class TelegramBotApp {
 
     private _setupListeners(): void {
         try {
-            this.bot.on('web_app_data', async(message)=>{
-                Logger.debug('[BOT] webapp data data data', message?.web_app_data?.data)
-                try {
-                    if (message?.web_app_data?.data) {
-                        Logger.debug('[BOT] webapp data data data', message?.web_app_data?.data)
-                        return await this._sendMessageOnGetDataFromWebApp(message?.web_app_data?.data)
-                    }
-                } catch (e) {
-                    Logger.error('[BOT] error oncatch data from web app', e)
-                }
+            this.bot.on('web_app_data', async(message, data)=>{
+                Logger.debug('[BOT] webapp data data data', data)
+                // try {
+                //     if (message?.web_app_data?.data) {
+                //         Logger.debug('[BOT] webapp data data data', message?.web_app_data?.data)
+                //         return await this._sendMessageOnGetDataFromWebApp(message?.web_app_data?.data)
+                //     }
+                // } catch (e) {
+                //     Logger.error('[BOT] error oncatch data from web app', e)
+                // }
             })
             this.bot.on('message', async (message) => {
                 const tgUser = message?.from
