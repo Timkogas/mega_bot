@@ -44,7 +44,7 @@ class App {
   }
 
   private async _initBot(): Promise<void> {
-    this._telegramBot = new TelegramBot()
+    // this._telegramBot = new TelegramBot()
   }
 
   private _startServer(): void {
