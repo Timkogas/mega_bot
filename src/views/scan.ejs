@@ -1,39 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>QR</title>
-  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
-  <script src="//cdn.jsdelivr.net/npm/eruda"></script><script>eruda.init();</script>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR</title>
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <script src="//cdn.jsdelivr.net/npm/eruda"></script>
+    <script>eruda.init();</script>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
+
 <body style="color:var(--tg-theme-text-color); font-family: Arial, sans-serif;">
-  <div id="reader" width="600px"></div>
-  <!-- Документация -->
-  <!-- https://scanapp.org/html5-qrcode-docs/docs/intro -->
-  <script>
-    function onScanSuccess(decodedText, decodedResult) {
-      alert(JSON.stringify(decodedText))
-      console.log(decodedText);
-      console.log(decodedResult, 'lol');
-      console.log(window.Telegram.WebApp.sendData, 'test2')
-      window.Telegram.WebApp.sendData(JSON.stringify({id: window.Telegram.WebApp.initDataUnsafe.user.id, type: '1'}))  
-    }
-    function onScanFailure(error) {
-        console.log(error, 'lel');
-        console.log(JSON.stringify({id: window.Telegram.WebApp.initDataUnsafe.user.id, type: '0'}), 'test')
-        console.log(window.Telegram.WebApp.sendData, 'test2')
-        window.Telegram.WebApp.sendData(JSON.stringify({id: window.Telegram.WebApp.initDataUnsafe.user.id, type: '0'}))
-    }
-    const html5QrcodeScanner = new Html5QrcodeScanner("reader", {
-      fps: 10,
-      qrbox: {
-        width: 250,
-        height: 250
-      }
-    }, false);
-    html5QrcodeScanner.render(onScanSuccess, onScanFailure);
-  </script>
+    <div id="reader" width="600px"></div>
+    <!-- Документация -->
+    <!-- https://scanapp.org/html5-qrcode-docs/docs/intro -->
+    <script>
+        fetch('https://server.mega.irsapp.ru/user/webAppCount', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestData),
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+            
+        function onScanSuccess(decodedText, decodedResult) {
+            alert(JSON.stringify(decodedText))
+            console.log(decodedText);
+            console.log(decodedResult, 'lol');
+            console.log(window.Telegram.WebApp.sendData, 'test2')
+            window.Telegram.WebApp.sendData(JSON.stringify({ id: window.Telegram.WebApp.initDataUnsafe.user.id, type: '1' }))
+        }
+        function onScanFailure(error) {
+            console.log(error, 'lel');
+            console.log(JSON.stringify({ id: window.Telegram.WebApp.initDataUnsafe.user.id, type: '0' }), 'test')
+            console.log(window.Telegram.WebApp.sendData, 'test2')
+            window.Telegram.WebApp.sendData(JSON.stringify({ id: window.Telegram.WebApp.initDataUnsafe.user.id, type: '0' }))
+        }
+        const html5QrcodeScanner = new Html5QrcodeScanner("reader", {
+            fps: 10,
+            qrbox: {
+                width: 250,
+                height: 250
+            }
+        }, false);
+        html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+    </script>
 </body>
+
 </html>

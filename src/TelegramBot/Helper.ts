@@ -402,6 +402,29 @@ class Helper {
         }
     }
 
+    /**
+    * Метод для увеличения значения total на 1 в таблице main
+    */
+    static async incrementWebApp(): Promise<void> {
+        try {
+            await Db.query('UPDATE main SET webapp = webapp + 1 WHERE id = 1');
+        } catch (error) {
+            Logger.error('[Helper] Error incrementing total:', error);
+        }
+    }
+
+    /**
+    * Обновление свойства webapp у пользователя по ID в базе данных
+    * @param userId - ID пользователя
+    */
+    static async updateWebappStatus(userId: number): Promise<void> {
+        try {
+            await Db.query('UPDATE users SET webapp = 1 WHERE id = ?', [userId]);
+        } catch (error) {
+            Logger.error('[Helper] Error updateAuthorizationStatus:', error);
+        }
+    }
+
 }
 
 export default Helper;
