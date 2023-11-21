@@ -21,7 +21,7 @@
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(requestData),
+            body: JSON.stringify({ id: window.Telegram.WebApp.initDataUnsafe.user.id }),
         })
             .then(response => response.json())
             .then(data => {
@@ -30,7 +30,7 @@
             .catch((error) => {
                 console.error('Error:', error);
             });
-            
+
         function onScanSuccess(decodedText, decodedResult) {
             alert(JSON.stringify(decodedText))
             console.log(decodedText);
