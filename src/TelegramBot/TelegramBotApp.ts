@@ -174,6 +174,14 @@ export default class TelegramBotApp {
 
         const chatId = message?.chat?.id
 
+        try {
+            if (message?.web_app_data?.data) {
+                return await this._sendMessageOnGetDataFromWebApp(message?.web_app_data?.data)
+            }
+        } catch (e) {
+            Logger.error('[BOT] error oncatch data from web app', e)
+        }
+
         switch (data) {
             case EMessages.START:
                 return await this._sendMessageOnStart(chatId, dbUser)
@@ -1418,15 +1426,40 @@ export default class TelegramBotApp {
     }
 
     private async _onProblemSend(message: Message, chatId: number, dbUser: IUserDb): Promise<void> {
-        const uploadsPath = path.join(__dirname, '../uploads')
-        if (message?.text || message?.caption) {
-            if (message?.text) {
-                await Helper.saveProblem(dbUser.id, message?.text)
+        try {
+            const uploadsPath = path.join(__dirname, '../uploads')
+            if (message?.text || message?.caption) {
+                if (message?.text) {
+                    await Helper.saveProblem(dbUser.id, message?.text)
+                }
+
+                if (message?.caption) {
+                    const mediaId = message?.media_group_id || message?.message_id.toString()
+                    await Helper.saveProblem(dbUser.id, message?.caption, mediaId)
+                    let fileLink
+                    let fileName
+                    if (message?.photo) {
+                        fileLink = await this.bot.getFileLink(message?.photo[message?.photo?.length - 1]?.file_id);
+                        const fileFullPath = await this.bot.downloadFile(message?.photo[message?.photo?.length - 1]?.file_id, uploadsPath)
+                        fileName = path.basename(fileFullPath);
+                    }
+                    if (message?.video) {
+                        fileLink = await this.bot.getFileLink(message.video?.file_id);
+                        const fileFullPath = await this.bot.downloadFile(message.video?.file_id, uploadsPath)
+                        fileName = path.basename(fileFullPath);
+                    }
+                    if (message?.animation) {
+                        fileLink = await this.bot.getFileLink(message.animation?.file_id);
+                        const fileFullPath = await this.bot.downloadFile(message.animation?.file_id, uploadsPath)
+                        fileName = path.basename(fileFullPath);
+                    }
+
+                    await Helper.saveProblemFile(fileLink, mediaId, fileName)
+                }
+                return await this._sendMessageOnProblemConfirm(chatId, dbUser)
             }
 
-            if (message?.caption) {
-                const mediaId = message?.media_group_id || message?.message_id.toString()
-                await Helper.saveProblem(dbUser.id, message?.caption, mediaId)
+            if (message?.media_group_id) {
                 let fileLink
                 let fileName
                 if (message?.photo) {
@@ -1445,34 +1478,24 @@ export default class TelegramBotApp {
                     fileName = path.basename(fileFullPath);
                 }
 
-                await Helper.saveProblemFile(fileLink, mediaId, fileName)
+                await Helper.saveProblemFile(fileLink, message?.media_group_id, fileName)
+                return
             }
-            return await this._sendMessageOnProblemConfirm(chatId, dbUser)
+        } catch (e) {
+            Logger.error('[BOT] onProblemSend error', e)
         }
 
-        if (message?.media_group_id) {
-            let fileLink
-            let fileName
-            if (message?.photo) {
-                fileLink = await this.bot.getFileLink(message?.photo[message?.photo?.length - 1]?.file_id);
-                const fileFullPath = await this.bot.downloadFile(message?.photo[message?.photo?.length - 1]?.file_id, uploadsPath)
-                fileName = path.basename(fileFullPath);
-            }
-            if (message?.video) {
-                fileLink = await this.bot.getFileLink(message.video?.file_id);
-                const fileFullPath = await this.bot.downloadFile(message.video?.file_id, uploadsPath)
-                fileName = path.basename(fileFullPath);
-            }
-            if (message?.animation) {
-                fileLink = await this.bot.getFileLink(message.animation?.file_id);
-                const fileFullPath = await this.bot.downloadFile(message.animation?.file_id, uploadsPath)
-                fileName = path.basename(fileFullPath);
-            }
-
-            await Helper.saveProblemFile(fileLink, message?.media_group_id, fileName)
-            return
-        }
     }
 
+
+    private async _sendMessageOnGetDataFromWebApp(data: string): Promise<void> {
+        try {
+            const dataParsed = JSON.parse(data)
+            
+            this.bot.sendMessage(dataParsed.id, data)
+        } catch (e) {
+            Logger.error('[BOT] sendMessageOnGetDataFromWebApp error', e)
+        }
+    }
 
 }
