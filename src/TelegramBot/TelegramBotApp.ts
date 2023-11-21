@@ -91,8 +91,8 @@ export default class TelegramBotApp {
 
     private _setupListeners(): void {
         try {
-            this.bot.on('web_app_data', async(message, data)=>{
-                Logger.debug('[BOT] webapp data data data', data)
+            this.bot.on('web_app_data', async (message, data) => {
+                Logger.debug('[BOT] webapp asdasdasd', message, data)
                 // try {
                 //     if (message?.web_app_data?.data) {
                 //         Logger.debug('[BOT] webapp data data data', message?.web_app_data?.data)
