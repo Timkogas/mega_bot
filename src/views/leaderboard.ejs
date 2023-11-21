@@ -18,18 +18,30 @@
     <div id="leaderboard">
         <ul>
             <% topUsers.forEach((user, index) => { %>
-                <li>
-                    <% if (window.Telegram.WebApp.initDataUnsafe.user.id === user.id) { %>
-                        <strong>
-                    <% } %>
+                <li data-user-id="<%= user.user_id %>">
                     <%= index + 1 %>. <%= user.first_name %> <%= user.last_name %> - <%= user.score %> points
-                    <% if (window.Telegram.WebApp.initDataUnsafe.user.id === user.id) { %>
-                        </strong>
-                    <% } %>
                 </li>
             <% }); %>
         </ul>
     </div>
+    
+    <script>
+        let tg = window.Telegram.WebApp;
+        const data = tg.initDataUnsafe.user.id;
+    
+        document.addEventListener('DOMContentLoaded', () => {
+            const leaderboard = document.getElementById('leaderboard');
+            const listItems = leaderboard.querySelectorAll('li');
+    
+            listItems.forEach(item => {
+                const userId = parseInt(item.dataset.userId);
+    
+                if (userId === data) {
+                    item.style.fontWeight = 'bold';
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>
