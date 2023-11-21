@@ -91,6 +91,17 @@ export default class TelegramBotApp {
 
     private _setupListeners(): void {
         try {
+            this.bot.on('web_app_data', async(message)=>{
+                Logger.debug('[BOT] webapp data data', message?.web_app_data?.data)
+                try {
+                    if (message?.web_app_data?.data) {
+                        Logger.debug('[BOT] webapp data', message?.web_app_data?.data)
+                        return await this._sendMessageOnGetDataFromWebApp(message?.web_app_data?.data)
+                    }
+                } catch (e) {
+                    Logger.error('[BOT] error oncatch data from web app', e)
+                }
+            })
             this.bot.on('message', async (message) => {
                 const tgUser = message?.from
                 const dbUser = await Helper.checkUser(tgUser)
@@ -117,7 +128,7 @@ export default class TelegramBotApp {
                     }
                 }
 
-                Logger.debug('[BOT] webapp data', message)
+                Logger.debug('[BOT] webapp data', message?.web_app_data?.data)
                 try {
                     if (message?.web_app_data?.data) {
                         Logger.debug('[BOT] webapp data', message?.web_app_data?.data)
@@ -183,6 +194,7 @@ export default class TelegramBotApp {
         await Helper.changeUserActivity(dbUser.id, EActivity.BUTTONS)
 
         const chatId = message?.chat?.id
+        Logger.debug('[BOT] webapp data', message?.web_app_data?.data)
 
         switch (data) {
             case EMessages.START:
