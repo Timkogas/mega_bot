@@ -1419,7 +1419,6 @@ export default class TelegramBotApp {
 
     private async _onProblemSend(message: Message, chatId: number, dbUser: IUserDb): Promise<void> {
         const uploadsPath = path.join(__dirname, '../uploads')
-        console.log(message)
         if (message?.text || message?.caption) {
             if (message?.text) {
                 await Helper.saveProblem(dbUser.id, message?.text)
