@@ -98,13 +98,16 @@ export default class TelegramBotApp {
 
                 if (text) {
                     if (text.includes('/start')) {
-
+                        await Helper.incrementTotal()
                         const textArr = text?.split(' ')
                         if (textArr.length === 2) {
                             if (/^\d+$/.test(textArr[1])) {
                                 Helper.checkReferral(dbUser, Number(textArr[1]), this.bot)
                             } else {
-                                Logger.debug('stats')
+                                const stats = textArr[1]?.split('_')
+                                if (stats.length === 3) {
+                                    await Helper.updateUserDetails(dbUser.id, stats[0], stats[1], stats[2])
+                                }
                             }
 
 

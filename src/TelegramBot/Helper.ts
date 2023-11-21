@@ -376,6 +376,32 @@ class Helper {
         }
     }
 
+    /**
+    * Метод для обновления данных пользователя в таблице users
+    * @param userId - Идентификатор пользователя
+    * @param platform - Новое значение для поля platform
+    * @param channel - Новое значение для поля channel
+    * @param creative - Новое значение для поля creative
+    */
+    static async updateUserDetails(userId: number, platform: string, channel: string, creative: string): Promise<void> {
+        try {
+            await Db.query('UPDATE users SET platform = ?, channel = ?, creative = ? WHERE id = ?', [platform, channel, creative, userId]);
+        } catch (error) {
+            Logger.error('[Helper] Error updating user details:', error);
+        }
+    }
+
+    /**
+    * Метод для увеличения значения total на 1 в таблице main
+    */
+    static async incrementTotal(): Promise<void> {
+        try {
+            await Db.query('UPDATE main SET total = total + 1 WHERE id = 1');
+        } catch (error) {
+            Logger.error('[Helper] Error incrementing total:', error);
+        }
+    }
+
 }
 
 export default Helper;

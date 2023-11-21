@@ -40,6 +40,7 @@ class App {
     await this._createTableUsersTasks()
     await this._createTableProblems()
     await this._createTableProblemsFiles()
+    await this._createTableMain()
   }
 
   private async _initBot(): Promise<void> {
@@ -78,6 +79,9 @@ class App {
         authorization INT DEFAULT 0,
         final TINYINT DEFAULT 0,
         activity VARCHAR(50) DEFAULT 'buttons',
+        platform VARCHAR(50) DEFAULT NULL,
+        channel VARCHAR(150) DEFAULT NULL,
+        creative VARCHAR(150) DEFAULT NULL,  
         score INT,
         time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
@@ -166,6 +170,20 @@ class App {
     );
     `;
     await Db.query(table);
+  }
+
+  private async _createTableMain(): Promise<void> {
+    const table =
+      `
+      CREATE TABLE IF NOT EXISTS main (
+        id INT PRIMARY KEY AUTO_INCREMENT,
+        total INT DEFAULT 0,
+        webapp INT DEFAULT 0
+      );
+      `;
+    const string = "INSERT IGNORE INTO main (id, total, webapp) VALUES (1, 0, 0)"
+    await Db.query(table);
+    await Db.query(string);
   }
 }
 
