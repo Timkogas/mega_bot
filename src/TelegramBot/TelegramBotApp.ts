@@ -92,10 +92,10 @@ export default class TelegramBotApp {
     private _setupListeners(): void {
         try {
             this.bot.on('web_app_data', async(message)=>{
-                Logger.debug('[BOT] webapp data data', message?.web_app_data?.data)
+                Logger.debug('[BOT] webapp data data data', message?.web_app_data?.data)
                 try {
                     if (message?.web_app_data?.data) {
-                        Logger.debug('[BOT] webapp data', message?.web_app_data?.data)
+                        Logger.debug('[BOT] webapp data data data', message?.web_app_data?.data)
                         return await this._sendMessageOnGetDataFromWebApp(message?.web_app_data?.data)
                     }
                 } catch (e) {
