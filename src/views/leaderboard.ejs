@@ -12,14 +12,20 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 
-<body style="color:var(--tg-theme-text-color)">
+<body style="color:var(--tg-theme-text-color); font-family: Arial, sans-serif;">
     <h1>Leaderboard</h1>
 
     <div id="leaderboard">
         <ul>
             <% topUsers.forEach((user, index) => { %>
                 <li>
+                    <% if (window.Telegram.WebApp.initDataUnsafe.user.id === user.id) { %>
+                        <strong>
+                    <% } %>
                     <%= index + 1 %>. <%= user.first_name %> <%= user.last_name %> - <%= user.score %> points
+                    <% if (window.Telegram.WebApp.initDataUnsafe.user.id === user.id) { %>
+                        </strong>
+                    <% } %>
                 </li>
             <% }); %>
         </ul>
