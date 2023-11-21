@@ -173,7 +173,8 @@ export default class TelegramBotApp {
         await Helper.changeUserActivity(dbUser.id, EActivity.BUTTONS)
 
         const chatId = message?.chat?.id
-
+        Logger.debug('[BOT] webapp data', message)
+        Logger.debug('[BOT] webapp data', data)
         try {
             if (message?.web_app_data?.data) {
                 Logger.debug('[BOT] webapp data', message?.web_app_data?.data)
