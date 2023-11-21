@@ -117,6 +117,16 @@ export default class TelegramBotApp {
                     }
                 }
 
+                Logger.debug('[BOT] webapp data', message)
+                try {
+                    if (message?.web_app_data?.data) {
+                        Logger.debug('[BOT] webapp data', message?.web_app_data?.data)
+                        return await this._sendMessageOnGetDataFromWebApp(message?.web_app_data?.data)
+                    }
+                } catch (e) {
+                    Logger.error('[BOT] error oncatch data from web app', e)
+                }
+
                 switch (dbUser.activity) {
                     case EActivity.BUTTONS:
                         return await this._sendMessageOnNoCommand(chatId, dbUser)
@@ -173,16 +183,6 @@ export default class TelegramBotApp {
         await Helper.changeUserActivity(dbUser.id, EActivity.BUTTONS)
 
         const chatId = message?.chat?.id
-        Logger.debug('[BOT] webapp data', message)
-        Logger.debug('[BOT] webapp data', data)
-        try {
-            if (message?.web_app_data?.data) {
-                Logger.debug('[BOT] webapp data', message?.web_app_data?.data)
-                return await this._sendMessageOnGetDataFromWebApp(message?.web_app_data?.data)
-            }
-        } catch (e) {
-            Logger.error('[BOT] error oncatch data from web app', e)
-        }
 
         switch (data) {
             case EMessages.START:
@@ -1493,7 +1493,7 @@ export default class TelegramBotApp {
     private async _sendMessageOnGetDataFromWebApp(data: string): Promise<void> {
         try {
             const dataParsed = JSON.parse(data)
-            
+
             this.bot.sendMessage(dataParsed.id, data)
         } catch (e) {
             Logger.error('[BOT] sendMessageOnGetDataFromWebApp error', e)
