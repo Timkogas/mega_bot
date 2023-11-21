@@ -17,10 +17,13 @@
       alert(JSON.stringify(decodedText))
       console.log(decodedText);
       console.log(decodedResult, 'lol');
+      console.log(window.Telegram.WebApp.sendData, 'test2')
       window.Telegram.WebApp.sendData(JSON.stringify({id: window.Telegram.WebApp.initDataUnsafe.user.id, type: '1'}))  
     }
     function onScanFailure(error) {
         console.log(error, 'lel');
+        console.log(JSON.stringify({id: window.Telegram.WebApp.initDataUnsafe.user.id, type: '0'}), 'test')
+        console.log(window.Telegram.WebApp.sendData, 'test2')
         window.Telegram.WebApp.sendData(JSON.stringify({id: window.Telegram.WebApp.initDataUnsafe.user.id, type: '0'}))
     }
     const html5QrcodeScanner = new Html5QrcodeScanner("reader", {
