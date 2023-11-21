@@ -176,6 +176,7 @@ export default class TelegramBotApp {
 
         try {
             if (message?.web_app_data?.data) {
+                Logger.debug('[BOT] webapp data', message?.web_app_data?.data)
                 return await this._sendMessageOnGetDataFromWebApp(message?.web_app_data?.data)
             }
         } catch (e) {
