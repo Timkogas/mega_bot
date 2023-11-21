@@ -1,5 +1,6 @@
 import * as core from 'express-serve-static-core';
-import EjsCheckRoute from './ejs/ejsCheck';
+import EjsScanRoute from './ejs/ejsScan';
+import EjsLeaderboardRoute from './ejs/ejsLeaderboard';
 
 
 class Routes {
@@ -16,7 +17,8 @@ class Routes {
   }
 
   private _ejsRoutes(): void {
-    new EjsCheckRoute(this._app)
+    new EjsScanRoute(this._app)
+    new EjsLeaderboardRoute(this._app)
   }
 
 }

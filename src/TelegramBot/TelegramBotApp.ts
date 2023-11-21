@@ -9,7 +9,8 @@ import axios from 'axios';
 
 dotenv.config();
 process.env["NTBA_FIX_350"] = '1';
-
+const webAppLeader = 'https://server.mega.irsapp.ru/leaderboard'
+const webAppScan = 'https://server.mega.irsapp.ru/scan'
 export enum EMessages {
     START = 'start',
     START_SHORT = 'start_short',
@@ -382,7 +383,7 @@ export default class TelegramBotApp {
             const buttons: InlineKeyboardButton[][] = [
                 [{ text: 'Задания', callback_data: hasTasks ? taskData.type : EMessages.TASKS }],
                 [{ text: 'Пригласить друга', callback_data: EMessages.INVITE }],
-                [{ text: 'Таблица лидеров', web_app: { url: 'https://ya.ru' } }],
+                [{ text: 'Таблица лидеров', web_app: { url: webAppLeader } }],
                 [{ text: 'Призы', callback_data: EMessages.PRIZES }],
             ]
 
@@ -561,9 +562,8 @@ export default class TelegramBotApp {
                     await Helper.addPointsToUser(dbUser, points)
                     break;
                 case EMessages.TASK_5:
-                    const webApp = 'https://html.skorit.ru/qr.html'
                     buttons = [
-                        [{ text: 'Сканировать еще один чек', web_app: { url: webApp } }],
+                        [{ text: 'Сканировать еще один чек', web_app: { url: webAppScan } }],
                         [{ text: 'Загрузить чек (success)', callback_data: EMessages.TASK_CORRECT }],
                         [{ text: 'Где найти шопперы?', callback_data: EMessages.WHERE_SHOPPERS }],
                         [{ text: 'Какие магазины участвуют?', callback_data: EMessages.SHOPS }],
@@ -1199,10 +1199,9 @@ export default class TelegramBotApp {
     private async _sendMessageOnTaskFour(chatId: number, dbUser: IUserDb): Promise<void> {
         try {
             const videoPath = path.join(__dirname, '../assets/videos/video1.mp4')
-            const webApp = 'https://html.skorit.ru/qr.html'
 
             const buttons: InlineKeyboardButton[][] = [
-                [{ text: 'Загрузить чек', web_app: { url: webApp } }],
+                [{ text: 'Загрузить чек', web_app: { url: webAppScan } }],
                 [{ text: 'Загрузить чек (success)', callback_data: EMessages.TASK_CORRECT }],
                 [{ text: 'Загрузить чек (failed)', callback_data: EMessages.SCAN_INCORRECT }],
                 [{ text: 'Где находится Аистенок?', callback_data: EMessages.WHERE_STORK }],
@@ -1230,10 +1229,9 @@ export default class TelegramBotApp {
     private async _sendMessageOnWhereStork(chatId: number, dbUser: IUserDb): Promise<void> {
         try {
             const imgPath = path.join(__dirname, '../assets/images/img1.jpg')
-            const webApp = 'https://html.skorit.ru/qr.html'
 
             const buttons: InlineKeyboardButton[][] = [
-                [{ text: 'Загрузить чек', web_app: { url: webApp } }],
+                [{ text: 'Загрузить чек', web_app: { url: webAppScan } }],
                 [{ text: 'Пропустить задание', callback_data: EMessages.SKIP_TASK }],
                 [{ text: 'Назад', callback_data: EMessages.MENU }],
             ]
@@ -1257,10 +1255,9 @@ export default class TelegramBotApp {
     private async _sendMessageOnScanIncorrect(chatId: number, dbUser: IUserDb): Promise<void> {
         try {
             await Helper.changeUserActivity(dbUser.id, EActivity.BUTTONS)
-            const webApp = 'https://html.skorit.ru/qr.html'
 
             const buttons: InlineKeyboardButton[][] = [
-                [{ text: 'Попробовать ещё раз', web_app: { url: webApp } }],
+                [{ text: 'Попробовать ещё раз', web_app: { url: webAppScan } }],
                 [{ text: 'Сообщить о проблеме', callback_data: EMessages.PROBLEM }],
                 [{ text: 'Пропустить', callback_data: EMessages.SKIP_TASK }],
             ]
@@ -1284,10 +1281,9 @@ export default class TelegramBotApp {
     private async _sendMessageOnTaskFive(chatId: number, dbUser: IUserDb): Promise<void> {
         try {
             const videoPath = path.join(__dirname, '../assets/videos/video1.mp4')
-            const webApp = 'https://html.skorit.ru/qr.html'
 
             const buttons: InlineKeyboardButton[][] = [
-                [{ text: 'Загрузить чек', web_app: { url: webApp } }],
+                [{ text: 'Загрузить чек', web_app: { url: webAppScan } }],
                 [{ text: 'Загрузить чек (success)', callback_data: EMessages.TASK_CORRECT }],
                 [{ text: 'Загрузить чек (failed)', callback_data: EMessages.SCAN_INCORRECT }],
                 [{ text: 'Где найти шопперы?', callback_data: EMessages.WHERE_SHOPPERS }],
@@ -1316,10 +1312,9 @@ export default class TelegramBotApp {
     private async _sendMessageOnWhereShoppers(chatId: number, dbUser: IUserDb): Promise<void> {
         try {
             const imgPath = path.join(__dirname, '../assets/images/img1.jpg')
-            const webApp = 'https://html.skorit.ru/qr.html'
 
             const buttons: InlineKeyboardButton[][] = [
-                [{ text: 'Загрузить чек', web_app: { url: webApp } }],
+                [{ text: 'Загрузить чек', web_app: { url: webAppScan } }],
                 [{ text: 'Какие магазины участвуют?', callback_data: EMessages.SHOPS }],
                 [{ text: 'Пропустить задание', callback_data: EMessages.SKIP_TASK }],
                 [{ text: 'Назад', callback_data: EMessages.MENU }],
@@ -1343,10 +1338,9 @@ export default class TelegramBotApp {
 
     private async _sendMessageOnShops(chatId: number, dbUser: IUserDb): Promise<void> {
         try {
-            const webApp = 'https://html.skorit.ru/qr.html'
 
             const buttons: InlineKeyboardButton[][] = [
-                [{ text: 'Загрузить чек', web_app: { url: webApp } }],
+                [{ text: 'Загрузить чек', web_app: { url: webAppScan } }],
                 [{ text: 'Где найти шопперы?', callback_data: EMessages.WHERE_SHOPPERS }],
                 [{ text: 'Пропустить задание', callback_data: EMessages.SKIP_TASK }],
                 [{ text: 'Назад', callback_data: EMessages.MENU }],
@@ -1378,7 +1372,7 @@ export default class TelegramBotApp {
 
             const buttons: InlineKeyboardButton[][] = [
                 [{ text: 'Пригласить друга', callback_data: EMessages.INVITE }],
-                [{ text: 'Таблица лидеров', web_app: { url: 'https://ya.ru' } }],
+                [{ text: 'Таблица лидеров', web_app: { url: webAppLeader } }],
                 [{ text: 'Призы', callback_data: EMessages.PRIZES }],
                 [{ text: 'Об акции', callback_data: EMessages.ABOUT }],
             ]
