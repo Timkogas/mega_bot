@@ -419,7 +419,7 @@ class Helper {
     */
     static async updateWebappStatus(userId: number): Promise<void> {
         try {
-            await Db.query('UPDATE users SET webapp = 1 WHERE id = ?', [userId]);
+            await Db.query('UPDATE users SET web_app = 1 WHERE id = ?', [userId]);
         } catch (error) {
             Logger.error('[Helper] Error updateAuthorizationStatus:', error);
         }
