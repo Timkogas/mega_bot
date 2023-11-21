@@ -1076,7 +1076,7 @@ export default class TelegramBotApp {
                 [{ text: 'Назад', callback_data: EMessages.AUTHORIZATION }],
             ]
 
-            const text = `Скопируй и введи сюда свой код User ID. (1 - correct)`
+            const text = `Скопируй и введи сюда свой код User ID.`
 
             await this.bot.sendMessage(chatId, text, {
                 parse_mode: 'HTML',

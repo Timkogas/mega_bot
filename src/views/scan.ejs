@@ -8,7 +8,7 @@
   <script src="//cdn.jsdelivr.net/npm/eruda"></script><script>eruda.init();</script>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
-<body>
+<body style="color:var(--tg-theme-text-color); font-family: Arial, sans-serif;">
   <div id="reader" width="600px"></div>
   <!-- Документация -->
   <!-- https://scanapp.org/html5-qrcode-docs/docs/intro -->
@@ -19,7 +19,7 @@
       console.log(decodedResult);
     }
     function onScanFailure(error) {
-      
+        console.log(error);
     }
     const html5QrcodeScanner = new Html5QrcodeScanner("reader", {
       fps: 10,
