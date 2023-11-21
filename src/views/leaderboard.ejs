@@ -18,13 +18,13 @@
     <div id="leaderboard">
         <ul>
             <% topUsers.forEach((user, index) => { %>
-                <li data-user-id="<%= user.user_id %>">
+                <li data-user-id="<%= user.id %>">
                     <%= index + 1 %>. <%= user.first_name %> <%= user.last_name %> - <%= user.score %> points
                 </li>
             <% }); %>
         </ul>
     </div>
-    
+
     <script>
         let tg = window.Telegram.WebApp;
         const data = tg.initDataUnsafe.user.id;
@@ -35,7 +35,7 @@
     
             listItems.forEach(item => {
                 const userId = parseInt(item.dataset.userId);
-    
+                
                 if (userId === data) {
                     item.style.fontWeight = 'bold';
                 }
