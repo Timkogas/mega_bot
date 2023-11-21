@@ -12,14 +12,14 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 
-<body>
+<body style="color:var(--tg-theme-text-color)">
     <h1>Leaderboard</h1>
 
     <div id="leaderboard">
         <ul>
             <% topUsers.forEach((user, index) => { %>
                 <li>
-                    <%= index + 1 %>. <%= user.first_name %> <%= user.last_name %> - <%= user.user_score %> points
+                    <%= index + 1 %>. <%= user.first_name %> <%= user.last_name %> - <%= user.score %> points
                 </li>
             <% }); %>
         </ul>

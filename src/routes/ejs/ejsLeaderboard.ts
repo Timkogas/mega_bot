@@ -15,20 +15,22 @@ export default class EjsLeaderboardRoute {
             try {
                 // Execute the SQL query to fetch the top 50 users
                 const query = `
-                    SELECT
-                        user_id,
-                        first_name,
-                        last_name,
-                        user_score
-                    FROM
-                        users
-                    ORDER BY
-                        user_score DESC
-                    LIMIT 50;
-                `;
+                SELECT
+                    id,
+                    first_name,
+                    last_name,
+                    score,
+                    time
+                FROM
+                    users
+                ORDER BY
+                    score DESC,
+                    time ASC
+                LIMIT 50;
+            `;
 
                 const topUsers = await Db.query(query);
-                Logger.debug('user',topUsers)
+                Logger.debug('user', topUsers)
                 // Render the leaderboard page with the top users
                 res.render('leaderboard', { topUsers });
             } catch (error) {
