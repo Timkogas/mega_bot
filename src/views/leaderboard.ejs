@@ -16,10 +16,11 @@
     <h1>Leaderboard</h1>
 
     <div id="leaderboard">
-        <ul>
+        <ol>
             <% topUsers.forEach((user, index) => { %>
                 <li data-user-id="<%= user.id %>">
-                    <%= index + 1 %>. <%= user.first_name %> <%= user.last_name %> - <%= user.score %> points
+                    <% let displayedName = user.first_name.slice(0, 3) + '* ' + user.last_name.slice(-3); %>
+                    <%= displayedName %> - <%= user.score %> points
                 </li>
             <% }); %>
         </ul>
