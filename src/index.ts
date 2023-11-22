@@ -4,17 +4,17 @@ import dotenv from 'dotenv';
 import * as core from 'express-serve-static-core';
 import Db from './Db/Db';
 import Logger from './Logger/Logger';
-import TelegramBot from './TelegramBot/TelegramBotApp';
 import path from 'path';
 import Routes from './routes';
 import cors from 'cors';
+import TelegramBotApp from './TelegramBot/TelegramBotApp';
 
 dotenv.config();
 
 class App {
   private _server: http.Server;
   private _app: core.Express;
-  private _telegramBot: TelegramBot
+  private _telegramBot: any
 
 
   constructor() {
@@ -41,10 +41,11 @@ class App {
     await this._createTableProblems()
     await this._createTableProblemsFiles()
     await this._createTableMain()
+    await this._createTableUsersChecks()
   }
 
   private async _initBot(): Promise<void> {
-    this._telegramBot = new TelegramBot()
+    this._telegramBot = TelegramBotApp
   }
 
   private _startServer(): void {
@@ -93,13 +94,34 @@ class App {
     const table =
       `
     CREATE TABLE IF NOT EXISTS checks (
-        qr VARCHAR (250) PRIMARY KEY,
-        data JSON
+        id INT PRIMARY KEY AUTO_INCREMENT,
+        qr VARCHAR (250),
+        INDEX idx_qr (qr)
     );
     `
     await Db.query(table)
   }
 
+  private async _createTableUsersChecks(): Promise<void> {
+    const table =
+      `
+    CREATE TABLE IF NOT EXISTS users_checks (
+       id INT PRIMARY KEY AUTO_INCREMENT,
+       user_id BIGINT, 
+       check_id INT,
+       status INT,
+       amount INT,
+       score INT,
+       time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+       receipt_info JSON,
+       url VARCHAR(250),
+       img VARCHAR(100),
+       FOREIGN KEY (check_id) REFERENCES checks(id),
+       FOREIGN KEY (user_id) REFERENCES users(id)
+    );
+    `
+    await Db.query(table);
+  }
 
   private async _createTableTasks(): Promise<void> {
     const table =

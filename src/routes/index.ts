@@ -3,6 +3,7 @@ import EjsScanRoute from './ejs/ejsScan';
 import EjsLeaderboardRoute from './ejs/ejsLeaderboard';
 import EjsAdminStats from './ejs/ejsAdminStats';
 import UserWebAppCount from './user/userWebAppCount';
+import ScanCheck from './scan/scanCheck';
 
 
 class Routes {
@@ -17,6 +18,7 @@ class Routes {
   private _init(): void {
     this._ejsRoutes();
     this._userRoutes()
+    this._scanRoutes()
   }
 
   private _ejsRoutes(): void {
@@ -27,6 +29,10 @@ class Routes {
 
   private _userRoutes(): void {
     new UserWebAppCount(this._app)
+  }
+
+  private _scanRoutes(): void {
+    new ScanCheck(this._app)
   }
 
 

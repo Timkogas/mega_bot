@@ -71,7 +71,7 @@ export const taskIdToEMessagesMap = {
     5: EMessages.TASK_5,
 };
 
-export default class TelegramBotApp {
+class TelegramBotApp {
     private bot: TelegramBot;
 
     constructor() {
@@ -91,17 +91,6 @@ export default class TelegramBotApp {
 
     private _setupListeners(): void {
         try {
-            this.bot.on('web_app_data', async (message, data) => {
-                Logger.debug('[BOT] webapp asdasdasd', message, data)
-                // try {
-                //     if (message?.web_app_data?.data) {
-                //         Logger.debug('[BOT] webapp data data data', message?.web_app_data?.data)
-                //         return await this._sendMessageOnGetDataFromWebApp(message?.web_app_data?.data)
-                //     }
-                // } catch (e) {
-                //     Logger.error('[BOT] error oncatch data from web app', e)
-                // }
-            })
             this.bot.on('message', async (message) => {
                 const tgUser = message?.from
                 const dbUser = await Helper.checkUser(tgUser)
@@ -128,15 +117,6 @@ export default class TelegramBotApp {
                     }
                 }
 
-                Logger.debug('[BOT] webapp data', message?.web_app_data?.data)
-                try {
-                    if (message?.web_app_data?.data) {
-                        Logger.debug('[BOT] webapp data', message?.web_app_data?.data)
-                        return await this._sendMessageOnGetDataFromWebApp(message?.web_app_data?.data)
-                    }
-                } catch (e) {
-                    Logger.error('[BOT] error oncatch data from web app', e)
-                }
 
                 switch (dbUser.activity) {
                     case EActivity.BUTTONS:
@@ -194,8 +174,7 @@ export default class TelegramBotApp {
         await Helper.changeUserActivity(dbUser.id, EActivity.BUTTONS)
 
         const chatId = message?.chat?.id
-        Logger.debug('[BOT] webapp data', message?.web_app_data?.data)
-
+     
         switch (data) {
             case EMessages.START:
                 return await this._sendMessageOnStart(chatId, dbUser)
@@ -764,6 +743,7 @@ export default class TelegramBotApp {
             const taskData = await Helper.getLastPendingTask(dbUser.id)
 
             const buttons: InlineKeyboardButton[][] = [
+                [{ text: 'Проверить подписку', callback_data: EMessages.SUBSCRIBE_CHECK}],
                 [{ text: 'Проверить подписку (succes)', callback_data: EMessages.SUBSCRIBE_CONFIRM }],
                 [{ text: 'Проверить подписку (error)', callback_data: EMessages.SUBSCRIBE_ERROR }],
                 [{ text: 'Следующее задание', callback_data: EMessages.TASK_2 }],
@@ -787,8 +767,9 @@ export default class TelegramBotApp {
 
     private async _sendMessageSubscribeCheck(chatId: number, dbUser: IUserDb): Promise<void> {
         try {
-            // const data = await this.bot.getChatMember('-1001793675054', dbUser.id)
-            // console.log(data)
+            console.log(-1001793675054, dbUser.id)
+            const data = await this.bot.getChatMember(-1001793675054, dbUser.id)
+            console.log(data)
             // const buttons: InlineKeyboardButton[][] = [
             //     [{ text: 'Проверить подписку', callback_data: EMessages.SUBSCRIBE_CHECK }],
             //     [{ text: 'Следующее задание', callback_data: EMessages.TASK_2 }],
@@ -1502,14 +1483,13 @@ export default class TelegramBotApp {
     }
 
 
-    private async _sendMessageOnGetDataFromWebApp(data: string): Promise<void> {
+    public async sendMessageOnGetDataFromWebApp(userId: number, data: string): Promise<void> {
         try {
-            const dataParsed = JSON.parse(data)
-
-            this.bot.sendMessage(dataParsed.id, data)
+            this.bot.sendMessage(userId, data)
         } catch (e) {
             Logger.error('[BOT] sendMessageOnGetDataFromWebApp error', e)
         }
     }
-
 }
+
+export default new TelegramBotApp()
