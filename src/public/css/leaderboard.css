@@ -48,7 +48,7 @@
 #leaderboard::-webkit-scrollbar-thumb {
     background-color: #474747;
     border-radius: 1em;
-    border: 1px solid #EAE3DA;
+    border: 1px solid #474747;;
 }
 
 .leaderboard_list {
