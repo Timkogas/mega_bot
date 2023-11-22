@@ -16,12 +16,12 @@
     <!-- Документация -->
     <!-- https://scanapp.org/html5-qrcode-docs/docs/intro -->
     <script>
-        fetch('https://server.mega.irsapp.ru/user/webAppCount', {
+        fetch('http://localhost:4000/user/webAppCount', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ id: window.Telegram.WebApp.initDataUnsafe.user.id }),
+            body: JSON.stringify({ id: 369689336 }),
         })
             .then(response => response.json())
             .then(data => {
@@ -32,15 +32,15 @@
             });
 
         function onScanSuccess(decodedText, decodedResult) {
-            alert(JSON.stringify(decodedText))
+            console.log(decodedResult)
             console.log(decodedText);
 
-            fetch('https://server.mega.irsapp.ru/scan/check', {
+            fetch('http://localhost:4000/scan/check', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ id: window.Telegram.WebApp.initDataUnsafe.user.id, qr: decodedText }),
+                body: JSON.stringify({ id: 369689336, qr: decodedText }),
             })
                 .then(response => response.json())
                 .then(data => {

@@ -9,6 +9,7 @@ import Routes from './routes';
 import cors from 'cors';
 import TelegramBotApp from './TelegramBot/TelegramBotApp';
 
+
 dotenv.config();
 
 class App {
@@ -109,13 +110,13 @@ class App {
        id INT PRIMARY KEY AUTO_INCREMENT,
        user_id BIGINT, 
        check_id INT,
-       status INT,
-       amount INT,
-       score INT,
+       status INT DEFAULT 0,
+       amount INT DEFAULT 0,
+       score INT DEFAULT 0,
        time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-       receipt_info JSON,
-       url VARCHAR(250),
-       img VARCHAR(100),
+       receipt_info JSON DEFAULT NULL,
+       url VARCHAR(250) DEFAULT NULL,
+       img VARCHAR(100) DEFAULT NULL,
        FOREIGN KEY (check_id) REFERENCES checks(id),
        FOREIGN KEY (user_id) REFERENCES users(id)
     );

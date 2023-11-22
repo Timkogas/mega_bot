@@ -425,6 +425,106 @@ class Helper {
         }
     }
 
+    /**
+    * Создание чека в таблице checks
+    *  @param qrCode - QR-код чека
+    * @param userId - айди пользователя
+    */
+    static async createCheck(qrCode: string, userId: number): Promise<void> {
+        try {
+            // Создаем новый чек и получаем его айди
+            const result = await Db.query('INSERT INTO checks (qr) VALUES (?)', [qrCode]);
+            const checkId = result.insertId;
+
+            // Добавляем запись в таблицу users_checks
+            await Db.query('INSERT INTO users_checks (user_id, check_id) VALUES (?, ?)', [userId, checkId]);
+        } catch (error) {
+            Logger.error('[Helper] Error creating check:', error);
+        }
+    }
+
+
+    /**
+     * Проверка наличия чека в таблице checks по QR-коду
+     * @param qrCode - QR-код чека
+     * @returns true, если чек существует; false в противном случае
+     */
+    static async checkIfCheckExists(qrCode: string): Promise<boolean> {
+        try {
+            const result = await Db.query('SELECT * FROM checks WHERE qr = ?', [qrCode]);
+            console.log(result)
+            return result.length > 0;
+        } catch (error) {
+            Logger.error('[Helper] Error checking if check exists:', error);
+            return false;
+        }
+    }
+
+    /**
+    * Обновление данных чека в таблице users_checks по QR-коду
+    * @param qrCode - QR-код чека
+    * @param updateData - Объект с данными для обновления
+    * @returns true, если обновление прошло успешно; false в противном случае
+    */
+    static async updateCheck(qrCode: string, updateData: {
+        status?: number,
+        amount?: number,
+        score?: number,
+        receipt_info?: any,
+        url?: string,
+        img?: string
+    }): Promise<boolean> {
+        try {
+            // Проверяем, существует ли чек с заданным QR-кодом
+            const checkExists = await this.checkIfCheckExists(qrCode);
+
+            if (!checkExists) {
+                // Чек не существует
+                Logger.error('[Helper] Check not found for update');
+                return false;
+            }
+
+            // Генерируем SQL-запрос на обновление данных
+            const updateQuery = 'UPDATE users_checks SET ' +
+                (updateData.status !== undefined ? 'status = ?, ' : '') +
+                (updateData.amount !== undefined ? 'amount = ?, ' : '') +
+                (updateData.score !== undefined ? 'score = ?, ' : '') +
+                (updateData.receipt_info !== undefined ? 'receipt_info = ?, ' : '') +
+                (updateData.url !== undefined ? 'url = ?, ' : '') +
+                (updateData.img !== undefined ? 'img = ?, ' : '') +
+                'time = CURRENT_TIMESTAMP ' +
+                'WHERE check_id IN (SELECT id FROM checks WHERE qr = ?)';
+
+
+            // Формируем массив значений для запроса
+            const values = [];
+            if (updateData.status !== undefined) values.push(updateData.status);
+            if (updateData.amount !== undefined) values.push(updateData.amount);
+            if (updateData.score !== undefined) values.push(updateData.score);
+            if (updateData.receipt_info !== undefined) values.push(JSON.stringify(updateData.receipt_info));
+            if (updateData.url !== undefined) values.push(updateData.url);
+            if (updateData.img !== undefined) values.push(updateData.img);
+            values.push(qrCode);
+
+            // Выполняем SQL-запрос
+            await Db.query(updateQuery, values);
+
+            return true;
+        } catch (error) {
+            Logger.error('[Helper] Error updating check:', error);
+            return false;
+        }
+    }
+
+    static hasNoPackage(items: any) {
+        for (const item of items) {
+            if (item.Name.toLowerCase().includes('пакет')) {
+                return false;
+            }
+        }
+        return true;
+    }
+
 }
 
 export default Helper;

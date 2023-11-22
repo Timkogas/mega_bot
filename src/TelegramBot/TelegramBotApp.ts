@@ -125,7 +125,7 @@ class TelegramBotApp {
                         const checkCode = Helper.checkCode(text)
 
                         if (checkCode) {
-                            return await this._sendMessageOnTaskCorrect(chatId, dbUser)
+                            return await this.sendMessageOnTaskCorrect(chatId, dbUser)
                         } else {
                             return await this._sendMessageOnCodeIncorrect(chatId, dbUser)
                         }
@@ -199,9 +199,9 @@ class TelegramBotApp {
             case EMessages.SUBSCRIBE_CHECK:
                 return await this._sendMessageSubscribeCheck(chatId, dbUser)
             case EMessages.SUBSCRIBE_CONFIRM:
-                return await this._sendMessageSubscribeConfirm(chatId, dbUser)
+                return await this._sendMessageOnSubscribeConfirm(chatId, dbUser)
             case EMessages.SUBSCRIBE_ERROR:
-                return await this._sendMessageSubscribeError(chatId, dbUser)
+                return await this._sendMessageOnSubscribeError(chatId, dbUser)
             case EMessages.WHERE_STATION:
                 return await this._sendMessageOnWhereStation(chatId, dbUser)
             case EMessages.WRITE_CODE:
@@ -237,7 +237,7 @@ class TelegramBotApp {
             case EMessages.WHERE_STORK:
                 return await this._sendMessageOnWhereStork(chatId, dbUser)
             case EMessages.SCAN_INCORRECT:
-                return await this._sendMessageOnScanIncorrect(chatId, dbUser)
+                return await this.sendMessageOnScanIncorrect(chatId, dbUser)
             case EMessages.TASK_5:
                 return await this._sendMessageOnTaskFive(chatId, dbUser)
             case EMessages.WHERE_SHOPPERS:
@@ -245,7 +245,7 @@ class TelegramBotApp {
             case EMessages.SHOPS:
                 return await this._sendMessageOnShops(chatId, dbUser)
             case EMessages.TASK_CORRECT:
-                return await this._sendMessageOnTaskCorrect(chatId, dbUser)
+                return await this.sendMessageOnTaskCorrect(chatId, dbUser)
             case EMessages.FINAL:
                 return await this._sendMessageOnFinal(chatId, dbUser)
         }
@@ -502,7 +502,7 @@ class TelegramBotApp {
         }
     }
 
-    private async _sendMessageOnTaskCorrect(chatId: number, dbUser: IUserDb): Promise<void> {
+    public async sendMessageOnTaskCorrect(chatId: number, dbUser: IUserDb, scanPoints?:number): Promise<void> {
         try {
             let videoPath
             let text
@@ -555,12 +555,10 @@ class TelegramBotApp {
                         [{ text: 'Следующее задание', callback_data: EMessages.TASK_5 }],
                         [{ text: 'Назад', callback_data: EMessages.MENU }],
                     ]
-                    if (dbUser.authorization === EAuthorization.COMPLETE) points = Number((10 * 1.5)).toFixed()
-                    else points = 10
-                    text = `<b>Чек принят.</b> Это был увлекательный шопинг! 🤗\n\nНа твой игровой счет начислено ${points} баллов.\n\nПоздравляем! Играем дальше?`
+                    text = `<b>Чек принят.</b> Это был увлекательный шопинг! 🤗\n\nНа твой игровой счет начислено ${scanPoints} баллов.\n\nПоздравляем! Играем дальше?`
                     videoPath = path.join(__dirname, '../assets/videos/video1.mp4')
-                    await Helper.confirmLastTask(dbUser.id, ETaskStatus.COMPLETE, points)
-                    await Helper.addPointsToUser(dbUser, points)
+                    await Helper.confirmLastTask(dbUser.id, ETaskStatus.COMPLETE, scanPoints)
+                    await Helper.addPointsToUser(dbUser, scanPoints)
                     break;
                 case EMessages.TASK_5:
                     buttons = [
@@ -571,11 +569,9 @@ class TelegramBotApp {
                         [{ text: 'Завершить задание', callback_data: EMessages.FINAL }],
                         [{ text: 'Назад', callback_data: EMessages.MENU }],
                     ]
-                    if (dbUser.authorization === EAuthorization.COMPLETE) points = Number((10 * 1.5)).toFixed()
-                    else points = 10
-                    text = `<b>Чек принят.</b> Как тебе покупки с шоппером? Скажи, правда приятно? 🌳\n\nНа твой игровой счет начислено ${points} баллов.\n\nПоздравляем!`
+                    text = `<b>Чек принят.</b> Как тебе покупки с шоппером? Скажи, правда приятно? 🌳\n\nНа твой игровой счет начислено ${scanPoints} баллов.\n\nПоздравляем!`
                     videoPath = path.join(__dirname, '../assets/videos/video1.mp4')
-                    await Helper.addPointsToUser(dbUser, points, true)
+                    await Helper.addPointsToUser(dbUser, scanPoints, true)
                     break;
             }
 
@@ -744,8 +740,6 @@ class TelegramBotApp {
 
             const buttons: InlineKeyboardButton[][] = [
                 [{ text: 'Проверить подписку', callback_data: EMessages.SUBSCRIBE_CHECK}],
-                [{ text: 'Проверить подписку (succes)', callback_data: EMessages.SUBSCRIBE_CONFIRM }],
-                [{ text: 'Проверить подписку (error)', callback_data: EMessages.SUBSCRIBE_ERROR }],
                 [{ text: 'Следующее задание', callback_data: EMessages.TASK_2 }],
                 [{ text: 'Назад', callback_data: EMessages.MENU }],
             ]
@@ -767,31 +761,18 @@ class TelegramBotApp {
 
     private async _sendMessageSubscribeCheck(chatId: number, dbUser: IUserDb): Promise<void> {
         try {
-            console.log(-1001793675054, dbUser.id)
             const data = await this.bot.getChatMember(-1001793675054, dbUser.id)
-            console.log(data)
-            // const buttons: InlineKeyboardButton[][] = [
-            //     [{ text: 'Проверить подписку', callback_data: EMessages.SUBSCRIBE_CHECK }],
-            //     [{ text: 'Следующее задание', callback_data: EMessages.TASK_2 }],
-            //     [{ text: 'Назад', callback_data: EMessages.MENU }],
-            // ]
-
-            // const text = `Хочешь получить <b>+5 бонусных баллов?</b> 😊\nСкорее подписывайся на наш <a href="https://t.me/megaekat">Телеграм-канал!</a>\n\nВ нем ты найдешь крутые идеи для покупок, информацию об акциях и скидках магазинов МЕГИ, розыгрыши и многое другое!`
-
-            // await this.bot.sendMessage(chatId, text, {
-            //     parse_mode: 'HTML',
-            //     reply_markup: {
-            //         inline_keyboard: buttons,
-            //     }
-            // })
-
-            // await Helper.setButtons(dbUser, buttons)
+            if (data.status === 'member' || data.status === 'administrator' ||data.status === 'creator' || data.status === 'restricted') {
+                this._sendMessageOnSubscribeConfirm(chatId, dbUser)
+            } else {
+                this._sendMessageOnSubscribeError(chatId, dbUser)
+            }
         } catch (e) {
             Logger.error('[BOT] sendMessageSubscribeCheck error', e)
         }
     }
 
-    private async _sendMessageSubscribeConfirm(chatId: number, dbUser: IUserDb): Promise<void> {
+    private async _sendMessageOnSubscribeConfirm(chatId: number, dbUser: IUserDb): Promise<void> {
         try {
             await Helper.addPointsToUser(dbUser, 5)
             await Helper.updateSubscribeStatus(dbUser.id)
@@ -816,7 +797,7 @@ class TelegramBotApp {
         }
     }
 
-    private async _sendMessageSubscribeError(chatId: number, dbUser: IUserDb): Promise<void> {
+    private async _sendMessageOnSubscribeError(chatId: number, dbUser: IUserDb): Promise<void> {
         try {
             const buttons: InlineKeyboardButton[][] = [
                 [{ text: 'Проверить подписку', callback_data: EMessages.SUBSCRIBE_CHECK }],
@@ -1255,32 +1236,6 @@ class TelegramBotApp {
         }
     }
 
-    private async _sendMessageOnScanIncorrect(chatId: number, dbUser: IUserDb): Promise<void> {
-        try {
-            await Helper.changeUserActivity(dbUser.id, EActivity.BUTTONS)
-
-            const buttons: InlineKeyboardButton[][] = [
-                [{ text: 'Попробовать ещё раз', web_app: { url: webAppScan } }],
-                [{ text: 'Сообщить о проблеме', callback_data: EMessages.PROBLEM }],
-                [{ text: 'Пропустить', callback_data: EMessages.SKIP_TASK }],
-            ]
-
-            const text = `Что-то пошло не так. <b>Чек не был принят.</b> Возможно, чек уже был использован, либо магазин, в котором была совершена покупка, не участвует в акции.\n\nПопробуй еще раз или сообщи нам о проблеме.`
-
-            await this.bot.sendMessage(chatId, text, {
-                parse_mode: 'HTML',
-                reply_markup: {
-                    inline_keyboard: buttons,
-                }
-            })
-
-            await Helper.setButtons(dbUser, buttons)
-        } catch (e) {
-            Logger.error('[BOT] _sendMessageOnScanIncorrect error', e)
-        }
-    }
-
-
     private async _sendMessageOnTaskFive(chatId: number, dbUser: IUserDb): Promise<void> {
         try {
             const videoPath = path.join(__dirname, '../assets/videos/video1.mp4')
@@ -1488,6 +1443,31 @@ class TelegramBotApp {
             this.bot.sendMessage(userId, data)
         } catch (e) {
             Logger.error('[BOT] sendMessageOnGetDataFromWebApp error', e)
+        }
+    }
+
+    public async sendMessageOnScanIncorrect(chatId: number, dbUser: IUserDb): Promise<void> {
+        try {
+            await Helper.changeUserActivity(dbUser.id, EActivity.BUTTONS)
+
+            const buttons: InlineKeyboardButton[][] = [
+                [{ text: 'Попробовать ещё раз', web_app: { url: webAppScan } }],
+                [{ text: 'Сообщить о проблеме', callback_data: EMessages.PROBLEM }],
+                [{ text: 'Пропустить', callback_data: EMessages.SKIP_TASK }],
+            ]
+
+            const text = `Что-то пошло не так. <b>Чек не был принят.</b> Возможно, чек уже был использован, либо магазин, в котором была совершена покупка, не участвует в акции.\n\nПопробуй еще раз или сообщи нам о проблеме.`
+
+            await this.bot.sendMessage(chatId, text, {
+                parse_mode: 'HTML',
+                reply_markup: {
+                    inline_keyboard: buttons,
+                }
+            })
+
+            await Helper.setButtons(dbUser, buttons)
+        } catch (e) {
+            Logger.error('[BOT] _sendMessageOnScanIncorrect error', e)
         }
     }
 }
