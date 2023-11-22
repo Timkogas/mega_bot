@@ -25,28 +25,42 @@
                 <% topUsers.forEach((user, index) => { %>
                     <li data-user-id="<%= user.id %>" class="leaderboard_item">
                         <% 
-                            function _func(name) {
+                            function _func(name, last) {
                                 if (!name) {
                                     return '';
                                 }
     
                                 let anonymizedName;
-                                if (name.length >= 9) {
-                                    anonymizedName = name.slice(0, 3) + '***' + name.slice(-3);
-                                } else if (name.length >= 5) {
-                                    anonymizedName = name.slice(0, 2) + '***' + name.slice(-2);
-                                } else if (name.length >= 3) {
-                                    anonymizedName = name.slice(0, 1) + '*' + name.slice(-1);
-                                } else if (name.length >= 1) {
-                                    anonymizedName = name[0] + '*';
+                                if (last) {
+                                    if (name.length >= 9) {
+                                        anonymizedName = '***' +name.slice(-3);
+                                    } else if (name.length >= 5) {
+                                        anonymizedName = '***' +name.slice(-2) ;
+                                    } else if (name.length >= 3) {
+                                        anonymizedName = '***' +name.slice(-1) ;
+                                    } else if (name.length >= 1) {
+                                        anonymizedName = '***' + name[0];
+                                    } else {
+                                        anonymizedName = '';
+                                    }
                                 } else {
-                                    anonymizedName = '';
+                                    if (name.length >= 9) {
+                                        anonymizedName = name.slice(0, 3) + '***';
+                                    } else if (name.length >= 5) {
+                                        anonymizedName = name.slice(0, 2) + '***';
+                                    } else if (name.length >= 3) {
+                                        anonymizedName = name.slice(0, 1) + '***';
+                                    } else if (name.length >= 1) {
+                                        anonymizedName = name[0] + '***';
+                                    } else {
+                                        anonymizedName = '';
+                                    }
                                 }
     
                                 return anonymizedName;
                             }
     
-                            let displayedName = _func(user.first_name) + ' ' + _func(user.last_name);
+                            let displayedName = _func(user.first_name) + ' ' + _func(user.last_name, true);
                             if (!displayedName.trim()) displayedName = 'Аноним'
                         %>
                         <div class="leaderboard_item_name_block">

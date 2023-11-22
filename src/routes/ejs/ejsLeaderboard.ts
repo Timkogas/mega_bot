@@ -8,10 +8,10 @@ import { faker } from '@faker-js/faker';
 const getRandomInt = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min;
 
 // Function to generate a random user
-const generateRandomUser = () => {
-    const id = faker.string.uuid();
-    const firstName = getRandomInt(10, 100) > 70? faker.person.firstName() : '';
-    const lastName = getRandomInt(10, 100) > 70? faker.person.lastName() : '';
+const generateRandomUser = (idN: number) => {
+    const id = idN;
+    const firstName = getRandomInt(10, 100) > 70 ? faker.person.firstName() : '';
+    const lastName = getRandomInt(10, 100) > 70 ? faker.person.lastName() : '';
     const score = getRandomInt(10, 500);
 
     return {
@@ -49,12 +49,25 @@ export default class EjsLeaderboardRoute {
                 LIMIT 50;
             `;
 
+
+                // Insert the random users into the database
+                const insertQuery = `
+                    INSERT IGNORE INTO users (id, first_name, last_name, score)
+                    VALUES (?, ?, ?, ?)
+                `;
+
+                // Assuming Db.query supports parameterized queries
+                for (let i = 0; i < 50; i++) {
+                    const user = generateRandomUser(i)
+                    await Db.query(insertQuery, [user.id, user.first_name, user.last_name, user.score]);
+                }
+
                 const topUsers = await Db.query(query);
-                const randomUsers = Array.from({ length: 50 }, generateRandomUser);
+
                 Logger.debug('user', topUsers)
-                
+
                 // Render the leaderboard page with the top users
-                res.render('leaderboard', { topUsers: [...topUsers, ...randomUsers] });
+                res.render('leaderboard', { topUsers: topUsers });
             } catch (error) {
                 Logger.error('Error fetching top users:', error);
             }
