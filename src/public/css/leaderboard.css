@@ -37,11 +37,12 @@
 
 #leaderboard::-webkit-scrollbar {
    width: 1.5em;
+   background-color: #474747;
    border-radius: 1em;
 }
 
 #leaderboard::-webkit-scrollbar-track {
-    background: #474747;
+    background: #EAE3DA;
     border-radius: 1em;
 }
 
