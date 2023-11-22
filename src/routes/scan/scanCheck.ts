@@ -31,12 +31,8 @@ export default class ScanCheck {
             
             // Проверяем наличие всех параметров
             if (tValue && sValue && fnValue && iValue && fpValue && nValue) {
-                console.log("t:", tValue);
-                console.log("s:", sValue);
-                console.log("fn:", fnValue);
-                console.log("i:", iValue);
-                console.log("fp:", fpValue);
-                console.log("n:", nValue);
+                const sValidValue = sValue.replace('.', '')
+                Logger.debug('sValidValue', sValidValue)
                 
                 TelegramBotApp.sendMessageOnGetDataFromWebApp(id, qr)
             } else {
