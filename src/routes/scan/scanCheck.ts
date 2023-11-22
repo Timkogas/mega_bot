@@ -20,6 +20,8 @@ export default class ScanCheck {
     try {
       const { id, qr } = req.body
       Logger.debug('qr', qr, id)
+      let queryParams = new URLSearchParams(qr);
+      Logger.debug('queryParams', queryParams)
       TelegramBotApp.sendMessageOnGetDataFromWebApp(id, qr)
       res.json({
         error: false,
