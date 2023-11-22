@@ -37,7 +37,7 @@
 
 #leaderboard::-webkit-scrollbar {
    width: 1.5em;
-   background-color: #474747;
+   background-color: #EAE3DA;
    border-radius: 1em;
 }
 
@@ -47,7 +47,8 @@
 }
 
 #leaderboard::-webkit-scrollbar-thumb {
-    background-color: red;
+    background-color: #474747;
+    z-index: 1;
     border-radius: 1em;
 }
 
