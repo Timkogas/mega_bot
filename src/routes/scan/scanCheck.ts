@@ -1,6 +1,7 @@
 import * as core from 'express-serve-static-core';
 import Logger from '../../Logger/Logger';
-import TelegramBotApp from '../../TelegramBot/TelegramBotApp';
+import TelegramBotApp, { EMessages } from '../../TelegramBot/TelegramBotApp';
+import Helper from '../../TelegramBot/Helper';
 
 export default class ScanCheck {
     constructor(app: core.Express) {
@@ -33,8 +34,17 @@ export default class ScanCheck {
             if (tValue && sValue && fnValue && iValue && fpValue && nValue) {
                 const sValidValue = sValue.replace('.', '')
                 Logger.debug('sValidValue', sValidValue)
+                const lastTask = await Helper.getLastPendingTask(id)
+
+                if (lastTask.type === EMessages.TASK_4) {
+
+                }
+
+                if (lastTask.type === EMessages.TASK_5) {
+
+                }
                 
-                TelegramBotApp.sendMessageOnGetDataFromWebApp(id, qr)
+                TelegramBotApp.sendMessageOnGetDataFromWebApp(id, qr + ' ' + lastTask.type)
             } else {
                 Logger.error('[SCAN] inccorect processing user', qr);
             }
