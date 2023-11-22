@@ -42,14 +42,14 @@
 }
 
 #leaderboard::-webkit-scrollbar-track {
-    background: #474747;
+    background: #EAE3DA;
     border-radius: 1em;
 }
 
 #leaderboard::-webkit-scrollbar-thumb {
     background-color: #474747;
     border-radius: 1em;
-    border: 1px solid #EAE3DA;;
+    border: 10px solid #474747;;
 }
 
 .leaderboard_list {
