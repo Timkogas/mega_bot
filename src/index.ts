@@ -55,6 +55,7 @@ class App {
     this._app.use(express.urlencoded({ extended: true }));
     this._app.use(cors());
     this._app.use('/uploads', express.static(__dirname + '/uploads'));
+    this._app.use( express.static(__dirname + '/public'));
     this._app.set('views', path.join(__dirname, 'views'));
     this._app.set('view engine', 'ejs');
 

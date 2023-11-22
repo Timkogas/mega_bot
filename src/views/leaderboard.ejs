@@ -4,7 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Telegram Bot Web App</title>
+    <link href="/css/fonts.css" rel="stylesheet">
+    <link href="/css/index.css" rel="stylesheet">
+    <link href="/css/leaderboard.css" rel="stylesheet">
+    <title>Таблица лидеров</title>
     <script src="//cdn.jsdelivr.net/npm/eruda"></script>
     <script>
         eruda.init();
@@ -12,48 +15,66 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 
-<body style="color:var(--tg-theme-text-color); font-family: Arial, sans-serif;">
-    <h1>Leaderboard</h1>
+<body>
+    <img src="/images/logo.svg" alt="logo"  class="logo">
+    <h1 class="title" >Топ-50 путешественников</h1>
 
-    <div id="leaderboard">
-        <ol>
-            <% topUsers.forEach((user, index) => { %>
-                <li data-user-id="<%= user.id %>">
-                    <% 
-                        function _func(name) {
-                            if (!name) {
-                                return '';
+    <div class="leaderboard_wrapper">
+        <div id="leaderboard">
+            <ol class="leaderboard_list">
+                <% topUsers.forEach((user, index) => { %>
+                    <li data-user-id="<%= user.id %>" class="leaderboard_item">
+                        <% 
+                            function _func(name) {
+                                if (!name) {
+                                    return '';
+                                }
+    
+                                let anonymizedName;
+                                if (name.length >= 9) {
+                                    anonymizedName = name.slice(0, 3) + '***' + name.slice(-3);
+                                } else if (name.length >= 5) {
+                                    anonymizedName = name.slice(0, 2) + '***' + name.slice(-2);
+                                } else if (name.length >= 3) {
+                                    anonymizedName = name.slice(0, 1) + '*' + name.slice(-1);
+                                } else if (name.length >= 1) {
+                                    anonymizedName = name[0] + '*';
+                                } else {
+                                    anonymizedName = '';
+                                }
+    
+                                return anonymizedName;
                             }
+    
+                            let displayedName = _func(user.first_name) + ' ' + _func(user.last_name);
+                            if (!displayedName.trim()) displayedName = 'Аноним'
+                        %>
+                        <div class="leaderboard_item_name_block">
+                            <span>
+                                <%= index + 1 + '.' %>
+                            </span>
 
-                            let anonymizedName;
-                            if (name.length >= 9) {
-                                anonymizedName = name.slice(0, 3) + '***' + name.slice(-3);
-                            } else if (name.length >= 5) {
-                                anonymizedName = name.slice(0, 2) + '***' + name.slice(-2);
-                            } else if (name.length >= 3) {
-                                anonymizedName = name.slice(0, 1) + '*' + name.slice(-1);
-                            } else if (name.length >= 1) {
-                                anonymizedName = name[0] + '*';
-                            } else {
-                                anonymizedName = '';
-                            }
-
-                            return anonymizedName;
-                        }
-
-                        let displayedName = _func(user.first_name) + ' ' + _func(user.last_name);
-                        if (!displayedName.trim()) displayedName = 'Анонимный пользователь'
-                    %>
-                    <%= displayedName %> - <%= user.score || 0 %> points
-                </li>
-            <% }); %>
-        </ol>
+                            <span>
+                                <%= displayedName %>
+                            </span>
+                        </div>
+                        <span class="leaderboard_item_score">
+                            <%= user.score || 0 %> 
+                        </span>
+                    </li>
+                    <div class="leaderboard_hr"></div>
+                <% }); %>
+            </ol>
+        </div>
     </div>
+    <button class="button exit">
+        Выйти
+    </button>
 
     <script>
         let tg = window.Telegram.WebApp;
-        const data = tg.initDataUnsafe.user.id;
-    
+        // const data = tg.initDataUnsafe.user.id;
+        const data = 369689336
         document.addEventListener('DOMContentLoaded', () => {
             const leaderboard = document.getElementById('leaderboard');
             const listItems = leaderboard.querySelectorAll('li');
