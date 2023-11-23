@@ -133,7 +133,6 @@
                         return response.json();
                     })
                     .then(data => {
-                        console.log(data, 'data');
                         const position = data.data.position;
                         const score = data.data.score;
                     })
@@ -148,7 +147,7 @@
                     position: position,
                     score: score
                 };
-
+                console.log('new user', newUser)
 
                 const newItem = document.createElement('li');
                 newItem.className = 'leaderboard_item';
