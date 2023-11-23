@@ -100,6 +100,13 @@
         let tg = window.Telegram.WebApp;
         const userIdTg = tg.initDataUnsafe.user.id;
         let exist = false
+
+        const exitButton = document.querySelector('.exit');
+        exitButton.addEventListener('click', function () {
+            tg.close()
+        });
+
+
         document.addEventListener('DOMContentLoaded', () => {
             const leaderboard = document.getElementById('leaderboard');
             const listItems = leaderboard.querySelectorAll('li');
