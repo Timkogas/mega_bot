@@ -16,6 +16,7 @@ export default class UserPlaceInLeaderBoard {
         this._app.get('/user/place', async (req, res) => {
             try {
                 const { id } = req.body
+                Logger.debug('id user', id)
                 if (id) {
                     const positionQuery = `
                     SELECT
@@ -29,9 +30,9 @@ export default class UserPlaceInLeaderBoard {
                 `;
 
                     const userPosition = await Db.query(positionQuery, [id]);
-
+                    Logger.debug('userPosition', userPosition)
                     if (userPosition.length > 0) {
-                        res.json({
+                        return res.json({
                             error: false,
                             error_text: '',
                             data: { 
@@ -40,7 +41,7 @@ export default class UserPlaceInLeaderBoard {
                              }
                         });
                     } else {
-                        res.json({
+                        return res.json({
                             error: true,
                             error_text: 'Internal Server Error',
                             data: {}
@@ -49,7 +50,7 @@ export default class UserPlaceInLeaderBoard {
                 }
             } catch (error) {
                 Logger.error('Error fetching user position:', error);
-                res.json({
+                return res.json({
                     error: true,
                     error_text: 'Internal Server Error',
                     data: {}

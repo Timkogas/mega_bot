@@ -70,8 +70,6 @@ export default class EjsLeaderboardRoute {
 
                 const topUsers = await Db.query(query);
 
-                Logger.debug('user', topUsers)
-
                 // Render the leaderboard page with the top users
                 res.render('leaderboard', { topUsers: topUsers });
             } catch (error) {
