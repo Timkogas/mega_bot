@@ -12,50 +12,53 @@ export default class UserPlaceInLeaderBoard {
 
     private _init(): void {
 
-
         this._app.get('/user/place', async (req, res) => {
-            try {
-                const { id } = req.body
-                Logger.debug('id user', id)
-                if (id) {
-                    const positionQuery = `
-                    SELECT
-                        id,
-                        score,
-                        RANK() OVER (ORDER BY score DESC, time ASC) as position
-                    FROM
-                        users
-                    WHERE
-                        id = ?;
-                `;
-
-                    const userPosition = await Db.query(positionQuery, [id]);
-                    Logger.debug('userPosition', userPosition)
-                    if (userPosition.length > 0) {
-                        return res.json({
-                            error: false,
-                            error_text: '',
-                            data: { 
-                                position: userPosition[0].position,
-                                score: userPosition[0].score
-                             }
-                        });
-                    } else {
-                        return res.json({
-                            error: true,
-                            error_text: 'Internal Server Error',
-                            data: {}
-                        })
-                    }
-                }
-            } catch (error) {
-                Logger.error('Error fetching user position:', error);
-                return res.json({
-                    error: true,
-                    error_text: 'Internal Server Error',
-                    data: {}
-                })
-            }
+            this._route(req, res);
         });
+    }
+
+    private async _route(req: core.Request<any>, res: core.Response<any>): Promise<any> {
+        try {
+            const { id } = req.body
+            Logger.debug('id user', id)
+            if (id) {
+                const positionQuery = `
+                SELECT
+                    id,
+                    score,
+                    RANK() OVER (ORDER BY score DESC, time ASC) as position
+                FROM
+                    users
+                WHERE
+                    id = ?;
+            `;
+
+                const userPosition = await Db.query(positionQuery, [id]);
+                Logger.debug('userPosition', userPosition)
+                if (userPosition.length > 0) {
+                    return res.json({
+                        error: false,
+                        error_text: '',
+                        data: {
+                            position: userPosition[0].position,
+                            score: userPosition[0].score
+                        }
+                    });
+                } else {
+                    return res.json({
+                        error: true,
+                        error_text: 'Internal Server Error',
+                        data: {}
+                    })
+                }
+            }
+        } catch (error) {
+            Logger.error('Error fetching user position:', error);
+            return res.json({
+                error: true,
+                error_text: 'Internal Server Error',
+                data: {}
+            })
+        }
     }
 }

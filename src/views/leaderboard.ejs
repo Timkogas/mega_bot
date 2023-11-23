@@ -100,31 +100,6 @@
         let tg = window.Telegram.WebApp;
         const userIdTg = tg.initDataUnsafe.user.id;
         let exist = false
-
-        let position
-        let score
-        fetch('https://server.mega.irsapp.ru/user/place', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ id: userIdTg }),
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log(data, 'data');
-                const position = data.data.position;
-                const score = data.data.score;
-            })
-            .catch(error => {
-                console.error('There was a problem with the fetch operation:', error);
-            });
-
         document.addEventListener('DOMContentLoaded', () => {
             const leaderboard = document.getElementById('leaderboard');
             const listItems = leaderboard.querySelectorAll('li');
@@ -142,6 +117,29 @@
             });
 
             if (!exist) {
+                let position
+                let score
+                fetch('https://server.mega.irsapp.ru/user/place', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ id: userIdTg }),
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log(data, 'data');
+                        const position = data.data.position;
+                        const score = data.data.score;
+                    })
+                    .catch(error => {
+                        console.error('There was a problem with the fetch operation:', error);
+                    });
 
                 const list = document.querySelector('.leaderboard_list')
                 const newUser = {
