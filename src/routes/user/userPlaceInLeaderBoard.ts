@@ -11,7 +11,7 @@ export default class UserPlaceInLeaderBoard {
     private _app: core.Express;
 
     private _init(): void {
-        this._app.get('/user/place', async (req, res) => {
+        this._app.post('/user/place', async (req, res) => {
             this._route(req, res);
         });
     }
