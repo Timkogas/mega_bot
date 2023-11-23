@@ -299,7 +299,7 @@ class TelegramBotApp {
                     }
                 })
             } else {
-                await this.bot.sendVideoNote(chatId, videoPath)
+                await this.bot.sendVideo(chatId, videoPath)
                 await this.bot.sendMessage(chatId, textFirstMessage, { parse_mode: 'HTML' })
                 await this.bot.sendMessage(chatId, textSecondMessage, {
                     parse_mode: 'HTML',
