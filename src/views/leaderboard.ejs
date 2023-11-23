@@ -9,9 +9,6 @@
     <link href="/css/leaderboard.css" rel="stylesheet">
     <title>Таблица лидеров</title>
     <script src="//cdn.jsdelivr.net/npm/eruda"></script>
-    <script>
-        eruda.init();
-    </script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.css" />
     <script src="https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.min.js"></script>
@@ -149,7 +146,6 @@
                             position: position,
                             score: score
                         };
-                        console.log('new user', newUser)
 
                         const newItem = document.createElement('li');
                         newItem.className = 'leaderboard_item';
@@ -157,7 +153,7 @@
                         newItem.dataset.userId = userIdTg;
                         newItem.innerHTML = `
                             <div class="leaderboard_item_name_block">
-                                <span>${newUser.position || 51.}</span>
+                                <span>${newUser.position || 51}.</span>
                                 <span class="leaderboard_item_name_block_name">${newUser.first_name + ' ' + newUser.last_name}</span>
                             </div>
                             <span class="leaderboard_item_score">${newUser.score || 0}</span>
