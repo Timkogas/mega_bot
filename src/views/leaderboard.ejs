@@ -135,40 +135,37 @@
                     .then(data => {
                         position = data.data.position;
                         score = data.data.score;
-                        console.log(position)
-                        console.log(score)
-                        console.log(data.data)
+                        const list = document.querySelector('.leaderboard_list')
+                        const newUser = {
+                            first_name: tg.initDataUnsafe.user.first_name,
+                            last_name: tg.initDataUnsafe.user.last_name,
+                            position: position,
+                            score: score
+                        };
+                        console.log('new user', newUser)
+
+                        const newItem = document.createElement('li');
+                        newItem.className = 'leaderboard_item';
+                        newItem.style.fontWeight = 'bold';
+                        newItem.dataset.userId = userIdTg;
+                        newItem.innerHTML = `
+                            <div class="leaderboard_item_name_block">
+                                <span>${newUser.position || 51.}</span>
+                                <span class="leaderboard_item_name_block_name">${newUser.first_name + ' ' + newUser.last_name}</span>
+                            </div>
+                            <span class="leaderboard_item_score">${newUser.score || 0}</span>
+                        `;
+
+                        list.appendChild(newItem);
+
+                        const hr = document.createElement('div');
+                        hr.className = 'leaderboard_hr';
+                        list.appendChild(hr);
                     })
                     .catch(error => {
                         console.error('There was a problem with the fetch operation:', error);
                     });
 
-                const list = document.querySelector('.leaderboard_list')
-                const newUser = {
-                    first_name: tg.initDataUnsafe.user.first_name,
-                    last_name: tg.initDataUnsafe.user.last_name,
-                    position: position,
-                    score: score
-                };
-                console.log('new user', newUser)
-
-                const newItem = document.createElement('li');
-                newItem.className = 'leaderboard_item';
-                newItem.style.fontWeight = 'bold';
-                newItem.dataset.userId = userIdTg;
-                newItem.innerHTML = `
-                    <div class="leaderboard_item_name_block">
-                        <span>${newUser.position || 51.}</span>
-                        <span class="leaderboard_item_name_block_name">${newUser.first_name + ' ' + newUser.last_name}</span>
-                    </div>
-                    <span class="leaderboard_item_score">${newUser.score || 0}</span>
-                `;
-
-                list.appendChild(newItem);
-
-                const hr = document.createElement('div');
-                hr.className = 'leaderboard_hr';
-                list.appendChild(hr);
             }
         });
 
