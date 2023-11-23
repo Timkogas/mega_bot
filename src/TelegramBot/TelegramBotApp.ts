@@ -174,7 +174,7 @@ class TelegramBotApp {
         await Helper.changeUserActivity(dbUser.id, EActivity.BUTTONS)
 
         const chatId = message?.chat?.id
-     
+
         switch (data) {
             case EMessages.START:
                 return await this._sendMessageOnStart(chatId, dbUser)
@@ -502,7 +502,7 @@ class TelegramBotApp {
         }
     }
 
-    public async sendMessageOnTaskCorrect(chatId: number, dbUser: IUserDb, scanPoints?:number): Promise<void> {
+    public async sendMessageOnTaskCorrect(chatId: number, dbUser: IUserDb, scanPoints?: number): Promise<void> {
         try {
             let videoPath
             let text
@@ -601,7 +601,7 @@ class TelegramBotApp {
                         [{ text: 'Сканировать еще один чек', web_app: { url: webAppScan } }],
                         [{ text: 'Загрузить чек (success)', callback_data: EMessages.TASK_CORRECT }],
                         [{ text: 'Где найти шопперы?', callback_data: EMessages.WHERE_SHOPPERS }],
-                        [{ text: 'Какие магазины участвуют?', callback_data: EMessages.SHOPS }],
+                        // [{ text: 'Какие магазины участвуют?', callback_data: EMessages.SHOPS }],
                         [{ text: 'Завершить задание', callback_data: EMessages.FINAL }],
                         [{ text: 'Назад', callback_data: EMessages.MENU }],
                     ]
@@ -774,7 +774,7 @@ class TelegramBotApp {
             const taskData = await Helper.getLastPendingTask(dbUser.id)
 
             const buttons: InlineKeyboardButton[][] = [
-                [{ text: 'Проверить подписку', callback_data: EMessages.SUBSCRIBE_CHECK}],
+                [{ text: 'Проверить подписку', callback_data: EMessages.SUBSCRIBE_CHECK }],
                 [{ text: 'Следующее задание', callback_data: EMessages.TASK_2 }],
                 [{ text: 'Назад', callback_data: EMessages.MENU }],
             ]
@@ -798,7 +798,7 @@ class TelegramBotApp {
     private async _sendMessageSubscribeCheck(chatId: number, dbUser: IUserDb): Promise<void> {
         try {
             const data = await this.bot.getChatMember(-1001793675054, dbUser.id)
-            if (data.status === 'member' || data.status === 'administrator' ||data.status === 'creator' || data.status === 'restricted') {
+            if (data.status === 'member' || data.status === 'administrator' || data.status === 'creator' || data.status === 'restricted') {
                 this._sendMessageOnSubscribeConfirm(chatId, dbUser)
             } else {
                 this._sendMessageOnSubscribeError(chatId, dbUser)
@@ -1279,12 +1279,12 @@ class TelegramBotApp {
             const buttons: InlineKeyboardButton[][] = [
                 [{ text: 'Загрузить чек', web_app: { url: webAppScan } }],
                 [{ text: 'Где найти шопперы?', callback_data: EMessages.WHERE_SHOPPERS }],
-                [{ text: 'Какие магазины участвуют?', callback_data: EMessages.SHOPS }],
+                // [{ text: 'Какие магазины участвуют?', callback_data: EMessages.SHOPS }],
                 [{ text: 'Пропустить задание', callback_data: EMessages.SKIP_TASK }],
                 [{ text: 'Назад', callback_data: EMessages.MENU }],
             ]
 
-            const text = `<b>Задание #5. Сходите в магазин с шоппером и загрузите чек на N рублей без позиции «пакет»</b>\n\n🛍️ Собрался(ась) за покупками? Мы помогаем сделать шаг навстречу экологичному образу жизни — получи от МЕГИ в подарок шоппер на столе информации, посети любой магазин и загрузи чек без пакета, чтобы получить баллы.\n\nЕсли ты действительно хочешь вносить свой йвклад в экологию и приобщиться к осознанному потреблению, то использование качественного шоппера вместо пакета из пластика — это хорошее начало! ⚡\n\nP.S.: Чеки из магазинов можно сканировать неограниченное раз. Как только отсканируешь все-все чеки, жми на кнопку «Завершить задание»`
+            const text = `<b>Задание #5. Сходите в магазин с шоппером и загрузите чек на N рублей без позиции «пакет»</b>\n\n🛍️ Собрался(ась) за покупками? Мы помогаем сделать шаг навстречу экологичному образу жизни — получи от МЕГИ в подарок шоппер на столе информации, посети любой магазин и загрузи чек без пакета, чтобы получить баллы.\n\nЕсли ты действительно хочешь вносить свой вклад в экологию и приобщиться к осознанному потреблению, то использование качественного шоппера вместо пакета из пластика — это хорошее начало! ⚡\n\nP.S.: Чеки из магазинов можно сканировать неограниченное раз. Как только отсканируешь все-все чеки, жми на кнопку «Завершить задание»`
 
             await this.bot.sendVideoNote(chatId, videoPath)
             await this.bot.sendMessage(chatId, text, {
@@ -1308,6 +1308,7 @@ class TelegramBotApp {
             const buttons: InlineKeyboardButton[][] = [
                 [{ text: 'Загрузить чек', web_app: { url: webAppScan } }],
                 [{ text: 'Пропустить задание', callback_data: EMessages.SKIP_TASK }],
+                // [{ text: 'Какие магазины участвуют?', callback_data: EMessages.SHOPS }],
                 [{ text: 'Назад', callback_data: EMessages.MENU }],
             ]
 
