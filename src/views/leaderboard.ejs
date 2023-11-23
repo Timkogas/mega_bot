@@ -119,6 +119,7 @@
             if (!exist) {
                 let position
                 let score
+                console.log(userIdTg)
                 fetch('https://server.mega.irsapp.ru/user/place', {
                     method: 'POST',
                     headers: {
@@ -129,8 +130,8 @@
                     .then(response => {response.json(); console.log(response)})
                     .then(data => {
                         console.log(data)
-                        position = data.data.position
-                        score = data.data.score
+                        position = data.position
+                        score = data.score
                     })
                     .catch((error) => {console.log(error, 'error')});
 
