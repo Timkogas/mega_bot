@@ -133,8 +133,8 @@
                         return response.json();
                     })
                     .then(data => {
-                        const position = data.data.position;
-                        const score = data.data.score;
+                        position = data.data.position;
+                        score = data.data.score;
                     })
                     .catch(error => {
                         console.error('There was a problem with the fetch operation:', error);
