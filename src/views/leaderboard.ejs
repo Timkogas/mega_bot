@@ -127,16 +127,19 @@
                     body: JSON.stringify({ id: userIdTg }),
                 })
                     .then(response => {
-                        console.log(response, 'response')
-                        console.log(response.json(), 'response.json()')
-                        return response.json(); 
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
                     })
                     .then(data => {
-                        console.log(data)
-                        position = data.data.position
-                        score = data.data.score
+                        console.log(data, 'data');
+                        const position = data.data.position;
+                        const score = data.data.score;
                     })
-                    .catch((error) => {console.log(error, 'error')});
+                    .catch(error => {
+                        console.error('There was a problem with the fetch operation:', error);
+                    });
 
                 const list = document.querySelector('.leaderboard_list')
                 const newUser = {
