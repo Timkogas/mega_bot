@@ -126,11 +126,11 @@
                     },
                     body: JSON.stringify({ id: userIdTg }),
                 })
-                    .then(response => response.json())
+                    .then(response => {response.json(); console.log(response)})
                     .then(data => {
                         console.log(data)
-                        position = data.position
-                        score = data.score
+                        position = data.data.position
+                        score = data.data.score
                     })
                     .catch((error) => {console.log(error, 'error')});
 
