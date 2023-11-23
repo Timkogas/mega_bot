@@ -11,8 +11,14 @@ const getRandomInt = (min: number, max: number) => Math.floor(Math.random() * (m
 const generateRandomUser = (idN: number) => {
     const id = idN;
     const firstName = getRandomInt(10, 100) > 70 ? faker.person.firstName() : '';
-    const lastName = getRandomInt(10, 100) > 70 ? faker.person.lastName() : '';
-    const score = getRandomInt(10, 500);
+    let lastName
+    if (firstName !== '') {
+        const lastName = getRandomInt(10, 100) > 70 ? faker.person.lastName() : '';
+    } else {
+        lastName = ''
+    }
+    
+    const score = getRandomInt(10, 600);
 
     return {
         id,
@@ -57,7 +63,7 @@ export default class EjsLeaderboardRoute {
                 `;
 
                 // Assuming Db.query supports parameterized queries
-                for (let i = 0; i < 50; i++) {
+                for (let i = 0; i < 80; i++) {
                     const user = generateRandomUser(i)
                     await Db.query(insertQuery, [user.id, user.first_name, user.last_name, user.score]);
                 }
