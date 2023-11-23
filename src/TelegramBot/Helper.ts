@@ -539,10 +539,10 @@ class Helper {
     static async updateSkipTaskTime(userId: number, skipTime: Date): Promise<boolean> {
         try {
             // Генерируем SQL-запрос на обновление времени skip_task
-            const updateQuery = 'UPDATE users SET skip_task = ? WHERE user_id = ?';
+            const updateQuery = 'UPDATE users SET skip_task = ? WHERE id = ?';
 
             // Формируем массив значений для запроса
-            const values = [skipTime.toISOString(), userId];
+            const values = [skipTime, userId];
 
             // Выполняем SQL-запрос
             await Db.query(updateQuery, values);
@@ -553,7 +553,6 @@ class Helper {
             return false;
         }
     }
-
 }
 
 export default Helper;

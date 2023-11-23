@@ -755,11 +755,11 @@ class TelegramBotApp {
             const lastSkipDate = new Date(newDbUser.skip_task).getTime();
             const currentDate = new Date().getTime();
             const twentyFourHours = 24 * 60 * 60 * 1000
+            
             if (currentDate - lastSkipDate >= twentyFourHours) {
                 await Helper.updateSkipTaskTime(newDbUser.id, new Date())
-                await Helper.confirmLastTask(dbUser.id, ETaskStatus.SKIP, 0)
-                await Helper.getLastPendingTask(dbUser.id)
                 const taskData = await Helper.getLastPendingTask(dbUser.id)
+                await Helper.confirmLastTask(dbUser.id, ETaskStatus.SKIP, 0)
                 switch (taskData.type) {
                     case EMessages.TASK_1:
                         return await this._sendMessageOnSubscribe(chatId, dbUser)
