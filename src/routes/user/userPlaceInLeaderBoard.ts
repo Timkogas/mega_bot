@@ -25,9 +25,16 @@ export default class UserPlaceInLeaderBoard {
                 SELECT
                     id,
                     score,
-                    RANK() OVER (ORDER BY score DESC, time ASC) as position
+                    position
                 FROM
-                    users
+                    (
+                        SELECT
+                            id,
+                            score,
+                            RANK() OVER (ORDER BY score DESC, time ASC) AS position
+                        FROM
+                            users
+                    ) AS ranked_users
                 WHERE
                     id = ?;
             `;
