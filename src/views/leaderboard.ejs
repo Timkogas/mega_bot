@@ -69,11 +69,8 @@
 
                             return anonymizedName;
                             }
-                            if (user.id === window.Telegram.WebApp.initDataUnsafe.user.id) {
-                                let displayedName = user.first_name + ' ' + user.last_name;
-                            } else {
-                                let displayedName = _func(user.first_name) + ' ' + _func(user.last_name, true);
-                            }
+                            if (user.id )
+                            let displayedName = _func(user.first_name) + ' ' + _func(user.last_name, true);
                             if (!displayedName.trim()) displayedName = 'Аноним'
                             %>
                             <div class="leaderboard_item_name_block">
@@ -102,6 +99,7 @@
         new SimpleBar(document.getElementById('leaderboard'), { autoHide: false });
         let tg = window.Telegram.WebApp;
         const data = tg.initDataUnsafe.user.id;
+
         document.addEventListener('DOMContentLoaded', () => {
             const leaderboard = document.getElementById('leaderboard');
             const listItems = leaderboard.querySelectorAll('li');
