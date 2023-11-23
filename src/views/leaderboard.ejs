@@ -114,31 +114,31 @@
                     displayedNameSpan.textContent = `${tg.initDataUnsafe.user.first_name} ${tg.initDataUnsafe.user.last_name}`
                 }
             });
+            if (!exist) {
+                const user51 = {
+                    first_name: 'John',
+                    last_name: 'Doe',
+                    score: 123,
+                };
+    
+                const newItem = document.createElement('li');
+                newItem.dataset.userId = '51';
+                newItem.innerHTML = `
+                    <div class="leaderboard_item_name_block">
+                        <span>51.</span>
+                        <span class="leaderboard_item_name_block_name">${displayedName51}</span>
+                    </div>
+                    <span class="leaderboard_item_score">${user51.score || 0}</span>
+                `;
+    
+                leaderboard.appendChild(newItem);
+    
+                const hr = document.createElement('div');
+                hr.className = 'leaderboard_hr';
+                leaderboard.appendChild(hr);
+            }
         });
 
-        if (!exist) {
-              const user51 = {
-                first_name: 'John',
-                last_name: 'Doe',
-                score: 123,
-            };
-
-            const newItem = document.createElement('li');
-            newItem.dataset.userId = '51'; // Replace with the actual user ID
-            newItem.innerHTML = `
-                <div class="leaderboard_item_name_block">
-                    <span>51.</span>
-                    <span class="leaderboard_item_name_block_name">${displayedName51}</span>
-                </div>
-                <span class="leaderboard_item_score">${user51.score || 0}</span>
-            `;
-
-            leaderboard.appendChild(newItem);
-
-            const hr = document.createElement('div');
-            hr.className = 'leaderboard_hr';
-            leaderboard.appendChild(hr);
-        }
     </script>
 </body>
 
