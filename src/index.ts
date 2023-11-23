@@ -85,6 +85,7 @@ class App {
         platform VARCHAR(50) DEFAULT NULL,
         channel VARCHAR(150) DEFAULT NULL,
         creative VARCHAR(150) DEFAULT NULL,  
+        skip_task DATETIME DEFAULT NULL,
         score INT,
         time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )

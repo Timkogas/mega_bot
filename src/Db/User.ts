@@ -16,6 +16,7 @@ export interface IUserDb {
     authorization: number
     activity: EActivity
     final: number
+    skip_task: Date
   }
 
 export enum EActivity {

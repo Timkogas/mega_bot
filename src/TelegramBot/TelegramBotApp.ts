@@ -7,6 +7,7 @@ import { EActivity, EAuthorization, EFinal, IUserDb } from '../Db/User';
 import { ETaskStatus } from '../Db/Task';
 import axios from 'axios';
 
+
 dotenv.config();
 process.env["NTBA_FIX_350"] = '1';
 const webAppLeader = 'https://server.mega.irsapp.ru/leaderboard'
@@ -749,23 +750,57 @@ class TelegramBotApp {
 
     private async _sendMessageOnSkipConfirm(chatId: number, dbUser: IUserDb): Promise<void> {
         try {
-            const taskData = await Helper.getLastPendingTask(dbUser.id)
-            await Helper.confirmLastTask(dbUser.id, ETaskStatus.SKIP, 0)
-            await Helper.getLastPendingTask(dbUser.id)
-            switch (taskData.type) {
-                case EMessages.TASK_1:
-                    return await this._sendMessageOnSubscribe(chatId, dbUser)
-                case EMessages.TASK_2:
-                    return await this._sendMessageOnAuthorization(chatId, dbUser)
-                case EMessages.TASK_3:
-                    return await this._sendMessageOnTaskFour(chatId, dbUser)
-                case EMessages.TASK_4:
-                    return await this._sendMessageOnTaskFive(chatId, dbUser)
-                case EMessages.TASK_5:
-                    return await this._sendMessageOnFinal(chatId, dbUser)
+            const newDbUser = await Helper.getUserById(dbUser.id)
+
+            const lastSkipDate = new Date(newDbUser.skip_task).getTime();
+            const currentDate = new Date().getTime();
+            const twentyFourHours = 24 * 60 * 60 * 1000
+            if (currentDate - lastSkipDate >= twentyFourHours) {
+                await Helper.updateSkipTaskTime(newDbUser.id, new Date())
+                await Helper.confirmLastTask(dbUser.id, ETaskStatus.SKIP, 0)
+                await Helper.getLastPendingTask(dbUser.id)
+                const taskData = await Helper.getLastPendingTask(dbUser.id)
+                switch (taskData.type) {
+                    case EMessages.TASK_1:
+                        return await this._sendMessageOnSubscribe(chatId, dbUser)
+                    case EMessages.TASK_2:
+                        return await this._sendMessageOnAuthorization(chatId, dbUser)
+                    case EMessages.TASK_3:
+                        return await this._sendMessageOnTaskFour(chatId, dbUser)
+                    case EMessages.TASK_4:
+                        return await this._sendMessageOnTaskFive(chatId, dbUser)
+                    case EMessages.TASK_5:
+                        return await this._sendMessageOnFinal(chatId, dbUser)
+                }
+            } else {
+                return await this._sendMessageOnSkipLimit(chatId, dbUser)
             }
         } catch (e) {
             Logger.error('[BOT] sendMessageOnSkipConfirm error', e)
+        }
+    }
+
+    private async _sendMessageOnSkipLimit(chatId: number, dbUser: IUserDb): Promise<void> {
+        try {
+            const taskData = await Helper.getLastPendingTask(dbUser.id)
+
+            const buttons: InlineKeyboardButton[][] = [
+                [{ text: 'Назад', callback_data: taskData.type }],
+            ]
+
+            const text = `Ты можешь пропустить только одно задание в день. Попробуй выполнить это задание или возвращайся завтра, чтобы приступить к следующему 🙌`
+
+            await this.bot.sendMessage(chatId, text, {
+                parse_mode: 'HTML',
+                disable_web_page_preview: true,
+                reply_markup: {
+                    inline_keyboard: buttons,
+                }
+            })
+
+            await Helper.setButtons(dbUser, buttons)
+        } catch (e) {
+            Logger.error('[BOT] _sendMessageOnSkipLimit error', e)
         }
     }
 

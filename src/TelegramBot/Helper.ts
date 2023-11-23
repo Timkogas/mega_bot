@@ -516,6 +516,11 @@ class Helper {
         }
     }
 
+    /**
+     * Проверка на пакет в товарах чека, если он есть возвращает false
+     * @param items - товары
+     * @returns true, если обновление прошло успешно; false в противном случае
+     */
     static hasNoPackage(items: any) {
         for (const item of items) {
             if (item.Name.toLowerCase().includes('пакет')) {
@@ -523,6 +528,30 @@ class Helper {
             }
         }
         return true;
+    }
+
+    /**
+    * Обновление времени skip_task для пользователя в таблице users
+    * @param userId - Идентификатор пользователя
+    * @param skipTime - Новое значение времени skip_task
+    * @returns true, если обновление прошло успешно; false в противном случае
+    */
+    static async updateSkipTaskTime(userId: number, skipTime: Date): Promise<boolean> {
+        try {
+            // Генерируем SQL-запрос на обновление времени skip_task
+            const updateQuery = 'UPDATE users SET skip_task = ? WHERE user_id = ?';
+
+            // Формируем массив значений для запроса
+            const values = [skipTime.toISOString(), userId];
+
+            // Выполняем SQL-запрос
+            await Db.query(updateQuery, values);
+
+            return true;
+        } catch (error) {
+            Logger.error('[Helper] Error updating skip_task time:', error);
+            return false;
+        }
     }
 
 }
