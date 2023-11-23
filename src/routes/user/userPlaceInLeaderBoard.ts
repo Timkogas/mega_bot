@@ -11,13 +11,12 @@ export default class UserPlaceInLeaderBoard {
     private _app: core.Express;
 
     private _init(): void {
-
         this._app.get('/user/place', async (req, res) => {
             this._route(req, res);
         });
     }
 
-    private async _route(req: core.Request<any>, res: core.Response<any>): Promise<any> {
+    private async _route(req: core.Request<any>, res: core.Response<any>): Promise<void> {
         try {
             const { id } = req.body
             Logger.debug('id user', id)
@@ -36,7 +35,7 @@ export default class UserPlaceInLeaderBoard {
                 const userPosition = await Db.query(positionQuery, [id]);
                 Logger.debug('userPosition', userPosition)
                 if (userPosition.length > 0) {
-                    return res.json({
+                    res.json({
                         error: false,
                         error_text: '',
                         data: {
@@ -45,7 +44,7 @@ export default class UserPlaceInLeaderBoard {
                         }
                     });
                 } else {
-                    return res.json({
+                    res.json({
                         error: true,
                         error_text: 'Internal Server Error',
                         data: {}
@@ -54,7 +53,7 @@ export default class UserPlaceInLeaderBoard {
             }
         } catch (error) {
             Logger.error('Error fetching user position:', error);
-            return res.json({
+            res.json({
                 error: true,
                 error_text: 'Internal Server Error',
                 data: {}
