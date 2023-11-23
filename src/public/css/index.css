@@ -22,7 +22,7 @@ html {
 html {
     font-family: 'Noto-IKEA', sans-serif;
     font-weight: 400;
-    font-size: 1.7vw;
+    font-size: min(1.05vh, 1.7vw);
 }
 
 

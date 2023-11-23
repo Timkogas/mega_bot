@@ -8,7 +8,7 @@
 
 .leaderboard_wrapper {
     background-color: #F7F4EF;
-    padding: 3.8em 1.5em 3.8em 4em;
+    padding: 3.2em 1.5em 3.2em 4em;
     width: 85%;
     border-radius: 2.8em;
     height: 70vh;
@@ -19,7 +19,7 @@
 .leaderboard_wrapper::after {
     content: '';
     position: absolute;
-    background-color: #EAE3DA;;
+    background-color: #EAE3DA;
     top: 3em;
     bottom: 3em;
     left: 3em;
@@ -30,33 +30,42 @@
 #leaderboard {
     border-radius: 4.4em;
     height: 100%;
-    overflow-y: scroll;
     position: relative;
-    padding-right: 2.5em;
+    padding-right: 4em;
+    z-index: 2;
 }
 
-#leaderboard::-webkit-scrollbar {
-   width: 1.5em;
-   background-color: #EAE3DA;
-   border-radius: 1em;
-}
-
-#leaderboard::-webkit-scrollbar-track {
-    background: #EAE3DA;
+.simplebar-track.simplebar-vertical {
+	background-color: #EAE3DA;
     border-radius: 1em;
+    width: 1.5em;
 }
 
-#leaderboard::-webkit-scrollbar-thumb {
-    background-color: #474747;
-    z-index: 1;
-    border-radius: 1em;
+.simplebar-scrollbar::before {
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	opacity: 1;
+	background-color: #474747;
+	border-radius: 1em;
 }
+
+.simplebar-track.simplebar-vertical .simplebar-scrollbar::before {
+	top: 0;
+	bottom: 0;
+}
+
+.simplebar-scrollbar.simplebar-visible::before {
+	opacity: 1;
+}
+
 
 .leaderboard_list {
     list-style-type: none;
     overflow: auto;
     position: relative;
-    z-index: 1;
+    z-index: 2;
 
     padding: 2em 2em 2em 2em;
 }

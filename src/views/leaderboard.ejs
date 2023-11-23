@@ -13,71 +13,81 @@
         eruda.init();
     </script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.css" />
+    <script src="https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.min.js"></script>
+    <noscript>
+        <style>
+          .simplebar-content-wrapper {
+            scrollbar-width: auto;
+            -ms-overflow-style: auto;
+          }
+      
+          .simplebar-content-wrapper::-webkit-scrollbar,
+          .simplebar-hide-scrollbar::-webkit-scrollbar {
+            display: initial;
+            width: initial;
+            height: initial;
+          }
+        </style>
+      </noscript>      
 </head>
 
 <body>
-    <img src="/images/logo.svg" alt="logo"  class="logo">
-    <h1 class="title" >Топ-50 путешественников</h1>
+    <img src="/images/logo.svg" alt="logo" class="logo">
+    <h1 class="title">Топ-50 путешественников</h1>
 
     <div class="leaderboard_wrapper">
         <div id="leaderboard">
             <ol class="leaderboard_list">
-                <% topUsers.forEach((user, index) => { %>
+                <% topUsers.forEach((user, index)=> { %>
                     <li data-user-id="<%= user.id %>" class="leaderboard_item">
-                        <% 
-                            function _func(name, last) {
-                                if (!name) {
-                                    return '';
-                                }
-    
-                                let anonymizedName;
-                                if (last) {
-                                    if (name.length >= 9) {
-                                        anonymizedName = '***' +name.slice(-3);
-                                    } else if (name.length >= 5) {
-                                        anonymizedName = '***' +name.slice(-2) ;
-                                    } else if (name.length >= 3) {
-                                        anonymizedName = '***' +name.slice(-1) ;
-                                    } else if (name.length >= 1) {
-                                        anonymizedName = '***' + name[0];
-                                    } else {
-                                        anonymizedName = '';
-                                    }
-                                } else {
-                                    if (name.length >= 9) {
-                                        anonymizedName = name.slice(0, 3) + '***';
-                                    } else if (name.length >= 5) {
-                                        anonymizedName = name.slice(0, 2) + '***';
-                                    } else if (name.length >= 3) {
-                                        anonymizedName = name.slice(0, 1) + '***';
-                                    } else if (name.length >= 1) {
-                                        anonymizedName = name[0] + '***';
-                                    } else {
-                                        anonymizedName = '';
-                                    }
-                                }
-    
-                                return anonymizedName;
+                        <% function _func(name, last) { if (!name) { return '' ; } let anonymizedName; if (last) { if
+                            (name.length>= 9) {
+                            anonymizedName = '***' +name.slice(-3);
+                            } else if (name.length >= 5) {
+                            anonymizedName = '***' +name.slice(-2) ;
+                            } else if (name.length >= 3) {
+                            anonymizedName = '***' +name.slice(-1) ;
+                            } else if (name.length >= 1) {
+                            anonymizedName = '***' + name[0];
+                            } else {
+                            anonymizedName = '';
                             }
-    
+                            } else {
+                            if (name.length >= 9) {
+                            anonymizedName = name.slice(0, 3) + '***';
+                            } else if (name.length >= 5) {
+                            anonymizedName = name.slice(0, 2) + '***';
+                            } else if (name.length >= 3) {
+                            anonymizedName = name.slice(0, 1) + '***';
+                            } else if (name.length >= 1) {
+                            anonymizedName = name[0] + '***';
+                            } else {
+                            anonymizedName = '';
+                            }
+                            }
+
+                            return anonymizedName;
+                            }
+
                             let displayedName = _func(user.first_name) + ' ' + _func(user.last_name, true);
                             if (!displayedName.trim()) displayedName = 'Аноним'
-                        %>
-                        <div class="leaderboard_item_name_block">
-                            <span>
-                                <%= index + 1 + '.' %>
-                            </span>
+                            %>
+                            <div class="leaderboard_item_name_block">
+                                <span>
+                                    <%= index + 1 + '.' %>
+                                </span>
 
-                            <span>
-                                <%= displayedName %>
+                                <span>
+                                    <%= displayedName %>
+                                </span>
+                            </div>
+                            <span class="leaderboard_item_score">
+                                <%= user.score || 0 %>
                             </span>
-                        </div>
-                        <span class="leaderboard_item_score">
-                            <%= user.score || 0 %> 
-                        </span>
                     </li>
                     <div class="leaderboard_hr"></div>
-                <% }); %>
+                    <% }); %>
             </ol>
         </div>
     </div>
@@ -86,16 +96,17 @@
     </button>
 
     <script>
+        new SimpleBar(document.getElementById('leaderboard'), { autoHide: false });
         let tg = window.Telegram.WebApp;
         // const data = tg.initDataUnsafe.user.id;
         const data = 369689336
         document.addEventListener('DOMContentLoaded', () => {
             const leaderboard = document.getElementById('leaderboard');
             const listItems = leaderboard.querySelectorAll('li');
-    
+
             listItems.forEach(item => {
                 const userId = parseInt(item.dataset.userId);
-                
+
                 if (userId === data) {
                     item.style.fontWeight = 'bold';
                 }
