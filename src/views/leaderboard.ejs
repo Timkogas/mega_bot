@@ -78,7 +78,7 @@
                                     <%= index + 1 + '.' %>
                                 </span>
 
-                                <span>
+                                <span class="leaderboard_item_name_block_name">
                                     <%= displayedName %>
                                 </span>
                             </div>
@@ -109,6 +109,9 @@
 
                 if (userId === data) {
                     item.style.fontWeight = 'bold';
+
+                    const displayedNameSpan = item.querySelector('.leaderboard_item_name_block_name');
+                    displayedNameSpan.textContent = `${tg.initDataUnsafe.user.first_name} ${tg.initDataUnsafe.user.last_name}`
                 }
             });
         });
