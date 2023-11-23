@@ -279,7 +279,7 @@ class TelegramBotApp {
 
     private async _sendMessageOnStart(chatId: number, dbUser: IUserDb, short?: boolean): Promise<void> {
         try {
-            const videoPath = path.join(__dirname, '../assets/videos/video1.mp4')
+            const videoPath = path.join(__dirname, '../assets/videos/1.mp4')
 
             const buttons: InlineKeyboardButton[][] = [
                 [{ text: 'Я согласен(на)', callback_data: EMessages.MENU }],
