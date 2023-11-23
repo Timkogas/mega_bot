@@ -4,6 +4,7 @@ import EjsLeaderboardRoute from './ejs/ejsLeaderboard';
 import EjsAdminStats from './ejs/ejsAdminStats';
 import UserWebAppCount from './user/userWebAppCount';
 import ScanCheck from './scan/scanCheck';
+import UserPlaceInLeaderBoard from './user/userPlaceInLeaderBoard';
 
 
 class Routes {
@@ -29,6 +30,7 @@ class Routes {
 
   private _userRoutes(): void {
     new UserWebAppCount(this._app)
+    new UserPlaceInLeaderBoard(this._app)
   }
 
   private _scanRoutes(): void {

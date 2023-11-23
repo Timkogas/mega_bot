@@ -16,7 +16,7 @@
     <!-- Документация -->
     <!-- https://scanapp.org/html5-qrcode-docs/docs/intro -->
     <script>
-        fetch('http://localhost:4000/user/webAppCount', {
+        fetch('https://server.mega.irsapp.ru/user/webAppCount', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -35,7 +35,7 @@
             console.log(decodedResult)
             console.log(decodedText);
 
-            fetch('http://localhost:4000/scan/check', {
+            fetch('https://server.mega.irsapp.ru/scan/check', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

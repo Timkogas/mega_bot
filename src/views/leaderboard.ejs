@@ -98,8 +98,8 @@
     <script>
         new SimpleBar(document.getElementById('leaderboard'), { autoHide: false });
         let tg = window.Telegram.WebApp;
-        const data = tg.initDataUnsafe.user.id;
-        const exist = false
+        const userIdTg = tg.initDataUnsafe.user.id;
+        let exist = false
         document.addEventListener('DOMContentLoaded', () => {
             const leaderboard = document.getElementById('leaderboard');
             const listItems = leaderboard.querySelectorAll('li');
@@ -107,30 +107,52 @@
             listItems.forEach(item => {
                 const userId = parseInt(item.dataset.userId);
 
-                if (userId === data) {
+                if (userId === userIdTg) {
                     item.style.fontWeight = 'bold';
+                    exist = true
 
                     const displayedNameSpan = item.querySelector('.leaderboard_item_name_block_name');
                     displayedNameSpan.textContent = `${tg.initDataUnsafe.user.first_name} ${tg.initDataUnsafe.user.last_name}`
                 }
             });
+
             if (!exist) {
+                let position
+                let score
+                fetch('https://server.mega.irsapp.ru/user/place', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ id: userIdTg }),
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(data)
+                        position = data.position
+                        score = data.score
+                    })
+                    .catch((error) => {console.log(error, 'error')});
+
                 const list = document.querySelector('.leaderboard_list')
-                const user51 = {
-                    first_name: 'John',
-                    last_name: 'Doe',
-                    score: 123,
+                const newUser = {
+                    first_name: tg.initDataUnsafe.user.first_name,
+                    last_name: tg.initDataUnsafe.user.last_name,
+                    position: position,
+                    score: score
                 };
+
 
                 const newItem = document.createElement('li');
                 newItem.className = 'leaderboard_item';
-                newItem.dataset.userId = '51';
+                newItem.style.fontWeight = 'bold';
+                newItem.dataset.userId = userIdTg;
                 newItem.innerHTML = `
                     <div class="leaderboard_item_name_block">
-                        <span>51.</span>
-                        <span class="leaderboard_item_name_block_name">${user51.first_name + ' ' + user51.last_name}</span>
+                        <span>${newUser.position}</span>
+                        <span class="leaderboard_item_name_block_name">${newUser.first_name + ' ' + newUser.last_name}</span>
                     </div>
-                    <span class="leaderboard_item_score">${user51.score || 0}</span>
+                    <span class="leaderboard_item_score">${newUser.score || 0}</span>
                 `;
 
                 list.appendChild(newItem);
