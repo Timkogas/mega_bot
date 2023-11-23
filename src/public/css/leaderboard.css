@@ -79,6 +79,8 @@
 
 .leaderboard_item_name_block {
     display: flex;
+    white-space: nowrap;
+    text-overflow: ellipsis;
     gap: 0.4em
 }
 
