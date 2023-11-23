@@ -525,6 +525,15 @@ class TelegramBotApp {
                     text = `<b>Код принят.</b> Спасибо за твой вклад в заботу о планете и людях! ☘️\n\nНа твой игровой счет начислено <b>10 баллов</b>. Поздравляем! Играем дальше?`
                     videoPath = path.join(__dirname, '../assets/videos/video1.mp4')
                     await Helper.addPointsToUser(dbUser, 10)
+
+                    await this.bot.sendVideoNote(chatId, videoPath)
+                    await this.bot.sendMessage(chatId, text, {
+                        parse_mode: 'HTML',
+                        reply_markup: {
+                            inline_keyboard: buttons,
+                        }
+                    })
+
                     break;
                 case EMessages.TASK_2:
                     points = 10
@@ -536,6 +545,15 @@ class TelegramBotApp {
                     text = `<b>Код принят.</b> Надеемся, тебе понравился наш мастер-класс! 😍\n\nНа твой игровой счет начислено <b>10 баллов</b>.\nПоздравляем! Играем дальше?`
                     videoPath = path.join(__dirname, '../assets/videos/video1.mp4')
                     await Helper.addPointsToUser(dbUser, 10)
+
+                    await this.bot.sendVideoNote(chatId, videoPath)
+                    await this.bot.sendMessage(chatId, text, {
+                        parse_mode: 'HTML',
+                        reply_markup: {
+                            inline_keyboard: buttons,
+                        }
+                    })
+
                     break;
                 case EMessages.TASK_3:
                     points = 10
@@ -549,6 +567,15 @@ class TelegramBotApp {
                     videoPath = path.join(__dirname, '../assets/videos/video1.mp4')
                     await Helper.confirmLastTask(dbUser.id, ETaskStatus.COMPLETE, points)
                     await Helper.addPointsToUser(dbUser, points)
+
+                    await this.bot.sendVideoNote(chatId, videoPath)
+                    await this.bot.sendMessage(chatId, text, {
+                        parse_mode: 'HTML',
+                        reply_markup: {
+                            inline_keyboard: buttons,
+                        }
+                    })
+
                     break;
                 case EMessages.TASK_4:
                     buttons = [
@@ -559,6 +586,15 @@ class TelegramBotApp {
                     videoPath = path.join(__dirname, '../assets/videos/video1.mp4')
                     await Helper.confirmLastTask(dbUser.id, ETaskStatus.COMPLETE, scanPoints)
                     await Helper.addPointsToUser(dbUser, scanPoints)
+
+                    await this.bot.sendVideoNote(chatId, videoPath)
+                    await this.bot.sendMessage(chatId, text, {
+                        parse_mode: 'HTML',
+                        reply_markup: {
+                            inline_keyboard: buttons,
+                        }
+                    })
+
                     break;
                 case EMessages.TASK_5:
                     buttons = [
@@ -572,17 +608,16 @@ class TelegramBotApp {
                     text = `<b>Чек принят.</b> Как тебе покупки с шоппером? Скажи, правда приятно? 🌳\n\nНа твой игровой счет начислено ${scanPoints} баллов.\n\nПоздравляем!`
                     videoPath = path.join(__dirname, '../assets/videos/video1.mp4')
                     await Helper.addPointsToUser(dbUser, scanPoints, true)
+
+                    await this.bot.sendMessage(chatId, text, {
+                        parse_mode: 'HTML',
+                        reply_markup: {
+                            inline_keyboard: buttons,
+                        }
+                    })
+
                     break;
             }
-
-
-            await this.bot.sendVideoNote(chatId, videoPath)
-            await this.bot.sendMessage(chatId, text, {
-                parse_mode: 'HTML',
-                reply_markup: {
-                    inline_keyboard: buttons,
-                }
-            })
 
             await Helper.setButtons(dbUser, buttons)
         } catch (e) {
@@ -748,6 +783,7 @@ class TelegramBotApp {
 
             await this.bot.sendMessage(chatId, text, {
                 parse_mode: 'HTML',
+                disable_web_page_preview: true,
                 reply_markup: {
                     inline_keyboard: buttons,
                 }
@@ -925,7 +961,7 @@ class TelegramBotApp {
                 [{ text: 'Назад', callback_data: EMessages.MENU }],
             ]
 
-            const text = `<b>Задание #2. МЕГА Место</b>\n\nАпсайклинг, кастомизация одежды совместно с художником и многое другое ждет тебя в МЕГА Месте!\n\n<b>Записывайся на мастер-классы по ссылке или в МЕГЕ, прими участие хотя бы в одном</b> и получи уникальный код от куратора, чтобы заработать баллы.\n\nРасписание мастер-классов и запись: <a href="https://megamesto.ru/">https://megamesto.ru/</a>\n\nДоверься МЕГЕ! 👐`
+            const text = `<b>Задание #2. МЕГА Место</b>\n\nАпсайклинг, кастомизация одежды совместно с художником и многое другое ждет тебя в МЕГА Месте!\n\nВыбирай лекции и мастер-классы, прими участие хотя бы в одном и получи уникальный код от куратора, чтобы заработать баллы.\n\nРасписание мастер-классов и запись: <a href="https://mega.ru/events/2023/35992/ekaterinburg/">https://mega.ru/events/2023/35992/ekaterinburg/</a>\n\nДоверься МЕГЕ! 👐`
 
             await this.bot.sendVideoNote(chatId, videoPath)
             await this.bot.sendMessage(chatId, text, {
@@ -1242,15 +1278,13 @@ class TelegramBotApp {
 
             const buttons: InlineKeyboardButton[][] = [
                 [{ text: 'Загрузить чек', web_app: { url: webAppScan } }],
-                [{ text: 'Загрузить чек (success)', callback_data: EMessages.TASK_CORRECT }],
-                [{ text: 'Загрузить чек (failed)', callback_data: EMessages.SCAN_INCORRECT }],
                 [{ text: 'Где найти шопперы?', callback_data: EMessages.WHERE_SHOPPERS }],
                 [{ text: 'Какие магазины участвуют?', callback_data: EMessages.SHOPS }],
                 [{ text: 'Пропустить задание', callback_data: EMessages.SKIP_TASK }],
                 [{ text: 'Назад', callback_data: EMessages.MENU }],
             ]
 
-            const text = `<b>Задание #5. Сходите в магазин с шоппером и загрузите чек на N рублей без позиции «пакет»</b>\n\n🛍️ Собрался(ась) за покупками? Мы помогаем сделать шаг навстречу экологичному образу жизни <b>— получи от МЕГИ в подарок шоппер на столе информации, посети любой магазин и загрузи чек без пакета, чтобы получить баллы.</b>\n\nЕсли ты действительно хочешь вносить свой йвклад в экологию и приобщиться к осознанному потреблению, то использование качественного шоппера вместо пакета из пластика — это хорошее начало! ⚡`
+            const text = `<b>Задание #5. Сходите в магазин с шоппером и загрузите чек на N рублей без позиции «пакет»</b>\n\n🛍️ Собрался(ась) за покупками? Мы помогаем сделать шаг навстречу экологичному образу жизни — получи от МЕГИ в подарок шоппер на столе информации, посети любой магазин и загрузи чек без пакета, чтобы получить баллы.\n\nЕсли ты действительно хочешь вносить свой йвклад в экологию и приобщиться к осознанному потреблению, то использование качественного шоппера вместо пакета из пластика — это хорошее начало! ⚡\n\nP.S.: Чеки из магазинов можно сканировать неограниченное раз. Как только отсканируешь все-все чеки, жми на кнопку «Завершить задание»`
 
             await this.bot.sendVideoNote(chatId, videoPath)
             await this.bot.sendMessage(chatId, text, {
@@ -1273,7 +1307,6 @@ class TelegramBotApp {
 
             const buttons: InlineKeyboardButton[][] = [
                 [{ text: 'Загрузить чек', web_app: { url: webAppScan } }],
-                [{ text: 'Какие магазины участвуют?', callback_data: EMessages.SHOPS }],
                 [{ text: 'Пропустить задание', callback_data: EMessages.SKIP_TASK }],
                 [{ text: 'Назад', callback_data: EMessages.MENU }],
             ]
@@ -1345,6 +1378,7 @@ class TelegramBotApp {
                     inline_keyboard: buttons,
                 }
             })
+            await this.bot.sendVideoNote(chatId, videoPath)
 
             await Helper.setButtons(dbUser, buttons)
 
