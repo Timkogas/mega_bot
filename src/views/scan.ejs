@@ -5,42 +5,99 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QR</title>
+    <link href="/css/fonts.css" rel="stylesheet">
+    <link href="/css/index.css" rel="stylesheet">
+    <link href="/css/scan.css" rel="stylesheet">
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     <script src="//cdn.jsdelivr.net/npm/eruda"></script>
     <script>eruda.init();</script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 
-<body style="color:var(--tg-theme-text-color); font-family: Arial, sans-serif;">
-    <div id="reader" width="600px"></div>
+<body>
+    <div class="container_start">
+        <img src="/images/logo.svg" alt="logo" class="logo">
+        <div class="promo">
+            <div class="promo_content">
+                <img src="/images/stork.svg" class="promo_content_img">
+                <h1 class="title promo_content_title">Сканируй чек <br> из «Аистёнка» <br> и получай <br> баллы</h1>
+            </div>
+        </div>
+        <button id="scanButton" class="button button_background button_yellow first_btn">
+            Сканировать
+        </button>
+        <button class="button button_background second_btn">
+            Ввести вручную
+        </button>
+        <button class="button exit">
+            Выйти
+        </button>
+    </div>
+
+    <div class="container_scan">
+        <div class="scan_info">Наведи камеру смартфона<br>на QR-код чека</div>
+        <div id="reader" width="600px" hight="600px"></div>
+        <div id="send_qr" class="button button_background button_yellow scan_button">Сканировать</div>
+        <div class="overlay"></div>
+    </div>
+
     <!-- Документация -->
     <!-- https://scanapp.org/html5-qrcode-docs/docs/intro -->
     <script>
-        fetch('https://server.mega.irsapp.ru/user/webAppCount', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ id: window.Telegram.WebApp.initDataUnsafe.user.id }),
-        })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Success:', data);
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-            });
+        // fetch('https://server.mega.irsapp.ru/user/webAppCount', {
+        //     method: 'POST',
+        //     headers: {
+        //         'Content-Type': 'application/json',
+        //     },
+        //     body: JSON.stringify({ id: window.Telegram.WebApp.initDataUnsafe.user.id }),
+        // })
+        //     .then(response => response.json())
+        //     .then(data => {
+        //         console.log('Success:', data);
+        //     })
+        //     .catch((error) => {
+        //         console.error('Error:', error);
+        //     });
+
+        let qrData = null
 
         function onScanSuccess(decodedText, decodedResult) {
             console.log(decodedResult)
             console.log(decodedText);
+            qrData = decodedText
+        }
 
-            fetch('https://server.mega.irsapp.ru/scan/check', {
+        function onScanFailure(error) {}
+
+        let qrboxFunction = function (viewfinderWidth, viewfinderHeight) {
+            let minEdgePercentage = 0.99;
+            let minEdgeSize = Math.min(viewfinderWidth, viewfinderHeight);
+            let qrboxSize = Math.floor(minEdgeSize * minEdgePercentage);
+            return {
+                width: qrboxSize,
+                height: qrboxSize
+            };
+        }
+
+        const html5Qrcode = new Html5Qrcode("reader", false);
+
+        document.getElementById('scanButton').addEventListener('click', function () {
+            const config = { fps: 10, qrbox: qrboxFunction };
+            document.querySelector('.container_start').style.display = 'none';
+            document.querySelector('.container_scan').style.display = 'flex';
+
+
+            html5Qrcode.start({ facingMode: "user" }, config, onScanSuccess, onScanFailure)
+        });
+
+        document.getElementById('send_qr').addEventListener('click', function () {
+            //https://server.mega.irsapp.ru/scan/check
+            fetch('http://localhost:4000/scan/check', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ id: window.Telegram.WebApp.initDataUnsafe.user.id, qr: decodedText }),
+                body: JSON.stringify({ id: 369689336, qr: qrData }),
             })
                 .then(response => response.json())
                 .then(data => {
@@ -49,21 +106,10 @@
                 .catch((error) => {
                     console.error('Error:', error);
                 });
+        });
 
-        }
 
-        function onScanFailure(error) {
 
-        }
-
-        const html5QrcodeScanner = new Html5QrcodeScanner("reader", {
-            fps: 10,
-            qrbox: {
-                width: 250,
-                height: 250
-            }
-        }, false);
-        html5QrcodeScanner.render(onScanSuccess, onScanFailure);
     </script>
 </body>
 

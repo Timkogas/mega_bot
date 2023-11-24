@@ -1,0 +1,179 @@
+.container_start {
+    width: 85%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100vh;
+}
+
+.promo {
+    margin-top: 3em;
+    margin-bottom: 2.5em;
+    height: 58vh;
+    width: 100%;
+    border-radius: 10em;
+    background-color: #C0D9CA;
+
+    background-image: url('../images/bg-big-green.png');
+    background-size: contain;
+    background-position: 40%;
+    background-repeat: repeat-x;
+
+    position: relative;
+}
+
+.promo_content {
+    top: 0;
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 3.2em;
+    height: 100%;
+    width: 100%;
+}
+
+.promo_content_img {
+    width: 25em;
+}
+
+.promo_content_title {
+    color: #05676A;
+    font-size: 5.1em;
+}
+
+.first_btn {
+    margin-bottom: 1em;
+}
+
+.second_btn {
+    margin-bottom: 1.5em;
+}
+
+
+
+/* scan */
+
+#reader {
+    position: absolute !important;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white !important;
+
+    width: 100%;
+    max-width: 70em;
+}
+
+#reader::after {
+    content: '';
+    display: block;
+    position: absolute;
+    background-color: white;
+    z-index: 2;
+    width: 100%;
+    height: 3px;
+    right: 0;
+    top: -1px;
+}
+
+#reader::before {
+    content: '';
+    display: block;
+    position: absolute;
+    background-color: white;
+    z-index: 2;
+    width: 100%;
+    height: 3px;
+    right: 0;
+    bottom:-1px;
+}
+
+video, canvas {
+    display: block;
+    top: -2px !important;
+
+    border: none !important;
+    outline: none !important;
+}
+
+#qr-shaded-region {
+    border-color: white !important;
+}
+
+.overlay {
+    z-index: 0;
+    background: #00000080;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.container_scan{
+    display: none;
+    width: 85%;
+    margin: 0 auto;
+    flex-direction: column;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.container_scan::after{
+    content: '';
+    display: block;
+    position: absolute;
+    background-color: white;
+    z-index: 2;
+    width: 1px;
+    height: 100%;
+    right: 0;
+    top:0;
+}
+
+.container_scan::before{
+    content: '';
+    display: block;
+    position: absolute;
+    background-color: white;
+    z-index: 2;
+    width: 1px;
+    height: 100%;
+    left: 0;
+    top:0;
+}
+
+.scan_info {
+    z-index: 1;
+
+    background-color: white;
+    width: 70%;
+    font-size: 2.5em;
+    line-height: 1em;
+    font-weight: 700;
+    border-radius: 1em;
+    padding: 0.8em 0.8em;
+    text-align: center;
+
+    position: absolute;
+    top: 50%;
+    transform: translateY(-380%);
+
+
+}
+
+.scan_button {
+
+    position: absolute;
+    top: 50%;
+    transform: translateY(310%);
+    width: 85%;
+
+    z-index: 1;
+    text-align: center;
+}
