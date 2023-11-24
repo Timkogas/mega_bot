@@ -87,7 +87,7 @@
             document.querySelector('.container_scan').style.display = 'flex';
 
 
-            html5Qrcode.start({ facingMode: "user" }, config, onScanSuccess, onScanFailure)
+            html5Qrcode.start({ facingMode: "environment" }, config, onScanSuccess, onScanFailure)
         });
 
         document.getElementById('send_qr').addEventListener('click', function () {
