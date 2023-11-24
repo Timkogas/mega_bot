@@ -64,7 +64,7 @@
     transform: translate(-50%, -50%);
     background-color: white !important;
 
-    width: 80%;
+    width: 90%;
     max-width: 70em;
 }
 
@@ -100,6 +100,7 @@ video, canvas {
 
 #qr-shaded-region {
     border-color: white !important;
+    width: 102% !important;
 }
 
 .overlay {
@@ -171,4 +172,11 @@ video, canvas {
 
     z-index: 1;
     text-align: center;
+}
+
+
+/* loading overlay */
+
+.container_loading_overlay {
+    display: none;
 }
