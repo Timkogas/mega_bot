@@ -381,3 +381,7 @@ canvas {
 .container_write_content_block_input_wrapper:last-child {
     margin-bottom: 0;
 }
+
+.back {
+    margin-bottom: 4em;
+}
