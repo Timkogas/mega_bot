@@ -1,6 +1,7 @@
 import * as core from 'express-serve-static-core';
 import Logger from '../../Logger/Logger';
 import Helper from '../../TelegramBot/Helper';
+import { EMessages } from '../../TelegramBot/TelegramBotApp';
 
 export default class UserWebAppCount {
   constructor(app: core.Express) {
@@ -22,12 +23,39 @@ export default class UserWebAppCount {
       await Helper.incrementWebApp()
       if (id) {
         await Helper.updateWebappStatus(id)
+        const lastTask = await Helper.getLastPendingTask(id)
+
+        if (lastTask.type === EMessages.TASK_4) {
+          res.json({
+            error: false,
+            error_text: '',
+            data: {
+              type: 4
+            }
+          })
+          return
+        }
+
+        if (lastTask.type === EMessages.TASK_5) {
+          res.json({
+            error: false,
+            error_text: '',
+            data: {
+              type: 5
+            }
+          })
+          return
+        }
+
+        res.json({
+          error: false,
+          error_text: '',
+          data: {
+            type: 5
+          }
+        })
       }
-      res.json({
-        error: false,
-        error_text: '',
-        data: {}
-      })
+
     } catch (error) {
       Logger.error('Error processing user check', error);
       res.json({

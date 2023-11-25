@@ -10,12 +10,12 @@
     <link href="/css/scan.css" rel="stylesheet">
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     <script src="//cdn.jsdelivr.net/npm/eruda"></script>
-    <script>eruda.init();</script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="/inputmask.js"></script>
 </head>
 
 <body>
-    <div class="container_start">
+    <div class="container_start_4 hidden">
         <img src="/images/logo.svg" alt="logo" class="logo">
         <div class="promo">
             <div class="promo_content">
@@ -23,10 +23,10 @@
                 <h1 class="title promo_content_title">Сканируй чек <br> из «Аистёнка» <br> и получай <br> баллы</h1>
             </div>
         </div>
-        <button id="scanButton" class="button button_background button_yellow first_btn">
+        <button id="scanButton4" class="button button_background button_yellow first_btn button_to_scan">
             Сканировать
         </button>
-        <button class="button button_background second_btn">
+        <button class="button button_background second_btn button_to_write">
             Ввести вручную
         </button>
         <button class="button exit">
@@ -34,7 +34,26 @@
         </button>
     </div>
 
-    <div class="container_scan">
+    <div class="container_start_5 hidden">
+        <img src="/images/logo.svg" alt="logo" class="logo">
+        <div class="promo">
+            <div class="promo_content">
+                <h1 class="title promo_content_title">Сканируй чеки<br>из МЕГИ<br>без пакета<br>и зарабатывай<br>баллы
+                </h1>
+            </div>
+        </div>
+        <button id="scanButton5" class="button button_background button_yellow first_btn button_to_scan">
+            Сканировать
+        </button>
+        <button class="button button_background second_btn button_to_write">
+            Ввести вручную
+        </button>
+        <button class="button exit">
+            Выйти
+        </button>
+    </div>
+
+    <div class="container_scan hidden">
         <img src="/images/logo.svg" alt="logo" class="logo">
         <div class="scan_info">Наведи камеру смартфона<br>на QR-код чека</div>
         <div id="reader" width="600px" hight="600px"></div>
@@ -42,33 +61,452 @@
         <div class="overlay"></div>
     </div>
 
-    <div class="container_loading_overlay">
+    <div class="container_loading_overlay hidden">
         <img src="/images/logo.svg" alt="logo" class="logo">
-        <div class="scan_info">Наведи камеру смартфона<br>на QR-код чека</div>
-        <div id="reader" width="600px" hight="600px"></div>
-        <div id="send_qr" class="button button_background button_yellow scan_button">Сканировать</div>
+        <div class="loading_content">
+            <img class="loading_content_img" src="/images/loading-white.svg">
+            <p class="loading_content_text">Проверяем, всё ли в порядке.<br>Подожди несколько секунд...</p>
+        </div>
         <div class="overlay"></div>
+    </div>
+
+    <div class="container_loading hidden">
+        <img src="/images/logo.svg" alt="logo" class="logo">
+        <div class="loading_content">
+            <img class="loading_content_img" src="/images/loading-grey.svg">
+            <p class="loading_content_text grey">Проверяем, всё ли в порядке.<br>Подожди несколько секунд...</p>
+        </div>
+    </div>
+
+    <div class="container_result container_error_scan hidden">
+        <img src="/images/logo.svg" alt="logo" class="logo">
+        <div class="container_result_content">
+            <div class="container_result_content_block">
+                <div class="container_result_content_block_status status_error">
+                    <h1 class="container_result_content_block_status_title">
+                        Что-то пошло не так
+                    </h1>
+                </div>
+
+                <h2 class="container_result_content_block_status_subtitle">
+                    Произошел технический сбой
+                </h2>
+
+                <p class="container_result_content_block_status_text">Попробуй отсканировать ещё раз<br>или вернись
+                    позднее</p>
+            </div>
+
+            <div class="container_result_content_block_btns">
+                <button class="button button_background button_yellow button_to_scan">Сканировать ещё раз</button>
+                <button class="button button_background button_to_write">Ввести данные чека вручную</button>
+                <button class="button exit">Выйти</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container_result container_error_internet_scan hidden">
+        <img src="/images/logo.svg" alt="logo" class="logo">
+        <div class="container_result_content">
+            <div class="container_result_content_block">
+                <div class="container_result_content_block_status status_error">
+                    <h1 class="container_result_content_block_status_title">
+                        Что-то пошло не так
+                    </h1>
+                </div>
+
+                <h2 class="container_result_content_block_status_subtitle">
+                    Отсутствует подключение<br>к интернету
+                </h2>
+
+                <p class="container_result_content_block_status_text">Проверь статус соединения<br>и попробуй ещё раз
+                </p>
+            </div>
+
+            <div class="container_result_content_block_btns">
+                <button class="button button_background button_yellow button_to_scan">Сканировать ещё раз</button>
+                <button class="button button_background button_to_write">Ввести данные чека вручную</button>
+                <button class="button exit">Выйти</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container_result container_not_confirm_scan hidden">
+        <img src="/images/logo.svg" alt="logo" class="logo">
+        <div class="container_result_content">
+            <div class="container_result_content_block">
+                <div class="container_result_content_block_status status_not_confirm">
+                    <h1 class="container_result_content_block_status_title">
+                        Чек не принят
+                    </h1>
+                </div>
+
+                <p class="container_result_content_block_status_text">Возможно, чек уже был использован,<br>либо
+                    магазин, в котором была<br>совершена покупка, не участвует<br>в акции.</p>
+            </div>
+
+            <div class="container_result_content_block_btns">
+                <button class="button button_background button_yellow button_to_scan">Сканировать другой чек</button>
+                <button class="button button_background button_to_write">Ввести данные чека вручную</button>
+                <button class="button exit">Выйти</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container_result container_confirm_scan_4 hidden">
+        <img src="/images/logo.svg" alt="logo" class="logo">
+        <div class="container_result_content">
+            <div class="container_result_content_block">
+                <div class="container_result_content_block_status status_confirm">
+                    <h1 class="container_result_content_block_status_title">
+                        Чек принят!
+                    </h1>
+                </div>
+
+                <h2 class="container_result_content_block_status_subtitle" id="text_points_4">
+                    Тебе начислено 1000 баллов
+                </h2>
+
+                <p class="container_result_content_block_status_text">Поздравляем! Продолжай<br>в том же духе, и
+                    эко-путешествие<br>по Уралу не за горами!</p>
+            </div>
+
+            <div class="container_result_content_block_btns">
+                <button class="button exit">Выйти</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container_result container_confirm_scan_5 hidden">
+        <img src="/images/logo.svg" alt="logo" class="logo">
+        <div class="container_result_content">
+            <div class="container_result_content_block">
+                <div class="container_result_content_block_status status_confirm">
+                    <h1 class="container_result_content_block_status_title">
+                        Чек принят!
+                    </h1>
+                </div>
+
+                <h2 class="container_result_content_block_status_subtitle" id="text_points_5">
+                    Тебе начислено 1000 баллов
+                </h2>
+
+                <p class="container_result_content_block_status_text">Поздравляем! Продолжай<br>в том же духе, и
+                    эко-путешествие<br>по Уралу не за горами!</p>
+            </div>
+
+            <div class="container_result_content_block_btns">
+                <button class="button button_background button_yellow button_to_scan">Сканировать другой чек</button>
+                <button class="button button_background button_to_write">Ввести данные чека вручную</button>
+                <button class="button exit">Выйти</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container_result container_confirm_write_4 hidden">
+        <img src="/images/logo.svg" alt="logo" class="logo">
+        <div class="container_result_content">
+            <div class="container_result_content_block">
+                <div class="container_result_content_block_status status_confirm">
+                    <h1 class="container_result_content_block_status_title">
+                        Чек принят!
+                    </h1>
+                </div>
+
+                <h2 class="container_result_content_block_status_subtitle" id="text_points_4_write">
+                    Тебе начислено 1000 баллов
+                </h2>
+
+                <p class="container_result_content_block_status_text">Поздравляем! Продолжай<br>в том же духе, и
+                    эко-путешествие<br>по Уралу не за горами!</p>
+            </div>
+
+            <div class="container_result_content_block_btns">
+                <button class="button exit">Выйти</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container_result container_confirm_write_5 hidden">
+        <img src="/images/logo.svg" alt="logo" class="logo">
+        <div class="container_result_content">
+            <div class="container_result_content_block">
+                <div class="container_result_content_block_status status_confirm">
+                    <h1 class="container_result_content_block_status_title">
+                        Чек принят!
+                    </h1>
+                </div>
+
+                <h2 class="container_result_content_block_status_subtitle" id="text_points_5_write">
+                    Тебе начислено 1000 баллов
+                </h2>
+
+                <p class="container_result_content_block_status_text">Поздравляем! Продолжай<br>в том же духе, и
+                    эко-путешествие<br>по Уралу не за горами!</p>
+            </div>
+
+            <div class="container_result_content_block_btns">
+                <button class="button button_background button_yellow button_to_write">Зарегистрировать ещё один
+                    чек</button>
+                <button class="button button_background button_to_scan">Сканировать QR-код на чеке</button>
+                <button class="button exit">Выйти</button>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="container_result container_error_write hidden">
+        <img src="/images/logo.svg" alt="logo" class="logo">
+        <div class="container_result_content">
+            <div class="container_result_content_block">
+                <div class="container_result_content_block_status status_error">
+                    <h1 class="container_result_content_block_status_title">
+                        Что-то пошло не так
+                    </h1>
+                </div>
+
+                <h2 class="container_result_content_block_status_subtitle">
+                    Произошел технический сбой
+                </h2>
+
+                <p class="container_result_content_block_status_text">Попробуй ввести данные чека ещё раз<br>или вернись
+                    позднее</p>
+            </div>
+
+            <div class="container_result_content_block_btns">
+                <button class="button button_background button_yellow button_to_write">Ввести ещё раз</button>
+                <button class="button button_background button_to_scan">Сканировать QR-код на чеке</button>
+                <button class="button exit">Выйти</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container_result container_error_internet_write hidden">
+        <img src="/images/logo.svg" alt="logo" class="logo">
+        <div class="container_result_content">
+            <div class="container_result_content_block">
+                <div class="container_result_content_block_status status_error">
+                    <h1 class="container_result_content_block_status_title">
+                        Что-то пошло не так
+                    </h1>
+                </div>
+
+                <h2 class="container_result_content_block_status_subtitle">
+                    Отсутствует подключение<br>к интернету
+                </h2>
+
+                <p class="container_result_content_block_status_text">Проверь статус соединения<br>и попробуй ещё раз
+                </p>
+            </div>
+
+            <div class="container_result_content_block_btns">
+                <button class="button button_background button_yellow button_to_write">Ввести ещё раз</button>
+                <button class="button button_background button_to_scan">Сканировать QR-код на чеке</button>
+                <button class="button exit">Выйти</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container_result container_not_confirm_write hidden">
+        <img src="/images/logo.svg" alt="logo" class="logo">
+        <div class="container_result_content">
+            <div class="container_result_content_block">
+                <div class="container_result_content_block_status status_not_confirm">
+                    <h1 class="container_result_content_block_status_title">
+                        Чек не принят
+                    </h1>
+                </div>
+
+                <p class="container_result_content_block_status_text">Возможно, чек уже был использован,<br>либо
+                    магазин, в котором была<br>совершена покупка, не участвует<br>в акции.</p>
+            </div>
+
+            <div class="container_result_content_block_btns">
+                <button class="button button_background button_yellow button_to_write">Ввести ещё раз</button>
+                <button class="button button_background button_to_scan">Сканировать QR-код на чеке</button>
+                <button class="button exit">Выйти</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container_write hidden">
+        <img src="/images/logo.svg" alt="logo" class="logo">
+        <div class="container_write_content">
+            <h2 class="title container_write_content_title">Введи данные из чека</h2>
+            <div class="container_write_content_block">
+                <div class="container_write_content_block_input_wrapper">
+                    <p class="container_write_content_block_input_label">ФН</p>
+                    <input class="container_write_content_block_input" id="fn-check">
+                </div>
+                <div class="container_write_content_block_input_wrapper">
+                    <p class="container_write_content_block_input_label">ФД</p>
+                    <input class="container_write_content_block_input" id="fd-check">
+                </div>
+                <div class="container_write_content_block_input_wrapper">
+                    <p class="container_write_content_block_input_label">ФДП или ФП</p>
+                    <input class="container_write_content_block_input" id="fp-check">
+                </div>
+                <div class="container_write_content_block_input_wrapper">
+                    <p class="container_write_content_block_input_label">Дата покупки</p>
+                    <input class="container_write_content_block_input" id="date-check">
+                </div>
+                <div class="container_write_content_block_input_wrapper">
+                    <p class="container_write_content_block_input_label">Время покупки</p>
+                    <input class="container_write_content_block_input" id="time-check">
+                </div>
+                <div class="container_write_content_block_input_wrapper">
+                    <p class="container_write_content_block_input_label">Сумма чека</p>
+                    <input class="container_write_content_block_input" id="sum-check">
+                </div>
+            </div>
+        </div>
+        <div class="container_result_content_block_btns">
+            <button id='send_write' class="button button_background button_yellow button_to_write">Зарегистрировать
+                чек</button>
+            <button class="button button_background button_to_scan">Сканировать QR-код на чеке</button>
+            <button id='back' class="button exit">Назад</button>
+        </div>
     </div>
 
     <!-- Документация -->
     <!-- https://scanapp.org/html5-qrcode-docs/docs/intro -->
     <script>
-        // fetch('https://server.mega.irsapp.ru/user/webAppCount', {
-        //     method: 'POST',
-        //     headers: {
-        //         'Content-Type': 'application/json',
-        //     },
-        //     body: JSON.stringify({ id: window.Telegram.WebApp.initDataUnsafe.user.id }),
-        // })
-        //     .then(response => response.json())
-        //     .then(data => {
-        //         console.log('Success:', data);
-        //     })
-        //     .catch((error) => {
-        //         console.error('Error:', error);
-        //     });
+        const DateSelector = document.getElementById("date-check");
+        const TimeSelector = document.getElementById("time-check");
+        const SumSelector = document.getElementById("sum-check");
 
+        const DateIm = new Inputmask({
+            alias: "datetime",
+            inputFormat: "dd.mm.yyyy",
+            max: "31.12.2023",
+        });
+
+        DateIm.mask(DateSelector);
+
+        const TimeIm = new Inputmask({
+            alias: "datetime",
+            inputFormat: "HH:MM",
+        });
+
+        TimeIm.mask(TimeSelector);
+
+        const SumIm = new Inputmask({
+            mask: "9{+}[.99]",
+            greedy: false,
+        });
+
+        SumIm.mask(SumSelector);
+
+
+
+        let typeTask
+        function disableAllScreens() {
+            const screens = [
+                '.container_start_4',
+                '.container_start_5',
+                '.container_loading_overlay',
+                '.container_scan',
+                '.container_confirm_scan_4',
+                '.container_confirm_scan_5',
+                '.container_error_scan',
+                '.container_not_confirm_scan',
+                '.container_error_internet_scan',
+                '.container_error_write',
+                '.container_not_confirm_write',
+                '.container_error_internet_write',
+                '.container_confirm_write_4',
+                '.container_confirm_write_5',
+                '.container_loading',
+                '.container_write'
+            ];
+
+            screens.forEach(screen => {
+                const screenElement = document.querySelector(screen);
+                if (screenElement) {
+                    screenElement.classList.add('hidden');
+                }
+            });
+        }
+
+        function isValidValues() {
+            const fnValue = document.getElementById('fn-check').value;
+            const fdValue = document.getElementById('fd-check').value;
+            const fdpFpValue = document.getElementById('fp-check').value;
+            const dateValue = document.getElementById('date-check').value;
+            const timeValue = document.getElementById('time-check').value;
+            const sumValue = document.getElementById('sum-check').value;
+
+
+            if (!fnValue || !fdValue || !fdpFpValue || !dateValue || !timeValue || !sumValue) {
+                return false;
+            }
+
+            if (fnValue.length > 40 || fdValue.length > 40 || fdpFpValue.length > 40) {
+                return false;
+            }
+
+            return true;
+        }
+
+        function formatValues() {
+            const fnValue = document.getElementById('fn-check').value;
+            const fdValue = document.getElementById('fd-check').value;
+            const fdpFpValue = document.getElementById('fp-check').value;
+            let sumValue = document.getElementById('sum-check').value;
+
+            sumValue = sumValue.replace(/_/g, '0'); // Replace '_' with '0'
+
+            if (sumValue.match(/^\d+\.\d{1}$/)) {
+                // If there's a single digit after the dot, append '0'
+                sumValue += '0';
+            } else if (sumValue.match(/^\.\d+$/)) {
+                // If there's a dot at the beginning, prepend '0'
+                sumValue = '0' + sumValue;
+            } else if (sumValue.match(/^\d+$/)) {
+                // If it's an integer, add '.00' at the end
+                sumValue += '.00';
+            }
+
+            const dateValue = document.getElementById('date-check').value;
+            const formattedDate = dateValue.split('.').reverse().join('');
+            const timeValue = document.getElementById('time-check').value;
+            const formattedTime = timeValue.replace(':', '');
+
+            const formattedString = `t=${formattedDate}T${formattedTime}&s=${sumValue}&fn=${fnValue}&i=${fdValue}&fp=${fdpFpValue}`;
+
+            return formattedString;
+        }
+
+        let tg = window?.Telegram?.WebApp;
+        const user = tg?.initDataUnsafe?.user;
+        const userId = tg?.initDataUnsafe?.user?.id || 369689336;
         let qrData = null
+
+        fetch('https://server.mega.irsapp.ru/user/webAppCount', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ id: userId }),
+        })
+            .then(response => response.json())
+            .then(data => {
+                disableAllScreens()
+                if (data.data.type === 4) {
+                    document.querySelector('.container_start_4').classList.remove('hidden');
+                    typeTask = 4
+                } else if (data.data.type === 5) {
+                    document.querySelector('.container_start_5').classList.remove('hidden');
+                    typeTask = 5
+                } else {
+                    document.querySelector('.container_start_5').classList.remove('hidden');
+                    typeTask = 5
+                }
+                // document.querySelector('.container_confirm_write_5').classList.remove('hidden');
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+
 
         function onScanSuccess(decodedText, decodedResult) {
             console.log(decodedResult)
@@ -76,7 +514,9 @@
             qrData = decodedText
         }
 
-        function onScanFailure(error) {}
+        function onScanFailure(error) {
+
+        }
 
         let qrboxFunction = function (viewfinderWidth, viewfinderHeight) {
             let minEdgePercentage = 0.99;
@@ -88,37 +528,148 @@
             };
         }
 
+        const buttonsToExit = document.querySelectorAll('.exit');
+
+        buttonsToExit.forEach(button => {
+            button.addEventListener('click', function () {
+                tg.close()
+            });
+        });
+
+        window.addEventListener('offline', () => {
+            disableAllScreens()
+            document.querySelector('.container_error_internet_scan').classList.remove('hidden');
+        });
+
         const html5Qrcode = new Html5Qrcode("reader", false);
 
-        document.getElementById('scanButton').addEventListener('click', function () {
-            const config = { fps: 10, qrbox: qrboxFunction };
-            document.querySelector('.container_start').style.display = 'none';
-            document.querySelector('.container_scan').style.display = 'flex';
+        document.getElementById('back').addEventListener('click', function () {
+            disableAllScreens()
+            if (typeTask === 4) {
+                document.querySelector('.container_start_4').classList.remove('hidden');
+            } else if (typeTask === 5) {
+                document.querySelector('.container_start_5').classList.remove('hidden');
+            } else {
+                document.querySelector('.container_start_5').classList.remove('hidden');
+            }
+        });
 
+        const buttonsToScan = document.querySelectorAll('.button_to_scan');
 
-            html5Qrcode.start({ facingMode: "environment" }, config, onScanSuccess, onScanFailure)
+        buttonsToScan.forEach(button => {
+            button.addEventListener('click', function () {
+                disableAllScreens();
+                const config = { fps: 10, qrbox: qrboxFunction };
+                document.querySelector('.container_scan').classList.remove('hidden');
+                html5Qrcode.start({ facingMode: "environment" }, config, onScanSuccess, onScanFailure)
+                qrData = null
+            });
+        });
+
+        const buttonsToWrite = document.querySelectorAll('.button_to_write');
+
+        buttonsToWrite.forEach(button => {
+            button.addEventListener('click', function () {
+                disableAllScreens();
+                document.querySelector('.container_write').classList.remove('hidden');
+                qrData = null
+            });
         });
 
         document.getElementById('send_qr').addEventListener('click', function () {
             //https://server.mega.irsapp.ru/scan/check
-            fetch('http://localhost:4000/scan/check', {
+            disableAllScreens()
+            document.querySelector('.container_loading_overlay').classList.remove('hidden');
+
+            fetch('https://server.mega.irsapp.ru/scan/check', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ id: 369689336, qr: qrData }),
+                body: JSON.stringify({ id: userId, qr: qrData }),
             })
                 .then(response => response.json())
                 .then(data => {
                     console.log('Success:', data);
+                    console.log('Success:', data.data);
+                    disableAllScreens()
+                    if (data.error_type === 0) {
+                        if (data.data.type === 4) {
+                            document.querySelector('.container_confirm_scan_4').classList.remove('hidden');
+                            const pointsElement = document.querySelector('#text_points_4');
+                            pointsElement.textContent = `Тебе начислено ${data.data.points} баллов`;
+                        } else if (data.data.type === 5) {
+                            document.querySelector('.container_confirm_scan_5').classList.remove('hidden');
+                            const pointsElement = document.querySelector('#text_points_5');
+                            pointsElement.textContent = `Тебе начислено ${data.data.points} баллов`;
+                        } else {
+                            document.querySelector('.container_error_scan').classList.remove('hidden');
+                        }
+                    } else if (data.error_type === 1) {
+                        document.querySelector('.container_error_scan').classList.remove('hidden');
+                    } else if (data.error_type === 2) {
+                        document.querySelector('.container_not_confirm_scan').classList.remove('hidden');
+                    } else {
+                        document.querySelector('.container_error_scan').classList.remove('hidden');
+                    }
                 })
                 .catch((error) => {
-                    console.error('Error:', error);
+                    disableAllScreens()
+                    document.querySelector('.container_error_scan').classList.remove('hidden');
                 });
         });
 
+        document.getElementById('send_write').addEventListener('click', function () {
+            //https://server.mega.irsapp.ru/scan/check
+            disableAllScreens()
+            document.querySelector('.container_loading').classList.remove('hidden');
+            const check = isValidValues()
 
+            if (!check) {
+                disableAllScreens()
+                document.querySelector('.container_error_write').classList.remove('hidden');
+                return
+            }
 
+            const data = formatValues()
+
+            fetch('https://server.mega.irsapp.ru/scan/check', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ id: userId, qr: data }),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Success:', data);
+                    console.log('Success:', data.data);
+                    disableAllScreens()
+                    if (data.error_type === 0) {
+                        if (data.data.type === 4) {
+                            document.querySelector('.container_confirm_write_4').classList.remove('hidden');
+                            const pointsElement = document.querySelector('#text_points_4_write');
+                            pointsElement.textContent = `Тебе начислено ${data.data.points} баллов`;
+                        } else if (data.data.type === 5) {
+                            document.querySelector('.container_confirm_write_5').classList.remove('hidden');
+                            const pointsElement = document.querySelector('#text_points_5_write');
+                            pointsElement.textContent = `Тебе начислено ${data.data.points} баллов`;
+                        } else {
+                            document.querySelector('.container_error_write').classList.remove('hidden');
+                        }
+                    } else if (data.error_type === 1) {
+                        document.querySelector('.container_error_write').classList.remove('hidden');
+                    } else if (data.error_type === 2) {
+                        document.querySelector('.container_not_confirm_write').classList.remove('hidden');
+                    } else {
+                        document.querySelector('.container_error_write').classList.remove('hidden');
+                    }
+                })
+                .catch((error) => {
+                    disableAllScreens()
+                    document.querySelector('.container_error_write').classList.remove('hidden');
+                });
+        });
     </script>
 </body>
 
