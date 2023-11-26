@@ -1,10 +1,14 @@
 import * as core from 'express-serve-static-core';
 import EjsScanRoute from './ejs/ejsScan';
 import EjsLeaderboardRoute from './ejs/ejsLeaderboard';
-import EjsAdminStats from './ejs/ejsAdminStats';
+import EjsAdminStatsAll from './ejs/EjsAdminStatsAll';
 import UserWebAppCount from './user/userWebAppCount';
 import ScanCheck from './scan/scanCheck';
 import UserPlaceInLeaderBoard from './user/userPlaceInLeaderBoard';
+import EjsAdminStatsPlatforms from './ejs/EjsAdminStatsPlatforms';
+import EjsAdminStatsResults from './ejs/EjsAdminStatsResults';
+import EjsAdminStatsDetail from './ejs/EjsAdminStatsDetail';
+import EjsAdminStatsProblems from './ejs/EjsAdminStatsProblems';
 
 
 class Routes {
@@ -25,7 +29,11 @@ class Routes {
   private _ejsRoutes(): void {
     new EjsScanRoute(this._app)
     new EjsLeaderboardRoute(this._app)
-    new EjsAdminStats(this._app)
+    new EjsAdminStatsAll(this._app)
+    new EjsAdminStatsPlatforms(this._app)
+    new EjsAdminStatsResults(this._app)
+    new EjsAdminStatsDetail(this._app)
+    new EjsAdminStatsProblems(this._app)
   }
 
   private _userRoutes(): void {

@@ -131,6 +131,20 @@ class Helper {
     }
 
     /**
+    * Обновление свойства authorization_id у пользователя по ID в базе данных
+    * @param userId - ID пользователя
+    * @param authorizationId - новое значение для authorization_id
+    */
+    static async updateAuthorizationId(userId: number, authorizationId: string): Promise<void> {
+        try {
+            // Update the 'authorization_id' field in the 'users' table
+            await Db.query('UPDATE users SET authorization_id = ? WHERE id = ?', [authorizationId, userId]);
+        } catch (error) {
+            Logger.error('[Helper] Error updateAuthorizationId:', error);
+        }
+    }
+
+    /**
     * Функция для проверки и обновления статуса авторизации пользователя
     * Если статус авторизации равен 0, обновляет его на 2
     * @param userId - ID пользователя
@@ -417,11 +431,23 @@ class Helper {
     * Обновление свойства webapp у пользователя по ID в базе данных
     * @param userId - ID пользователя
     */
-    static async updateWebappStatus(userId: number): Promise<void> {
+    static async incrementWebappStatus(userId: number): Promise<void> {
         try {
-            await Db.query('UPDATE users SET web_app = 1 WHERE id = ?', [userId]);
+            await Db.query('UPDATE users SET web_app = web_app + 1 WHERE id = ?', [userId]);
         } catch (error) {
-            Logger.error('[Helper] Error updateAuthorizationStatus:', error);
+            Logger.error('[Helper] Error incrementWebappStatus:', error);
+        }
+    }
+
+    /**
+    * Increment the start field for a user by 1.
+    * @param userId - ID of the user
+    */
+    static async incrementStartField(userId: number): Promise<void> {
+        try {
+            await Db.query('UPDATE users SET start = start + 1 WHERE id = ?', [userId]);
+        } catch (error) {
+            Logger.error('[Helper] Error incrementStartField:', error);
         }
     }
 

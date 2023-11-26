@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.css">
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            margin: 20px;
+        }
+
+        h1,
+        h2 {
+            color: #333;
+        }
+
+        div {
+            margin-bottom: 20px;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .pagination a {
+            color: black;
+            padding: 8px 16px;
+            text-decoration: none;
+            transition: background-color .3s;
+            margin: 0 4px;
+        }
+
+        .pagination a.active {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .pagination a:hover:not(.active) {
+            background-color: #ddd;
+        }
+    </style>
+</head>
+
+<body style="font-family: Arial, Helvetica, sans-serif;">
+
+    <h1>Статистика</h1>
+
+    <h2>Результаты сессий сканирования чеков</h2>
+
+    <table id="statsTable" class="display">
+        <thead>
+            <tr>
+                <th>Platform</th>
+                <th>Channel</th>
+                <th>Creative</th>
+                <th>Total Launches</th>
+                <th>Unique Users</th>
+                <th>Total Web App Launches</th>
+                <th>Unique Web App Users</th>
+                <th>Game Sessions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% for (const stat of userActivityStats) { %>
+                <tr>
+                    <td><%= stat.platform %></td>
+                    <td><%= stat.channel %></td>
+                    <td><%= stat.creative %></td>
+                    <td><%= stat.total_launches %></td>
+                    <td><%= stat.unique_users %></td>
+                    <td><%= stat.total_web_app_launches %></td>
+                    <td><%= stat.unique_web_app_users %></td>
+                    <td><%= stat.game_sessions %></td>
+                </tr>
+            <% } %>
+        </tbody>
+    </table>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#statsTable').DataTable();
+        });
+    </script>
+
+</body>
+
+</html>

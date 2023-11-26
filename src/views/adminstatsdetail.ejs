@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.css">
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            margin: 20px;
+        }
+
+        h1,
+        h2 {
+            color: #333;
+        }
+
+        div {
+            margin-bottom: 20px;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .pagination a {
+            color: black;
+            padding: 8px 16px;
+            text-decoration: none;
+            transition: background-color .3s;
+            margin: 0 4px;
+        }
+
+        .pagination a.active {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .pagination a:hover:not(.active) {
+            background-color: #ddd;
+        }
+    </style>
+</head>
+
+<body style="font-family: Arial, Helvetica, sans-serif;">
+
+    <h1>Статистика</h1>
+
+    <h2>Результаты юзеров по очкам</h2>
+
+    <table id="usersTable" class="display">
+        <thead>
+            <tr>
+                <th>ID в Telegram</th>
+                <th>Имя пользователя в Telegram</th>
+                <th>Очки за Задание 1</th>
+                <th>Статус подписки</th>
+                <th>Очки за Задание 2</th>
+                <th>MEGA Friends</th>
+                <th>ID USER</th>
+                <th>Очки за Задание 3</th>
+                <th>Очки за Задание 4</th>
+                <th>Очки за Задание 5</th>
+                <th>Общее количество очков</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% for (const user of users) { %>
+                <tr>
+                    <td><%= user.telegram_id %></td>
+                    <td><%= user.telegram_username %></td>
+                    <td><%= user.score_task1 %></td>
+                    <td><%= user.subscription_status %></td>
+                    <td><%= user.score_task2 %></td>
+                    <td><%= user.mega_friends_status %></td>
+                    <td><%= user.authorization_id || 'не авторизован' %></td>
+                    <td><%= user.score_task3 %></td>
+                    <td><%= user.score_task4 %></td>
+                    <td><%= user.score_task5 %></td>
+                    <td><%= user.total_score %></td>
+                </tr>
+            <% } %>
+        </tbody>
+    </table>
+    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#usersTable').DataTable();
+        });
+    </script>
+
+</body>
+
+</html>

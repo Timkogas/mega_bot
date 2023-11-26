@@ -17,7 +17,7 @@ const generateRandomUser = (idN: number) => {
     } else {
         lastName = ''
     }
-    
+
     const score = getRandomInt(10, 600);
 
     return {
@@ -54,19 +54,6 @@ export default class EjsLeaderboardRoute {
                     time ASC
                 LIMIT 50;
             `;
-
-
-                // Insert the random users into the database
-                const insertQuery = `
-                    INSERT IGNORE INTO users (id, first_name, last_name, score)
-                    VALUES (?, ?, ?, ?)
-                `;
-
-                // Assuming Db.query supports parameterized queries
-                for (let i = 0; i < 80; i++) {
-                    const user = generateRandomUser(i)
-                    await Db.query(insertQuery, [user.id, user.first_name, user.last_name, user.score]);
-                }
 
                 const topUsers = await Db.query(query);
 

@@ -148,6 +148,7 @@ class TelegramBotApp {
                             )
 
                             if (checkAuthorization?.data?.username || checkAuthorization?.data?.firstName || checkAuthorization?.data?.email) {
+                                Helper.updateAuthorizationId(dbUser.id, text)
                                 return await this._sendMessageOnAuthorizationConfirm(chatId, dbUser)
                             } else {
                                 return await this._sendMessageOnAuthorizationIncorrect(chatId, dbUser)
@@ -280,8 +281,8 @@ class TelegramBotApp {
 
     private async _sendMessageOnStart(chatId: number, dbUser: IUserDb, short?: boolean): Promise<void> {
         try {
+            await Helper.incrementStartField(dbUser.id)
             const videoPath = path.join(__dirname, '../assets/videos/1.mp4')
-
             const buttons: InlineKeyboardButton[][] = [
                 [{ text: 'Я согласен(на)', callback_data: EMessages.MENU }],
                 [{ text: 'Об акции', callback_data: EMessages.ABOUT }],

@@ -76,23 +76,25 @@ class App {
         referral BIGINT DEFAULT NULL,
         sent TINYINT DEFAULT 0,
         buttons JSON DEFAULT NULL,
-        web_app TINYINT DEFAULT 0,
+        web_app INT DEFAULT 0,
         refs INT DEFAULT 0,
         subscribe INT DEFAULT 0,
         authorization INT DEFAULT 0,
+        authorization_id VARCHAR(100) DEFAULT null,
         final TINYINT DEFAULT 0,
         activity VARCHAR(50) DEFAULT 'buttons',
         platform VARCHAR(50) DEFAULT NULL,
         channel VARCHAR(150) DEFAULT NULL,
         creative VARCHAR(150) DEFAULT NULL,  
         skip_task DATETIME DEFAULT NULL,
+        start INT DEFAULT 0,
         score INT,
         time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
     `
     await Db.query(table)
   }
-
+  
   private async _createTableChecks(): Promise<void> {
     const table =
       `

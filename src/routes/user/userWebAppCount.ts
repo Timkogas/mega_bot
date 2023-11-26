@@ -22,7 +22,7 @@ export default class UserWebAppCount {
       const { id } = req.body
       await Helper.incrementWebApp()
       if (id) {
-        await Helper.updateWebappStatus(id)
+        await Helper.incrementWebappStatus(id)
         const lastTask = await Helper.getLastPendingTask(id)
 
         if (lastTask.type === EMessages.TASK_4) {
