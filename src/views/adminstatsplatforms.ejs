@@ -87,10 +87,10 @@
         </thead>
         <tbody>
             <% for (const stat of userActivityStats) { %>
-                <tr data-platform="<%= stat.platform %>" data-channel="<%= stat.channel %>">
-                    <td><%= stat.platform %></td>
-                    <td><%= stat.channel %></td>
-                    <td><%= stat.creative %></td>
+                <tr data-platform="<%= stat.platform || '' %>" data-channel="<%= stat.channel || '' %>">
+                    <td><%= stat.platform || '' %></td>
+                    <td><%= stat.channel || '' %></td>
+                    <td><%= stat.creative || '' %></td>
                     <td><%= stat.total_launches %></td>
                     <td><%= stat.unique_users %></td>
                     <td><%= stat.total_web_app_launches %></td>

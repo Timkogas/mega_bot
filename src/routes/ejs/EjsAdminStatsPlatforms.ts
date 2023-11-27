@@ -77,7 +77,6 @@ export default class EjsAdminStatsPlatforms {
 
         return groupedStats;
     }
-
     private _init(): void {
         try {
             this._app.get('/adminstats/platforms', async (req, res) => {
@@ -96,3 +95,17 @@ export default class EjsAdminStatsPlatforms {
         }
     }
 }
+// const sd = [
+//     {
+//         "platform": null,
+//         "channels":
+//             [
+//                 {
+//                     "channel": null, "creatives": [
+//                         { "creative": null, "total_launches": "8", "unique_users": 6, "total_web_app_launches": "0", "unique_web_app_users": 0, "game_sessions": 0 }
+//                     ]
+//                 }
+//             ]
+//     },
+
+//     { "platform": "tg", "channels": [{ "channel": "sblr", "creatives": [{ "creative": "post", "total_launches": "1", "unique_users": 1, "total_web_app_launches": "8", "unique_web_app_users": 1, "game_sessions": 0 }] }] }]
