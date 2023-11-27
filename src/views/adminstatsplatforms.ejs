@@ -75,14 +75,14 @@
     <table id="statsTable" class="display">
         <thead>
             <tr>
-                <th>Platform</th>
-                <th>Channel</th>
-                <th>Creative</th>
-                <th>Total Launches</th>
-                <th>Unique Users</th>
-                <th>Total Web App Launches</th>
-                <th>Unique Web App Users</th>
-                <th>Game Sessions</th>
+                <th data-i18n="Platform">Платформа</th>
+                <th data-i18n="Channel">Канал</th>
+                <th data-i18n="Creative">Творческий</th>
+                <th data-i18n="Total Launches">Всего запусков</th>
+                <th data-i18n="Unique Users">Уникальные пользователи</th>
+                <th data-i18n="Total Web App Launches">Всего запусков в веб-приложении</th>
+                <th data-i18n="Unique Web App Users">Уникальные пользователи в веб-приложении</th>
+                <th data-i18n="Game Sessions">Сессии в игре</th>
             </tr>
         </thead>
         <tbody>
@@ -104,6 +104,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/rowgroup/1.1.3/js/dataTables.rowGroup.min.js"></script>
+    <script src="https://cdn.datatables.net/plug-ins/1.10.24/i18n/Russian.json"></script>
     <script>
         $(document).ready(function () {
             var table = $('#statsTable').DataTable({
@@ -117,6 +118,9 @@
                         return $('<tr/>')
                             .append('<td colspan="8">' + group + ' (' + rows.count() + ' items)</td>');
                     }
+                },
+                language: {
+                    url: 'https://cdn.datatables.net/plug-ins/1.10.24/i18n/Russian.json'
                 }
             });
 
