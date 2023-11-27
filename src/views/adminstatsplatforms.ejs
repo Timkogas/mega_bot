@@ -86,16 +86,16 @@
             </tr>
         </thead>
         <tbody>
-            <% for (const stat of userActivityStats) { %>
-                <tr data-platform="<%= stat.platform || '' %>" data-channel="<%= stat.channel || '' %>">
-                    <td><%= stat.platform || '' %></td>
-                    <td><%= stat.channel || '' %></td>
-                    <td><%= stat.creative || '' %></td>
-                    <td><%= stat.total_launches %></td>
-                    <td><%= stat.unique_users %></td>
-                    <td><%= stat.total_web_app_launches %></td>
-                    <td><%= stat.unique_web_app_users %></td>
-                    <td><%= stat.game_sessions %></td>
+            <% for (const item of sd) { %>
+                <tr data-platform="<%= item.platform || '' %>" data-channel="<%= item.channels[0].channel || '' %>">
+                    <td><%= item.platform || '' %></td>
+                    <td><%= item.channels[0].channel || '' %></td>
+                    <td><%= item.channels[0].creatives[0].creative || '' %></td>
+                    <td><%= item.channels[0].creatives[0].total_launches %></td>
+                    <td><%= item.channels[0].creatives[0].unique_users %></td>
+                    <td><%= item.channels[0].creatives[0].total_web_app_launches %></td>
+                    <td><%= item.channels[0].creatives[0].unique_web_app_users %></td>
+                    <td><%= item.channels[0].creatives[0].game_sessions %></td>
                 </tr>
             <% } %>
         </tbody>
