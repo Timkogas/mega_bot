@@ -355,8 +355,8 @@ class Helper {
         const task = await this.getLastPendingTask(user.id)
         if (value === '1') return true
 
-        const code = await Db.query(`SELECT * FROM codes WHERE name = ? AND type = ?`,
-            [value, task.id]);
+        const code = await Db.query(`SELECT * FROM codes WHERE name = ? AND type = ? AND start_date <= ? AND end_date >= ?`,
+            [value, task.id, currentDate, currentDate]);
 
 
         return code.length > 0;
