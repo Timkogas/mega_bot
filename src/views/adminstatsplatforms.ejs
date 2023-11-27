@@ -86,7 +86,7 @@
             </tr>
         </thead>
         <tbody>
-            <% for (const item of sd) { %>
+            <% for (const item of userActivityStats) { %>
                 <tr data-platform="<%= item.platform || '' %>" data-channel="<%= item.channels[0].channel || '' %>">
                     <td><%= item.platform || '' %></td>
                     <td><%= item.channels[0].channel || '' %></td>
