@@ -383,7 +383,7 @@ class Helper {
                         Logger.debug('check', user.id, user.authorization_id)
                         const checkAuthorization = await axios.post('https://omniapi-dev.mega.ru/telegram/registerUser',
                             {
-                                telegramId: user.id,
+                                telegramId: `${user.id}`,
                                 keycloakId: user.authorization_id
                             },
                             {
