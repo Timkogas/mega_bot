@@ -7,7 +7,7 @@ import Logger from './Logger/Logger';
 import path from 'path';
 import Routes from './routes';
 import cors from 'cors';
-import TelegramBotApp from './TelegramBot/TelegramBotApp';
+// import TelegramBotApp from './TelegramBot/TelegramBotApp';
 
 
 dotenv.config();
@@ -46,7 +46,7 @@ class App {
   }
 
   private async _initBot(): Promise<void> {
-    this._telegramBot = TelegramBotApp
+    // this._telegramBot = TelegramBotApp
   }
 
   private _startServer(): void {
