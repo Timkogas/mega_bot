@@ -31,7 +31,7 @@ export default class EjsAdminStatsPlatforms {
 
 
         const groupedStats: any[] = [];
-        statsResult.rows.forEach((row: any) => {
+        statsResult.forEach((row: any) => {
             const platformIndex = groupedStats.findIndex((group) => group.platform === row.platform);
             if (platformIndex === -1) {
                 groupedStats.push({
