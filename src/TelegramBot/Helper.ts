@@ -350,8 +350,16 @@ class Helper {
     * @param value - Строковое значение
     * @returns true, если строка равна '1', иначе false
     */
-    static checkCode(value: string): boolean {
-        return value === '1';
+    static async checkCode(user: IUserDb, value: string): Promise<boolean> {
+        const currentDate = new Date();
+        const task = await this.getLastPendingTask(user.id)
+        if (value === '1') return true
+
+        const code = await Db.query(`SELECT * FROM codes WHERE name = ? AND type = ?`,
+            [value, task.id]);
+
+
+        return code.length > 0;
     }
 
 

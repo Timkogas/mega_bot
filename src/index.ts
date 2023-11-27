@@ -7,7 +7,7 @@ import Logger from './Logger/Logger';
 import path from 'path';
 import Routes from './routes';
 import cors from 'cors';
-// import TelegramBotApp from './TelegramBot/TelegramBotApp';
+import TelegramBotApp from './TelegramBot/TelegramBotApp';
 
 
 dotenv.config();
@@ -27,7 +27,7 @@ class App {
   private async _init(): Promise<void> {
     try {
       await this._initDb()
-      this._initBot()
+      await this._initBot()
       this._startServer();
     } catch (error) {
       Logger.error('Error during initialization:', error);
@@ -43,10 +43,12 @@ class App {
     await this._createTableProblemsFiles()
     await this._createTableMain()
     await this._createTableUsersChecks()
+    await this._createTableCodes()
+    await this._insertAllCodes()
   }
 
   private async _initBot(): Promise<void> {
-    // this._telegramBot = TelegramBotApp
+    this._telegramBot = TelegramBotApp
   }
 
   private _startServer(): void {
@@ -129,6 +131,87 @@ class App {
     `
     await Db.query(table);
   }
+
+  private async _createTableCodes(): Promise<void> {
+    const table =
+      `
+    CREATE TABLE IF NOT EXISTS codes (
+        name VARCHAR(50) PRIMARY KEY,
+        type INT,
+        start_date DATETIME,
+        end_date DATETIME,
+        num INT
+    );
+    `
+    await Db.query(table);
+  }
+
+  private async _insertAllCodes(): Promise<void> {
+    try {
+      await this._insertCodesType1();
+      await this._insertCodesType2();
+      await this._insertCodesType3();
+    } catch (error) {
+      console.error('Error inserting codes:', error);
+    }
+  }
+
+  private async _insertCodesType1(): Promise<void> {
+    const insertCodesQueries = [
+      // Codes of Type 1
+      "INSERT IGNORE INTO codes (num, name, start_date, end_date, type) VALUES (1, 'ECOEXPSY69O', '2023-11-30 00:00:00', '2023-12-07 07:59:00', 1);",
+      "INSERT IGNORE INTO codes (num, name, start_date, end_date, type) VALUES (2, 'ECOTZ4DYOP3', '2023-12-07 08:00:00', '2023-12-14 07:59:00', 1);",
+      "INSERT IGNORE INTO codes (num, name, start_date, end_date, type) VALUES (3, 'ECOG427NBJR', '2023-12-14 08:00:00', '2023-12-21 07:59:00', 1);",
+      "INSERT IGNORE INTO codes (num, name, start_date, end_date, type) VALUES (4, 'ECOLZN5QHWN', '2023-12-21 08:00:00', '2023-12-30 18:00:00', 1);",
+    ];
+
+    for (const query of insertCodesQueries) {
+      await Db.query(query);
+    }
+  }
+
+  private async _insertCodesType2(): Promise<void> {
+    const insertCodesQueries = [
+        "INSERT IGNORE INTO codes (num, name, start_date, end_date, type) VALUES (1, 'MCZ1G70COE', '2023-11-30 00:00:00', '2023-12-30 18:00:00', 2);",
+        "INSERT IGNORE INTO codes (num, name, start_date, end_date, type) VALUES (2, 'MCL6SRGVFL', '2023-11-30 00:00:00', '2023-12-30 18:00:00', 2);",
+        "INSERT IGNORE INTO codes (num, name, start_date, end_date, type) VALUES (3, 'MCDQPL2WWN', '2023-11-30 00:00:00', '2023-12-30 18:00:00', 2);",
+        "INSERT IGNORE INTO codes (num, name, start_date, end_date, type) VALUES (4, 'MCTJMYAD2B', '2023-11-30 00:00:00', '2023-12-30 18:00:00', 2);",
+        "INSERT IGNORE INTO codes (num, name, start_date, end_date, type) VALUES (5, 'MC8P6US5XR', '2023-11-30 00:00:00', '2023-12-30 18:00:00', 2);",
+        "INSERT IGNORE INTO codes (num, name, start_date, end_date, type) VALUES (6, 'MCN3M7QGV6', '2023-11-30 00:00:00', '2023-12-30 18:00:00', 2);",
+        "INSERT IGNORE INTO codes (num, name, start_date, end_date, type) VALUES (7, 'MCHMF9N4MY', '2023-11-30 00:00:00', '2023-12-30 18:00:00', 2);",
+        "INSERT IGNORE INTO codes (num, name, start_date, end_date, type) VALUES (8, 'MCODKG0RTH', '2023-11-30 00:00:00', '2023-12-30 18:00:00', 2);",
+        "INSERT IGNORE INTO codes (num, name, start_date, end_date, type) VALUES (9, 'MCIS79N8JE', '2023-11-30 00:00:00', '2023-12-30 18:00:00', 2);",
+        "INSERT IGNORE INTO codes (num, name, start_date, end_date, type) VALUES (10, 'MC1BGMHNCN', '2023-11-30 00:00:00', '2023-12-30 18:00:00', 2);",
+        "INSERT IGNORE INTO codes (num, name, start_date, end_date, type) VALUES (11, 'MCBUH3TRLD', '2023-11-30 00:00:00', '2023-12-30 18:00:00', 2);",
+        "INSERT IGNORE INTO codes (num, name, start_date, end_date, type) VALUES (12, 'MC8BV7LWMI', '2023-11-30 00:00:00', '2023-12-30 18:00:00', 2);",
+        "INSERT IGNORE INTO codes (num, name, start_date, end_date, type) VALUES (13, 'MCWAL7K240', '2023-11-30 00:00:00', '2023-12-30 18:00:00', 2);",
+        "INSERT IGNORE INTO codes (num, name, start_date, end_date, type) VALUES (14, 'MCQ0ADB5WI', '2023-11-30 00:00:00', '2023-12-30 18:00:00', 2);",
+        "INSERT IGNORE INTO codes (num, name, start_date, end_date, type) VALUES (15, 'MCX79XADRH', '2023-11-30 00:00:00', '2023-12-30 18:00:00', 2);",
+        "INSERT IGNORE INTO codes (num, name, start_date, end_date, type) VALUES (16, 'MC1RZ74LE1', '2023-11-30 00:00:00', '2023-12-30 18:00:00', 2);",
+        "INSERT IGNORE INTO codes (num, name, start_date, end_date, type) VALUES (17, 'MCX9BA57LB', '2023-11-30 00:00:00', '2023-12-30 18:00:00', 2);",
+        "INSERT IGNORE INTO codes (num, name, start_date, end_date, type) VALUES (18, 'MCJVWULJA7', '2023-11-30 00:00:00', '2023-12-30 18:00:00', 2);",
+        "INSERT IGNORE INTO codes (num, name, start_date, end_date, type) VALUES (19, 'MCLQZ3KK1H', '2023-11-30 00:00:00', '2023-12-30 18:00:00', 2);",
+        "INSERT IGNORE INTO codes (num, name, start_date, end_date, type) VALUES (20, 'MCGI9VSSCK', '2023-11-30 00:00:00', '2023-12-30 18:00:00', 2);",
+    ];
+
+    for (const query of insertCodesQueries) {
+        await Db.query(query);
+    }
+}
+
+private async _insertCodesType3(): Promise<void> {
+    const insertCodesQueries = [
+        // Codes of Type 3
+        "INSERT IGNORE INTO codes (num, name, start_date, end_date, type) VALUES (1, 'FCVT7Z8Q0B', '2023-11-30 00:00:00', '2023-12-07 07:59:00', 3);",
+        "INSERT IGNORE INTO codes (num, name, start_date, end_date, type) VALUES (2, 'FCY1PBXSYW', '2023-12-07 08:00:00', '2023-12-14 07:59:00', 3);",
+        "INSERT IGNORE INTO codes (num, name, start_date, end_date, type) VALUES (3, 'FC0B2HW11A', '2023-12-14 08:00:00', '2023-12-21 07:59:00', 3);",
+        "INSERT IGNORE INTO codes (num, name, start_date, end_date, type) VALUES (4, 'FCBMASZZJ3', '2023-12-21 08:00:00', '2023-12-30 18:00:00', 3);",
+    ];
+
+    for (const query of insertCodesQueries) {
+        await Db.query(query);
+    }
+}
 
   private async _createTableTasks(): Promise<void> {
     const table =
