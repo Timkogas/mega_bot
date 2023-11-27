@@ -83,7 +83,7 @@ export default class EjsAdminStatsPlatforms {
             this._app.get('/adminstats/platforms', async (req, res) => {
                 try {
                     const userActivityStats = await this._fetchUserStats();
-                    Logger.debug('userActivityStats', userActivityStats)
+                    Logger.debug('userActivityStats', JSON.stringify(userActivityStats))
                     // Render the adminstatsplatforms template with the retrieved data
                     res.render('adminstatsplatforms', { userActivityStats });
                 } catch (error) {
