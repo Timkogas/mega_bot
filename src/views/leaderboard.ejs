@@ -95,6 +95,7 @@
     <script>
         new SimpleBar(document.getElementById('leaderboard'), { autoHide: false });
         let tg = window.Telegram.WebApp;
+        tg.expand();
         const userIdTg = tg.initDataUnsafe.user.id;
         let exist = false
 

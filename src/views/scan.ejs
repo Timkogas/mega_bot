@@ -477,6 +477,7 @@
         }
 
         let tg = window?.Telegram?.WebApp;
+        tg.expand();
         const user = tg?.initDataUnsafe?.user;
         const userId = tg?.initDataUnsafe?.user?.id;
         let qrData = null
