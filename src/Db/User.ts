@@ -14,6 +14,7 @@ export interface IUserDb {
     time?: string; // Assuming TIMESTAMP is stored as a string
     refs: number
     authorization: number
+    authorization_id: string
     activity: EActivity
     final: number
     skip_task: Date
@@ -30,6 +31,7 @@ export enum EAuthorization {
   NO = 0,
   COMPLETE = 1,
   SKIP = 2,
+  LEFT = 3,
 };
 
 export enum EFinal {

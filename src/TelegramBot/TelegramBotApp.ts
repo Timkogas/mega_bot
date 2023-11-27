@@ -563,7 +563,8 @@ class TelegramBotApp {
                         [{ text: 'Следующее задание', callback_data: EMessages.TASK_4 }],
                         [{ text: 'Назад', callback_data: EMessages.MENU }],
                     ]
-                    if (dbUser.authorization === EAuthorization.COMPLETE) points = Number((10 * 1.5)).toFixed()
+                    const authorization = await Helper.checkAuthorization(dbUser.id)
+                    if (authorization) points = Number((10 * 1.5)).toFixed()
                     else points = 10
                     text = `<b>Код принят.</b> Теперь ты умеешь правильно сортировать отходы! ♻️.\n\nНа твой игровой счет начислено ${points} баллов. Поздравляем!`
                     videoPath = path.join(__dirname, '../assets/videos/12.mp4')

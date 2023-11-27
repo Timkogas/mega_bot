@@ -4,6 +4,7 @@ import Db from "../Db/Db";
 import { EActivity, EAuthorization, IUserDb } from "../Db/User";
 import { EMessages, taskIdToEMessagesMap } from "./TelegramBotApp";
 import { ETaskStatus } from "../Db/Task";
+import axios from "axios";
 
 class Helper {
 
@@ -347,20 +348,72 @@ class Helper {
 
     /**
     * Функция для проверки строки и преобразования в булевое значение
+    * @param user - пользователь из базы данных
     * @param value - Строковое значение
     * @returns true, если строка равна '1', иначе false
     */
     static async checkCode(user: IUserDb, value: string): Promise<boolean> {
-        const currentDate = new Date();
-        const task = await this.getLastPendingTask(user.id)
-        if (value === '1') return true
+        try {
+            const currentDate = new Date();
+            const task = await this.getLastPendingTask(user.id)
+            if (value === '1') return true
 
-        const code = await Db.query(`SELECT * FROM codes WHERE name = ? AND type = ? AND start_date <= ? AND end_date >= ?`,
-            [value, task.id, currentDate, currentDate]);
+            const code = await Db.query(`SELECT * FROM codes WHERE name = ? AND type = ? AND start_date <= ? AND end_date >= ?`,
+                [value, task.id, currentDate, currentDate]);
 
 
-        return code.length > 0;
+            return code.length > 0;
+        } catch (error) {
+            Logger.error('[Helper] Error checkCode:', error);
+        }
     }
+
+    /**
+     * Метод для проверки авторизации пользователя на основе запроса к внешнему API
+     * @param userId - ID пользователя в Telegram
+     * @returns true, если запрос успешен и есть данные пользователя, иначе false
+     */
+    static async checkAuthorization(userId: number): Promise<boolean> {
+        try {
+            const user = await Helper.getUserById(userId);
+
+            if (user?.authorization === 1) {
+                if (user?.authorization_id) {
+                    try {
+                        const checkAuthorization = await axios.post('https://omniapi-dev.mega.ru/telegram/registerUser',
+                            {
+                                telegramId: user.id,
+                                keycloakId: user.authorization_id
+                            },
+                            {
+                                headers: {
+                                    'x-api-key': process.env.API_KEY
+                                }
+                            }
+                        );
+
+                        if (checkAuthorization?.data?.username || checkAuthorization?.data?.firstName || checkAuthorization?.data?.email) {
+                            return true
+                        } else {
+                            return false
+                        }
+                    } catch (error) {
+                        Logger.error('[Helper] Error checkAuthorization:', error);
+                        return false;
+                    }
+                } else {
+                    return false
+                }
+            } else {
+                return false
+            }
+
+        } catch (error) {
+            Logger.error('[Helper] Error checkAuthorization:', error);
+            return false;
+        }
+    }
+
 
 
     /**

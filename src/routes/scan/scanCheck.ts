@@ -82,7 +82,8 @@ export default class ScanCheck {
 
                         if (sValidValueNumber > 10000) {
                             points = Math.round(Math.round(sValidValueNumber / 100) / 10)
-                            if (userDb.authorization === EAuthorization.COMPLETE) points = Math.round(points * 1.5)
+                            const authorization = await Helper.checkAuthorization(userDb.id)
+                            if (authorization) points = Math.round(points * 1.5)
                             await Helper.updateCheck(newQr, { status: ECheckStatus.CONFIRM, amount: sValidValueNumber, score: points })
                             res.json({
                                 error: false,
@@ -170,7 +171,8 @@ export default class ScanCheck {
                         const sValidValueNumber = Number(sValidValue)
 
                         points = Math.round(Math.round(sValidValueNumber / 100) / 10)
-                        if (userDb.authorization === EAuthorization.COMPLETE) points = Math.round(points * 1.5)
+                        const authorization = await Helper.checkAuthorization(userDb.id)
+                        if (authorization) points = Math.round(points * 1.5)
                         await Helper.updateCheck(newQr, { status: ECheckStatus.CONFIRM, amount: sValidValueNumber, score: points })
                         res.json({
                             error: false,
