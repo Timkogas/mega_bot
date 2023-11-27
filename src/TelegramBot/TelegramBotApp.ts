@@ -348,7 +348,7 @@ class TelegramBotApp {
     private async _sendMessageOnNotWanted(chatId: number, dbUser: IUserDb): Promise<void> {
         try {
             const videoPath = path.join(__dirname, '../assets/videos/3.mp4')
-
+            Helper.updateDisagreeStatus(dbUser.id)
             const buttons: InlineKeyboardButton[][] = [
                 [{ text: 'Я согласен(на)', callback_data: EMessages.MENU }],
                 [{ text: 'Об акции', callback_data: EMessages.ABOUT }],
@@ -377,7 +377,7 @@ class TelegramBotApp {
 
             let taskData
             const hasTasks = await Helper.getHasPendingTask(dbUser.id)
-
+            Helper.updateAgreeStatus(dbUser.id)
             if (hasTasks) {
                 taskData = await Helper.getLastPendingTask(dbUser.id)
             }

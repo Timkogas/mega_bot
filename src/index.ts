@@ -55,7 +55,7 @@ class App {
     this._app.use(express.urlencoded({ extended: true }));
     this._app.use(cors());
     this._app.use('/uploads', express.static(__dirname + '/uploads'));
-    this._app.use( express.static(__dirname + '/public'));
+    this._app.use(express.static(__dirname + '/public'));
     this._app.set('views', path.join(__dirname, 'views'));
     this._app.set('view engine', 'ejs');
 
@@ -89,12 +89,14 @@ class App {
         skip_task DATETIME DEFAULT NULL,
         start INT DEFAULT 0,
         score INT,
+        agree TINYINT DEFAULT 0,
+        disagree TINYINT DEFAULT 0,
         time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
     `
     await Db.query(table)
   }
-  
+
   private async _createTableChecks(): Promise<void> {
     const table =
       `

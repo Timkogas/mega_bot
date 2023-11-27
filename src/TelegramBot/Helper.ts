@@ -119,6 +119,30 @@ class Helper {
     }
 
     /**
+    * Обновление свойства agree у пользователя по ID в базе данных
+    * @param userId - ID пользователя
+    */
+    static async updateAgreeStatus(userId: number): Promise<void> {
+        try {
+            await Db.query('UPDATE users SET agree = 1 WHERE id = ?', [userId]);
+        } catch (error) {
+            Logger.error('[Helper] Error updating agree status:', error);
+        }
+    }
+
+    /**
+    * Обновление свойства disagree у пользователя по ID в базе данных
+    * @param userId - ID пользователя
+    */
+    static async updateDisagreeStatus(userId: number): Promise<void> {
+        try {
+            await Db.query('UPDATE users SET disagree = 1 WHERE id = ?', [userId]);
+        } catch (error) {
+            Logger.error('[Helper] Error updating disagree status:', error);
+        }
+    }
+
+    /**
     * Обновление свойства authorization у пользователя по ID в базе данных
     * @param userId - ID пользователя
     */
