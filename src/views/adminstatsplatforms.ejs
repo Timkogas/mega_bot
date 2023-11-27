@@ -3,7 +3,10 @@
 
 <head>
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/rowgroup/1.1.3/css/rowGroup.dataTables.min.css">
     <style>
+        /* Ваш CSS остается неизменным */
+
         body {
             font-family: Arial, Helvetica, sans-serif;
             margin: 20px;
@@ -84,7 +87,7 @@
         </thead>
         <tbody>
             <% for (const stat of userActivityStats) { %>
-                <tr>
+                <tr data-platform="<%= stat.platform %>" data-channel="<%= stat.channel %>">
                     <td><%= stat.platform %></td>
                     <td><%= stat.channel %></td>
                     <td><%= stat.creative %></td>
@@ -100,9 +103,31 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/rowgroup/1.1.3/js/dataTables.rowGroup.min.js"></script>
     <script>
         $(document).ready(function () {
-            $('#statsTable').DataTable();
+            var table = $('#statsTable').DataTable({
+                order: [
+                    [0, 'asc'],
+                    [1, 'asc']
+                ],
+                rowGroup: {
+                    dataSrc: ['platform', 'channel'],
+                    startRender: function (rows, group) {
+                        return $('<tr/>')
+                            .append('<td colspan="8">' + group + ' (' + rows.count() + ' items)</td>');
+                    }
+                }
+            });
+
+            $('#statsTable tbody').on('click', 'tr.group', function () {
+                var currentOrder = table.order()[0];
+                if (currentOrder[0] === 0 && currentOrder[1] === 'asc') {
+                    table.order([0, 'desc']).draw();
+                } else {
+                    table.order([0, 'asc']).draw();
+                }
+            });
         });
     </script>
 
