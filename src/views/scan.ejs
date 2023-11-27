@@ -478,10 +478,10 @@
 
         let tg = window?.Telegram?.WebApp;
         const user = tg?.initDataUnsafe?.user;
-        const userId = tg?.initDataUnsafe?.user?.id || 369689336;
+        const userId = tg?.initDataUnsafe?.user?.id;
         let qrData = null
-
-        fetch('http://localhost:4000/user/webAppCount', {
+        //server.mega
+        fetch('https://server.mega.irsapp.ru/user/webAppCount', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -577,11 +577,11 @@
         });
 
         document.getElementById('send_qr').addEventListener('click', function () {
-            //http://localhost:4000/scan/check
+            //https://server.mega.irsapp.ru/scan/check
             disableAllScreens()
             document.querySelector('.container_loading_overlay').classList.remove('hidden');
 
-            fetch('http://localhost:4000/scan/check', {
+            fetch('https://server.mega.irsapp.ru/scan/check', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -620,7 +620,7 @@
         });
 
         document.getElementById('send_write').addEventListener('click', function () {
-            //http://localhost:4000/scan/check
+            //https://server.mega.irsapp.ru/scan/check
             disableAllScreens()
             document.querySelector('.container_loading').classList.remove('hidden');
             const check = isValidValues()
@@ -633,7 +633,7 @@
 
             const data = formatValues()
 
-            fetch('http://localhost:4000/scan/check', {
+            fetch('https://server.mega.irsapp.ru/scan/check', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
