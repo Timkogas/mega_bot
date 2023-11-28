@@ -32,60 +32,62 @@ export default class EjsAdminStatsPlatforms {
 
         const groupedStats: any[] = [];
         statsResult.forEach((row: any) => {
-            const platformIndex = groupedStats.findIndex((group) => group.id === row.platform);
-            if (platformIndex === -1) {
-                groupedStats.push({
-                    id: row.platform,
-                    total_launches: row.total_launches,
-                    unique_users: row.unique_users,
-                    total_web_app_launches: row.total_web_app_launches,
-                    unique_web_app_users: row.unique_web_app_users,
-                    game_sessions: row.game_sessions,
-                    channels: [{
-                        id: row.channel,
+            if (row.platform !== null) {
+                const platformIndex = groupedStats.findIndex((group) => group.id === row.platform);
+                if (platformIndex === -1) {
+                    groupedStats.push({
+                        id: row.platform,
                         total_launches: row.total_launches,
                         unique_users: row.unique_users,
                         total_web_app_launches: row.total_web_app_launches,
                         unique_web_app_users: row.unique_web_app_users,
                         game_sessions: row.game_sessions,
-                        creatives: [{
-                            id: row.creative,
+                        channels: [{
+                            id: row.channel,
                             total_launches: row.total_launches,
                             unique_users: row.unique_users,
                             total_web_app_launches: row.total_web_app_launches,
                             unique_web_app_users: row.unique_web_app_users,
                             game_sessions: row.game_sessions,
-                        }],
-                    }],
-                });
-            } else {
-                const channelIndex = groupedStats[platformIndex].channels.findIndex((channel) => channel.id === row.channel);
-                if (channelIndex === -1) {
-                    groupedStats[platformIndex].channels.push({
-                        id: row.channel,
-                        total_launches: row.total_launches,
-                        unique_users: row.unique_users,
-                        total_web_app_launches: row.total_web_app_launches,
-                        unique_web_app_users: row.unique_web_app_users,
-                        game_sessions: row.game_sessions,
-                        creatives: [{
-                            id: row.creative,
-                            total_launches: row.total_launches,
-                            unique_users: row.unique_users,
-                            total_web_app_launches: row.total_web_app_launches,
-                            unique_web_app_users: row.unique_web_app_users,
-                            game_sessions: row.game_sessions,
+                            creatives: [{
+                                id: row.creative,
+                                total_launches: row.total_launches,
+                                unique_users: row.unique_users,
+                                total_web_app_launches: row.total_web_app_launches,
+                                unique_web_app_users: row.unique_web_app_users,
+                                game_sessions: row.game_sessions,
+                            }],
                         }],
                     });
                 } else {
-                    groupedStats[platformIndex].channels[channelIndex].creatives.push({
-                        id: row.creative,
-                        total_launches: row.total_launches,
-                        unique_users: row.unique_users,
-                        total_web_app_launches: row.total_web_app_launches,
-                        unique_web_app_users: row.unique_web_app_users,
-                        game_sessions: row.game_sessions,
-                    });
+                    const channelIndex = groupedStats[platformIndex].channels.findIndex((channel) => channel.id === row.channel);
+                    if (channelIndex === -1) {
+                        groupedStats[platformIndex].channels.push({
+                            id: row.channel,
+                            total_launches: row.total_launches,
+                            unique_users: row.unique_users,
+                            total_web_app_launches: row.total_web_app_launches,
+                            unique_web_app_users: row.unique_web_app_users,
+                            game_sessions: row.game_sessions,
+                            creatives: [{
+                                id: row.creative,
+                                total_launches: row.total_launches,
+                                unique_users: row.unique_users,
+                                total_web_app_launches: row.total_web_app_launches,
+                                unique_web_app_users: row.unique_web_app_users,
+                                game_sessions: row.game_sessions,
+                            }],
+                        });
+                    } else {
+                        groupedStats[platformIndex].channels[channelIndex].creatives.push({
+                            id: row.creative,
+                            total_launches: row.total_launches,
+                            unique_users: row.unique_users,
+                            total_web_app_launches: row.total_web_app_launches,
+                            unique_web_app_users: row.unique_web_app_users,
+                            game_sessions: row.game_sessions,
+                        });
+                    }
                 }
             }
         });
@@ -110,7 +112,8 @@ export default class EjsAdminStatsPlatforms {
         }
     }
 }
-const sd = [
+
+const o = [
     {
         "platform": null,
         "channels":
@@ -136,7 +139,7 @@ const sd = [
     }]
 
 
-const d = [
+const t = [
 
     {
         "id": "tg",
@@ -157,5 +160,34 @@ const d = [
                     [
                         { "id": "post", "total_launches": "1", "unique_users": 1, "total_web_app_launches": "8", "unique_web_app_users": 1, "game_sessions": 0 }
                     ]
+            }]
+    }]
+
+
+const th = [
+    {
+        "id": null,
+        "total_launches": "8",
+        "unique_users": 7,
+        "total_web_app_launches": "0",
+        "unique_web_app_users": 0,
+        "game_sessions": 0,
+        "channels":
+            [{
+                "id": null, "total_launches": "8", "unique_users": 7, "total_web_app_launches": "0", "unique_web_app_users": 0, "game_sessions": 0,
+                "creatives": [{ "id": null, "total_launches": "8", "unique_users": 7, "total_web_app_launches": "0", "unique_web_app_users": 0, "game_sessions": 0 }]
+            }]
+    },
+
+    {
+        "id": "tg", "total_launches": "2", "unique_users": 2, "total_web_app_launches": "0", "unique_web_app_users": 0, "game_sessions": 0,
+        "channels":
+            [{
+                "id": "il", "total_launches": "2", "unique_users": 2, "total_web_app_launches": "0", "unique_web_app_users": 0, "game_sessions": 0,
+                "creatives": [{ "id": "post", "total_launches": "2", "unique_users": 2, "total_web_app_launches": "0", "unique_web_app_users": 0, "game_sessions": 0 }]
+            },
+            {
+                "id": "sblr", "total_launches": "1", "unique_users": 1, "total_web_app_launches": "8", "unique_web_app_users": 1, "game_sessions": 0,
+                "creatives": [{ "id": "post", "total_launches": "1", "unique_users": 1, "total_web_app_launches": "8", "unique_web_app_users": 1, "game_sessions": 0 }]
             }]
     }]
