@@ -99,7 +99,7 @@
                 </tr>
                 <% for (const channel of item.channels) { %>
                     <tr data-platform="<%= item.id || '' %>" data-channel="<%= channel.id || '' %>" class="channel">
-                        <td><%= '' %></td>
+                        <td></td>
                         <td><%= channel.id || '' %></td>
                         <td></td>
                         <td><%= channel.total_launches %></td>
@@ -110,8 +110,8 @@
                     </tr>
                     <% for (const creative of channel.creatives) { %>
                         <tr data-platform="<%= item.id || '' %>" data-channel="<%= channel.id || '' %>" data-creative="<%= creative.id || '' %>" class="creative">
-                            <td><%= '' %></td>
-                            <td><%= '' %></td>
+                            <td></td>
+                            <td></td>
                             <td><%= creative.id || '' %></td>
                             <td><%= creative.total_launches %></td>
                             <td><%= creative.unique_users %></td>
@@ -132,6 +132,11 @@
     <script>
         $(document).ready(function () {
             var table = $('#statsTable').DataTable({
+                order: [
+                    [0, 'asc'],
+                    [1, 'asc'],
+                    [2, 'asc']
+                ],
                 rowGroup: {
                     dataSrc: ['platform', 'channel', 'creative'],
                     startRender: function (rows, group) {
