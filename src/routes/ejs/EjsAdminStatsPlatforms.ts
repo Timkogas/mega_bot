@@ -29,8 +29,6 @@ export default class EjsAdminStatsPlatforms {
             platform;
         `);
 
-        Logger.debug('platformsStats', JSON.stringify(platformsStats))
-
         const channelsStatsPromises = platformsStats.map(async (platform) => {
             const channelStats = await Db.query(`
                 SELECT
@@ -55,8 +53,6 @@ export default class EjsAdminStatsPlatforms {
         });
         
         const platformsWithChannelsStats = await Promise.all(channelsStatsPromises);
-        
-        Logger.debug('platformsWithChannelsStats', JSON.stringify(platformsWithChannelsStats));
 
         const channelsWithCreativesStatsPromises = platformsWithChannelsStats.map(async (platform) => {
             const channelsWithCreativesStats = await Promise.all(platform.channels.map(async (channel) => {
@@ -91,10 +87,8 @@ export default class EjsAdminStatsPlatforms {
         const platformsWithChannelsAndCreativesStats = await Promise.all(channelsWithCreativesStatsPromises);
         
         Logger.debug('platformsWithChannelsAndCreativesStats', JSON.stringify(platformsWithChannelsAndCreativesStats));
-        
-        const groupedStats: any[] = [];
 
-        return groupedStats;
+        return platformsWithChannelsAndCreativesStats;
     }
     private _init(): void {
         try {
