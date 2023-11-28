@@ -62,6 +62,10 @@
         .pagination a:hover:not(.active) {
             background-color: #ddd;
         }
+
+        .channel, .creative {
+            display: none;
+        }
     </style>
 </head>
 
@@ -88,7 +92,7 @@
             <% for (const item of userActivityStats) { %>
                 <tr data-platform="<%= item.id || '' %>" class="platform">
                     <td>
-                        <button type="button" class="toggleButton">Toggle</button>
+                        <button type="button" class="toggleButton" data-platform="<%= item.id || '' %>">Toggle</button>
                         <%= item.id || '' %>
                     </td>
                     <td></td>
@@ -103,7 +107,6 @@
                     <tr data-platform="<%= item.id || '' %>" data-channel="<%= channel.id || '' %>" class="channel">
                         <td></td>
                         <td>
-                            <button type="button" class="toggleButton">Toggle</button>
                             <%= channel.id || '' %>
                         </td>
                         <td></td>
@@ -135,12 +138,15 @@
     <script src="https://cdn.datatables.net/plug-ins/1.10.24/i18n/Russian.json"></script>
     <script>
         $(document).ready(function () {
-            var table = $('#statsTable').DataTable();
-
+            const table = $('#statsTable').DataTable();
+            
             // Добавляем обработчик события на кнопку Toggle
             $('#statsTable tbody').on('click', 'button.toggleButton', function () {
-                var row = table.row($(this).parents('tr'));
-                row.child.isShown() ? row.child.hide() : row.child.show();
+                const platformId = $(this).data('platform');
+                const channelRows = table.rows('.channel[data-platform="' + platformId + '"]');
+                
+                // Переключаем видимость каналов
+                channelRows.toggle();
             });
         });
     </script>
