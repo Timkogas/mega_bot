@@ -29,7 +29,7 @@ export default class EjsAdminStatsPlatforms {
                 platform, channel, creative;
         `);
 
-
+        Logger.debug('statsResult', JSON.stringify(statsResult))
         const groupedStats: any[] = [];
         statsResult.forEach((row: any) => {
             if (row.platform !== null) {
