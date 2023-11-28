@@ -15,7 +15,9 @@
             text-wrap: wrap !important;
         }
 
-        .ag-theme-material .ag-header-cell-label .ag-header-cell-text {     height: auto !important;     overflow-wrap: normal !important;     white-space: normal !important; }
+        .ag-header-cell-label .ag-header-cell-text {
+            white-space: normal !important;
+        }
     </style>
 
 
@@ -40,18 +42,18 @@
             const columnDefs = [
                 { field: "id", headerName: "Платформа", suppressMovable: true },
                 // { field: "channel", headerName: "Канал/Аккаунт" },
-                { field: "total_launches", headerName: "Общее количество запусков чат-бота", suppressMovable: true },
-                { field: "unique_users", headerName: "Количество уникальных пользователей, запустивших чат-бот", suppressMovable: true },
-                { field: "total_web_app_launches", headerName: "Общее количество запусков Web-App", suppressMovable: true },
-                { field: "unique_web_app_users", headerName: "Количество уникальных пользователей, запустивших Web-App", suppressMovable: true },
-                { field: "game_sessions", headerName: "Количество пользователей, завершивших игровую сессию", suppressMovable: true },
+                { field: "total_launches", headerName: "Общее количество запусков чат-бота", suppressMovable: true, autoHeight: true, },
+                { field: "unique_users", headerName: "Количество уникальных пользователей, запустивших чат-бот", suppressMovable: true,  autoHeight: true,},
+                { field: "total_web_app_launches", headerName: "Общее количество запусков Web-App", suppressMovable: true,  autoHeight: true, },
+                { field: "unique_web_app_users", headerName: "Количество уникальных пользователей, запустивших Web-App", suppressMovable: true,  autoHeight: true, },
+                { field: "game_sessions", headerName: "Количество пользователей, завершивших игровую сессию", suppressMovable: true ,  autoHeight: true,},
             ];
 
             const gridOptions = {
                 columnDefs: columnDefs,
                 rowData: userActivityStats,
                 autoSizeColumns: true,
-
+                headerHeight: 48,
                 suppressMenu: true,
                 suppressSorting: true,
                 suppressFilter: true,
