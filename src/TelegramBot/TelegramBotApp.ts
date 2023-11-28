@@ -162,7 +162,7 @@ class TelegramBotApp {
             })
 
 
-            this.bot.on('callback_query', async (callbackQuery) => this._handleCallbackQuery(callbackQuery));
+            this.bot.on('callback_query', async (callbackQuery) => await this._handleCallbackQuery(callbackQuery));
         } catch (e) {
             Logger.error('[BOT] setupListeners error', e)
         }
@@ -832,9 +832,9 @@ class TelegramBotApp {
         try {
             const data = await this.bot.getChatMember(-1001793675054, dbUser.id)
             if (data.status === 'member' || data.status === 'administrator' || data.status === 'creator' || data.status === 'restricted') {
-                this._sendMessageOnSubscribeConfirm(chatId, dbUser)
+                return await this._sendMessageOnSubscribeConfirm(chatId, dbUser)
             } else {
-                this._sendMessageOnSubscribeError(chatId, dbUser)
+                return await this._sendMessageOnSubscribeError(chatId, dbUser)
             }
         } catch (e) {
             Logger.error('[BOT] sendMessageSubscribeCheck error', e)
