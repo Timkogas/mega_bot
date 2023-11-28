@@ -75,7 +75,7 @@
     <h1>Статистика</h1>
 
     <h2>Результаты сессий сканирования чеков</h2>
-    <div id="myGrid" style="height: 100%; width:100%;" class="ag-theme-alpine"></div>
+    <div id="myGrid" style="height: 200px; width:300px;" class="ag-theme-alpine"></div>
     <!-- <table id="statsTable" class="display">
         <thead>
             <tr>
@@ -91,9 +91,6 @@
         </thead>
     </table> -->
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/plug-ins/1.10.24/i18n/Russian.json"></script>
     <script>
         const columnDefs = [
             { field: "make" },
@@ -101,20 +98,19 @@
             { field: "price" }
         ];
 
-        // specify the data
+
         const rowData = [
             { make: "Toyota", model: "Celica", price: 35000 },
             { make: "Ford", model: "Mondeo", price: 32000 },
             { make: "Porsche", model: "Boxster", price: 72000 }
         ];
 
-        // let the grid know which columns and what data to use
+
         const gridOptions = {
             columnDefs: columnDefs,
             rowData: rowData
         };
 
-        // setup the grid after the page has finished loading
         document.addEventListener('DOMContentLoaded', () => {
             const gridDiv = document.querySelector('#myGrid');
             new agGrid.Grid(gridDiv, gridOptions);
