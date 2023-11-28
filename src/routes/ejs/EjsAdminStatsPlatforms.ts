@@ -43,7 +43,7 @@ export default class EjsAdminStatsPlatforms {
                 FROM
                     users
                 WHERE
-                    platform = $1
+                    platform = ?
                 GROUP BY
                     channel;
             `, [platform.id]);
