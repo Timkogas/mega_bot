@@ -8,6 +8,12 @@
             font-family: Arial, Helvetica, sans-serif;
             margin: 20px;
         }
+
+        .ag-center-cols-container {
+            width: 100% !important;
+            min-width: 100% !important;
+            text-wrap: wrap !important;
+        }
     </style>
 
 
@@ -30,13 +36,13 @@
             console.log(userActivityStats)
 
             const columnDefs = [
-                { field: "id", headerName: "Платформа", autoHeight: true},
+                { field: "id", headerName: "Платформа", suppressMovable: true },
                 // { field: "channel", headerName: "Канал/Аккаунт" },
-                { field: "total_launches", headerName: "Общее количество запусков чат-бота", autoHeight: true },
-                { field: "unique_users", headerName: "Количество уникальных пользователей, запустивших чат-бот", autoHeight: true },
-                { field: "total_web_app_launches", headerName: "Общее количество запусков Web-App", autoHeight: true },
-                { field: "unique_web_app_users", headerName: "Количество уникальных пользователей, запустивших Web-App", autoHeight: true },
-                { field: "game_sessions", headerName: "Количество пользователей, завершивших игровую сессию", autoHeight: true },
+                { field: "total_launches", headerName: "Общее количество запусков чат-бота", suppressMovable: true },
+                { field: "unique_users", headerName: "Количество уникальных пользователей, запустивших чат-бот", suppressMovable: true },
+                { field: "total_web_app_launches", headerName: "Общее количество запусков Web-App", suppressMovable: true },
+                { field: "unique_web_app_users", headerName: "Количество уникальных пользователей, запустивших Web-App", suppressMovable: true },
+                { field: "game_sessions", headerName: "Количество пользователей, завершивших игровую сессию", suppressMovable: true },
             ];
 
             const gridOptions = {
@@ -44,11 +50,12 @@
                 rowData: userActivityStats,
                 autoSizeColumns: true,
 
-                suppressMenu: true, 
-                suppressSorting: true, 
-                suppressFilter: true, 
+                suppressMenu: true,
+                suppressSorting: true,
+                suppressFilter: true,
+                suppressMovable: true,
                 autoHeight: true,
-                domLayout: 'autoHeight', 
+                domLayout: 'autoHeight',
             };
 
             new agGrid.Grid(gridDiv, gridOptions);
