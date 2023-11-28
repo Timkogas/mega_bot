@@ -18,7 +18,7 @@
     <h1>Статистика</h1>
 
     <h2>Результаты сессий сканирования чеков</h2>
-    <div id="myGrid" style="height: 200px; width:100%;" class="ag-theme-alpine"></div>
+    <div id="myGrid" style="height: max-content; width:100%;" class="ag-theme-alpine"></div>
 
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
@@ -30,7 +30,7 @@
             console.log(userActivityStats)
 
             const columnDefs = [
-                { field: "platform", headerName: "Платформа" },
+                { field: "id", headerName: "Платформа" },
                 // { field: "channel", headerName: "Канал/Аккаунт" },
                 { field: "total_launches", headerName: "Общее количество запусков чат-бота" },
                 { field: "unique_users", headerName: "Количество уникальных пользователей, запустивших чат-бот" },
@@ -42,6 +42,7 @@
             const gridOptions = {
                 columnDefs: columnDefs,
                 rowData: userActivityStats,
+                autoSizeColumns: true,
             };
 
             new agGrid.Grid(gridDiv, gridOptions);
