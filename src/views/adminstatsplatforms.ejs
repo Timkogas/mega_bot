@@ -43,13 +43,57 @@
         document.addEventListener('DOMContentLoaded', async () => {
             const gridDiv = document.querySelector('#myGrid');
 
+
             const response = await fetch('/adminstats/getStatPlatform');
             const { userActivityStats } = await response.json();
-            console.log(userActivityStats)
+            console.log(userActivityStats);
+
+            // Функция для преобразования данных в формат, понятный ag-Grid
+            const flattenData = (data) => {
+                const flattenedData = [];
+                data.forEach((platform) => {
+                    const platformData = {
+                        id: platform.id,
+                        total_launches: platform.total_launches,
+                        unique_users: platform.unique_users,
+                        total_web_app_launches: platform.total_web_app_launches,
+                        unique_web_app_users: platform.unique_web_app_users,
+                        game_sessions: platform.game_sessions,
+                    };
+                    platform.channels.forEach((channel) => {
+                        const channelData = {
+                            ...platformData,
+                            channel: channel.id,
+                            channel_total_launches: channel.total_launches,
+                            channel_unique_users: channel.unique_users,
+                            channel_total_web_app_launches: channel.total_web_app_launches,
+                            channel_unique_web_app_users: channel.unique_web_app_users,
+                            channel_game_sessions: channel.game_sessions,
+                        };
+                        channel.creatives.forEach((creative) => {
+                            const creativeData = {
+                                ...channelData,
+                                creative: creative.id,
+                                creative_total_launches: creative.total_launches,
+                                creative_unique_users: creative.unique_users,
+                                creative_total_web_app_launches: creative.total_web_app_launches,
+                                creative_unique_web_app_users: creative.unique_web_app_users,
+                                creative_game_sessions: creative.game_sessions,
+                            };
+                            flattenedData.push(creativeData);
+                        });
+                    });
+                });
+                return flattenedData;
+            };
+
+            const flattenedData = flattenData(userActivityStats);
 
             const columnDefs = [
                 { field: "id", headerName: "Платформа", suppressMovable: true, flex: 1, rowGroup: true },
-                { field: "total_launches", headerName: "Общее количество запусков чат-бота", suppressMovable: true, flex: 1, rowGroup: true },
+                { field: "channel", headerName: "Канал/Аккаунт" },
+                { field: "creative", headerName: "Креатив" },
+                { field: "total_launches", headerName: "Общее количество запусков чат-бота", suppressMovable: true, flex: 1 },
                 { field: "unique_users", headerName: "Количество уникальных пользователей, запустивших чат-бот", suppressMovable: true, flex: 1 },
                 { field: "total_web_app_launches", headerName: "Общее количество запусков Web-App", suppressMovable: true, flex: 1 },
                 { field: "unique_web_app_users", headerName: "Количество уникальных пользователей, запустивших Web-App", suppressMovable: true, flex: 1 },
@@ -58,14 +102,7 @@
 
             const gridOptions = {
                 columnDefs: columnDefs,
-                rowData: userActivityStats,
-                autoGroupColumnDef: {
-                    headerName: "Канал/Аккаунт", 
-                    field: "channels", 
-                    cellRendererParams: {
-                        suppressCount: true, 
-                    },
-                },
+                rowData: flattenedData,
                 suppressMenu: true,
                 suppressSorting: true,
                 suppressFilter: true,
@@ -75,7 +112,6 @@
             };
 
             const grid = new agGrid.Grid(gridDiv, gridOptions);
-
         });
     </script>
 
