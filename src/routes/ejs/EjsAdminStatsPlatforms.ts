@@ -23,6 +23,8 @@ export default class EjsAdminStatsPlatforms {
             COUNT(DISTINCT CASE WHEN final = 1 THEN id END) AS game_sessions
         FROM
             users
+        WHERE
+            platform IS NOT NULL
         GROUP BY
             platform;
         `);
