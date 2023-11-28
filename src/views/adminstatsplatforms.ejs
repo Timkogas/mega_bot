@@ -87,21 +87,31 @@
         </thead>
         <tbody>
             <% for (const item of userActivityStats) { %>
-                <tr>
+                <tr data-platform="<%= item.id || '' %>" class="platform">
                     <td><%= item.id || '' %></td>
-                    <td><%= '' %></td>
-                    <td><%= '' %></td>
+                    <td></td>
+                    <td></td>
                     <td><%= item.total_launches %></td>
                     <td><%= item.unique_users %></td>
                     <td><%= item.total_web_app_launches %></td>
                     <td><%= item.unique_web_app_users %></td>
                     <td><%= item.game_sessions %></td>
                 </tr>
-                <!-- <% for (const channel of item.channels) { %>
+                <% for (const channel of item.channels) { %>
+                    <tr data-platform="<%= item.id || '' %>" data-channel="<%= channel.id || '' %>" class="channel">
+                        <td><%= '' %></td>
+                        <td><%= channel.id || '' %></td>
+                        <td></td>
+                        <td><%= channel.total_launches %></td>
+                        <td><%= channel.unique_users %></td>
+                        <td><%= channel.total_web_app_launches %></td>
+                        <td><%= channel.unique_web_app_users %></td>
+                        <td><%= channel.game_sessions %></td>
+                    </tr>
                     <% for (const creative of channel.creatives) { %>
-                        <tr data-platform="<%= item.id || '' %>" data-channel="<%= channel.id || '' %>" data-creative="<%= creative.id || '' %>">
-                            <td><%= item.id || '' %></td>
-                            <td><%= channel.id || '' %></td>
+                        <tr data-platform="<%= item.id || '' %>" data-channel="<%= channel.id || '' %>" data-creative="<%= creative.id || '' %>" class="creative">
+                            <td><%= '' %></td>
+                            <td><%= '' %></td>
                             <td><%= creative.id || '' %></td>
                             <td><%= creative.total_launches %></td>
                             <td><%= creative.unique_users %></td>
@@ -110,7 +120,7 @@
                             <td><%= creative.game_sessions %></td>
                         </tr>
                     <% } %>
-                <% } %> -->
+                <% } %>
             <% } %>
         </tbody>
     </table>
@@ -121,7 +131,32 @@
     <script src="https://cdn.datatables.net/plug-ins/1.10.24/i18n/Russian.json"></script>
     <script>
         $(document).ready(function () {
-            var table = $('#statsTable').DataTable({});
+            var table = $('#statsTable').DataTable({
+                order: [
+                    [0, 'asc'],
+                    [1, 'asc'],
+                    [2, 'asc']
+                ],
+                rowGroup: {
+                    dataSrc: ['platform', 'channel', 'creative'],
+                    startRender: function (rows, group) {
+                        return $('<tr/>')
+                            .append('<td colspan="8">' + group + ' (' + rows.count() + ' items)</td>');
+                    }
+                },
+                language: {
+                    url: 'https://cdn.datatables.net/plug-ins/1.10.24/i18n/Russian.json'
+                }
+            });
+
+            $('#statsTable tbody').on('click', 'tr.group', function () {
+                var currentOrder = table.order()[0];
+                if (currentOrder[0] === 0 && currentOrder[1] === 'asc') {
+                    table.order([0, 'desc']).draw();
+                } else {
+                    table.order([0, 'asc']).draw();
+                }
+            });
         });
     </script>
 
