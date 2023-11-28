@@ -48,11 +48,51 @@
             const { userActivityStats } = await response.json();
             console.log(userActivityStats)
 
+            const flattenData = (data) => {
+                return data.flatMap((platform) => {
+                    const channels = platform.channels.map((channel) => {
+                        const creatives = channel.creatives.map((creative) => ({
+                            channel_id: channel.id,
+                            creative_id: creative.id,
+                            total_launches: creative.total_launches,
+                            unique_users: creative.unique_users,
+                            total_web_app_launches: creative.total_web_app_launches,
+                            unique_web_app_users: creative.unique_web_app_users,
+                            game_sessions: creative.game_sessions,
+                        }));
+
+                        return {
+                            platform_id: platform.id,
+                            channel_id: channel.id,
+                            total_launches: channel.total_launches,
+                            unique_users: channel.unique_users,
+                            total_web_app_launches: channel.total_web_app_launches,
+                            unique_web_app_users: channel.unique_web_app_users,
+                            game_sessions: channel.game_sessions,
+                            ...creatives[0], // Взять данные из первого креатива
+                        };
+                    });
+
+                    return [
+                        {
+                            platform_id: platform.id,
+                            total_launches: platform.total_launches,
+                            unique_users: platform.unique_users,
+                            total_web_app_launches: platform.total_web_app_launches,
+                            unique_web_app_users: platform.unique_web_app_users,
+                            game_sessions: platform.game_sessions,
+                        },
+                        ...channels,
+                    ];
+                });
+            };
+
+            const flattenedData = flattenData(userActivityStats);
 
             const columnDefs = [
-                { field: 'platform', headerName: 'Платформа', suppressMovable: true, flex: 1, rowGroup: true },
-                { field: 'channel', headerName: 'Канал', suppressMovable: true, flex: 1, rowGroup: true},
-                { field: 'creative', headerName: 'Креатив', suppressMovable: true, flex: 1, rowGroup: true },
+                { field: 'platform_id', headerName: 'Платформа', suppressMovable: true, flex: 1, rowGroup: true },
+                { field: 'channel_id', headerName: 'Канал', suppressMovable: true, flex: 1, rowGroup: true},
+                { field: 'creative_id', headerName: 'Креатив', suppressMovable: true, flex: 1, rowGroup: true },
                 { field: 'total_launches', headerName: 'Общее количество запусков чат-бота', suppressMovable: true, flex: 1 },
                 { field: 'unique_users', headerName: 'Количество уникальных пользователей, запустивших чат-бот', suppressMovable: true, flex: 1 },
                 { field: 'total_web_app_launches', headerName: 'Общее количество запусков Web-App', suppressMovable: true, flex: 1 },
@@ -60,9 +100,11 @@
                 { field: 'game_sessions', headerName: 'Количество пользователей, завершивших игровую сессию', suppressMovable: true, flex: 1 },
             ];
 
+            console.log(flattenedData)
+
             const gridOptions = {
                 columnDefs: columnDefs,
-                rowData: userActivityStats,
+                rowData: flattenedData,
                 suppressMenu: true,
                 suppressSorting: true,
                 suppressFilter: true,
