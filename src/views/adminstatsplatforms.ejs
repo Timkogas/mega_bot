@@ -43,6 +43,11 @@
                 columnDefs: columnDefs,
                 rowData: userActivityStats,
                 autoSizeColumns: true,
+
+                suppressMenu: true, 
+                suppressSorting: true, 
+                suppressFilter: true, 
+                domLayout: 'autoHeight', 
             };
 
             new agGrid.Grid(gridDiv, gridOptions);
