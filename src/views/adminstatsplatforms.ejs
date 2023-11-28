@@ -58,17 +58,33 @@
                 { field: "game_sessions", headerName: "Количество пользователей, завершивших игровую сессию", suppressMovable: true,   flex: 1 },
             ];
 
+            const autoGroupColumnDef = {
+                headerName: "Канал/Аккаунт",
+                field: "id",
+                cellRenderer: 'agGroupCellRenderer',
+                cellRendererParams: {
+                    checkbox: true
+                }
+            };
+
+
             const gridOptions = {
                 columnDefs: columnDefs,
+                autoGroupColumnDef: autoGroupColumnDef,
                 rowData: userActivityStats,
+                groupUseEntireRow: true,
+                groupDefaultExpanded: -1,
                 suppressMenu: true,
                 suppressSorting: true,
                 suppressFilter: true,
                 suppressMovable: true,
                 autoHeight: true,
                 domLayout: 'autoHeight',
+                animateRows: true,
+                getDataPath: function(data) {
+                    return [data.id, data.channels, data.creatives];
+                }
             };
-
             const grid = new agGrid.Grid(gridDiv, gridOptions);
 
         });
