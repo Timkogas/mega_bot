@@ -22,26 +22,7 @@
     <h2>Результаты сессий сканирования чеков</h2>
     <div id="myGrid" style="height: 200px; width:100%;" class="ag-theme-alpine"></div>
     <% 
-    const columnDefs = [
-        { field: "platform", headerName: "Платформа" },
-        { field: "channel", headerName: "Канал/Аккаунт" },
-        { field: "total_launches", headerName: "Общее количество запусков чат-бота" },
-        { field: "unique_users", headerName: "Количество уникальных пользователей, запустивших чат-бот" },
-        { field: "total_web_app_launches", headerName: "Общее количество запусков Web-App" },
-        { field: "unique_web_app_users", headerName: "Количество уникальных пользователей, запустивших Web-App" },
-        { field: "game_sessions", headerName: "Количество пользователей, завершивших игровую сессию" },
-    ];
-
-    const gridOptions = {
-        columnDefs: columnDefs,
-        rowData: userActivityStats
-    };
-
-    document.addEventListener('DOMContentLoaded', () => {
-        const gridDiv = document.querySelector('#myGrid');
-        new agGrid.Grid(gridDiv, gridOptions);
-    });
-    
+    var dataUsers = userActivityStats
     %>
     <!-- <table id="statsTable" class="display">
         <thead>
@@ -58,7 +39,27 @@
         </thead>
     </table> -->
 
+    <script> 
+     const columnDefs = [
+        { field: "platform", headerName: "Платформа" },
+        { field: "channel", headerName: "Канал/Аккаунт" },
+        { field: "total_launches", headerName: "Общее количество запусков чат-бота" },
+        { field: "unique_users", headerName: "Количество уникальных пользователей, запустивших чат-бот" },
+        { field: "total_web_app_launches", headerName: "Общее количество запусков Web-App" },
+        { field: "unique_web_app_users", headerName: "Количество уникальных пользователей, запустивших Web-App" },
+        { field: "game_sessions", headerName: "Количество пользователей, завершивших игровую сессию" },
+    ];
 
+     const gridOptions = {
+        columnDefs: columnDefs,
+        rowData: dataUsers
+    };
+    
+    document.addEventListener('DOMContentLoaded', () => {
+        const gridDiv = document.querySelector('#myGrid');
+        new agGrid.Grid(gridDiv, gridOptions);
+    }); 
+    </script>
 
 </body>
 
