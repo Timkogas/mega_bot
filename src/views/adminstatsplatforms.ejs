@@ -87,16 +87,20 @@
         </thead>
         <tbody>
             <% for (const item of userActivityStats) { %>
-                <tr data-platform="<%= item.platform || '' %>" data-channel="<%= item.channels[0].channel || '' %>">
-                    <td><%= item.platform || '' %></td>
-                    <td><%= item.channels[0].channel || '' %></td>
-                    <td><%= item.channels[0].creatives[0].creative || '' %></td>
-                    <td><%= item.channels[0].creatives[0].total_launches %></td>
-                    <td><%= item.channels[0].creatives[0].unique_users %></td>
-                    <td><%= item.channels[0].creatives[0].total_web_app_launches %></td>
-                    <td><%= item.channels[0].creatives[0].unique_web_app_users %></td>
-                    <td><%= item.channels[0].creatives[0].game_sessions %></td>
-                </tr>
+                <% for (const channel of item.channels) { %>
+                    <% for (const creative of channel.creatives) { %>
+                        <tr data-platform="<%= item.id || '' %>" data-channel="<%= channel.id || '' %>" data-creative="<%= creative.id || '' %>">
+                            <td><%= item.id || '' %></td>
+                            <td><%= channel.id || '' %></td>
+                            <td><%= creative.id || '' %></td>
+                            <td><%= creative.total_launches %></td>
+                            <td><%= creative.unique_users %></td>
+                            <td><%= creative.total_web_app_launches %></td>
+                            <td><%= creative.unique_web_app_users %></td>
+                            <td><%= creative.game_sessions %></td>
+                        </tr>
+                    <% } %>
+                <% } %>
             <% } %>
         </tbody>
     </table>
@@ -110,7 +114,8 @@
             var table = $('#statsTable').DataTable({
                 order: [
                     [0, 'asc'],
-                    [1, 'asc']
+                    [1, 'asc'],
+                    [2, 'asc']
                 ],
                 rowGroup: {
                     dataSrc: ['platform', 'channel'],
