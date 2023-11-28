@@ -29,12 +29,12 @@ export default class EjsAdminStatsPlatforms {
                 platform, channel, creative;
         `);
 
-
+        Logger.debug('statsResult', JSON.stringify(statsResult))
         const groupedStats: any[] = [];
         statsResult.forEach((row: any) => {
             if (row.platform !== null) {
                 let platformObj = groupedStats.find((platform) => platform.id === row.platform);
-    
+
                 if (!platformObj) {
                     platformObj = {
                         id: row.platform,
@@ -45,12 +45,12 @@ export default class EjsAdminStatsPlatforms {
                         game_sessions: row.game_sessions,
                         channels: [],
                     };
-    
+
                     groupedStats.push(platformObj);
                 }
-    
+
                 let channelObj = platformObj.channels.find((channel) => channel.id === row.channel);
-    
+
                 if (!channelObj) {
                     channelObj = {
                         id: row.channel,
@@ -61,10 +61,10 @@ export default class EjsAdminStatsPlatforms {
                         game_sessions: row.game_sessions,
                         creatives: [],
                     };
-    
+
                     platformObj.channels.push(channelObj);
                 }
-    
+
                 channelObj.creatives.push({
                     id: row.creative,
                     total_launches: row.total_launches,
@@ -96,57 +96,3 @@ export default class EjsAdminStatsPlatforms {
         }
     }
 }
-
-
-const t = [
-
-    {
-        "id": "tg",
-        "total_launches": "1",
-        "unique_users": 1,
-        "total_web_app_launches": "8",
-        "unique_web_app_users": 1,
-        "game_sessions": 0,
-        "channels": [
-            {
-                "id": "sblr",
-                "total_launches": "1",
-                "unique_users": 1,
-                "total_web_app_launches": "8",
-                "unique_web_app_users": 1,
-                "game_sessions": 0,
-                "creatives":
-                    [
-                        { "id": "post", "total_launches": "1", "unique_users": 1, "total_web_app_launches": "8", "unique_web_app_users": 1, "game_sessions": 0 }
-                    ]
-            }]
-    }]
-
-
-const th = [
-    {
-        "id": null,
-        "total_launches": "8",
-        "unique_users": 7,
-        "total_web_app_launches": "0",
-        "unique_web_app_users": 0,
-        "game_sessions": 0,
-        "channels":
-            [{
-                "id": null, "total_launches": "8", "unique_users": 7, "total_web_app_launches": "0", "unique_web_app_users": 0, "game_sessions": 0,
-                "creatives": [{ "id": null, "total_launches": "8", "unique_users": 7, "total_web_app_launches": "0", "unique_web_app_users": 0, "game_sessions": 0 }]
-            }]
-    },
-
-    {
-        "id": "tg", "total_launches": "2", "unique_users": 2, "total_web_app_launches": "0", "unique_web_app_users": 0, "game_sessions": 0,
-        "channels":
-            [{
-                "id": "il", "total_launches": "2", "unique_users": 2, "total_web_app_launches": "0", "unique_web_app_users": 0, "game_sessions": 0,
-                "creatives": [{ "id": "post", "total_launches": "2", "unique_users": 2, "total_web_app_launches": "0", "unique_web_app_users": 0, "game_sessions": 0 }]
-            },
-            {
-                "id": "sblr", "total_launches": "1", "unique_users": 1, "total_web_app_launches": "8", "unique_web_app_users": 1, "game_sessions": 0,
-                "creatives": [{ "id": "post", "total_launches": "1", "unique_users": 1, "total_web_app_launches": "8", "unique_web_app_users": 1, "game_sessions": 0 }]
-            }]
-    }]
