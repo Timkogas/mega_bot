@@ -135,7 +135,7 @@ class TelegramBotApp {
                     case EActivity.AUTHORIZATION:
 
                         try {
-                            const checkAuthorization = await axios.post('https://omniapi-dev.mega.ru/telegram/registerUser',
+                            const checkAuthorization = await axios.post('https://omniapi.mega.ru/telegram/registerUser',
                                 {
                                     telegramId: `${dbUser.id}`,
                                     keycloakId: text
