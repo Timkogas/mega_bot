@@ -97,7 +97,7 @@
                     <td><%= item.unique_web_app_users %></td>
                     <td><%= item.game_sessions %></td>
                 </tr>
-                <% for (const channel of item.channels) { %>
+                <!-- <% for (const channel of item.channels) { %>
                     <tr data-platform="<%= item.id || '' %>" data-channel="<%= channel.id || '' %>" class="channel">
                         <td></td>
                         <td><%= channel.id || '' %></td>
@@ -120,7 +120,7 @@
                             <td><%= creative.game_sessions %></td>
                         </tr>
                     <% } %>
-                <% } %>
+                <% } %> -->
             <% } %>
         </tbody>
     </table>
@@ -131,24 +131,8 @@
     <script src="https://cdn.datatables.net/plug-ins/1.10.24/i18n/Russian.json"></script>
     <script>
         $(document).ready(function () {
-            var table = $('#statsTable').DataTable({
-                order: [
-                    [0, 'asc'],
-                    [1, 'asc'],
-                    [2, 'asc']
-                ],
-                rowGroup: {
-                    dataSrc: ['platform', 'channel', 'creative'],
-                    startRender: function (rows, group) {
-                        return $('<tr/>')
-                            .append('<td colspan="8">' + group + ' (' + rows.count() + ' items)</td>');
-                    }
-                },
-                language: {
-                    url: 'https://cdn.datatables.net/plug-ins/1.10.24/i18n/Russian.json'
-                }
-            });
-        });
+            var table = $('#statsTable').DataTable({});
+        })
     </script>
 
 </body>
