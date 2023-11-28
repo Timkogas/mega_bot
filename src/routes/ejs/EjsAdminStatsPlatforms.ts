@@ -94,10 +94,19 @@ export default class EjsAdminStatsPlatforms {
         try {
             this._app.get('/adminstats/platforms', async (req, res) => {
                 try {
+                    res.render('adminstatsplatforms');
+                } catch (error) {
+                    Logger.error('Error fetching user stats:', error);
+                    res.status(500).send('Internal Server Error');
+                }
+            });
+
+            this._app.get('/adminstats/getStatPlatform', async (req, res) => {
+                try {
                     const userActivityStats = await this._fetchUserStats();
-                    Logger.debug('userActivityStats', JSON.stringify(userActivityStats))
-                    // Render the adminstatsplatforms template with the retrieved data
-                    res.render('adminstatsplatforms', { userActivityStats });
+                    Logger.debug('userActivityStats', JSON.stringify(userActivityStats));
+
+                    res.json({ userActivityStats });
                 } catch (error) {
                     Logger.error('Error fetching user stats:', error);
                     res.status(500).send('Internal Server Error');

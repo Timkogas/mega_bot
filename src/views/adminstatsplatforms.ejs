@@ -4,12 +4,10 @@
 <head>
     <script src="https://cdn.jsdelivr.net/npm/ag-grid-community/dist/ag-grid-community.min.js"></script>
     <style>
-
         body {
             font-family: Arial, Helvetica, sans-serif;
             margin: 20px;
         }
-
     </style>
 
 
@@ -21,44 +19,32 @@
 
     <h2>Результаты сессий сканирования чеков</h2>
     <div id="myGrid" style="height: 200px; width:100%;" class="ag-theme-alpine"></div>
-    <% 
-    var dataUsers = userActivityStats
-    %>
-    <!-- <table id="statsTable" class="display">
-        <thead>
-            <tr>
-                <th data-i18n="Platform">Платформа</th>
-                <th data-i18n="Channel">Канал/Аккаунт</th>
-                <th data-i18n="Creative">Креатив</th>
-                <th data-i18n="Total Launches">Общее количество запусков чат-бота</th>
-                <th data-i18n="Unique Users">Количество уникальных пользователей, запустивших чат-бот</th>
-                <th data-i18n="Total Web App Launches">Общее количество запусков Web-App</th>
-                <th data-i18n="Unique Web App Users">Количество уникальных пользователей, запустивших Web-App</th>
-                <th data-i18n="Game Sessions">Количество пользователей, завершивших игровую сессию</th>
-            </tr>
-        </thead>
-    </table> -->
 
-    <script> 
-     const columnDefs = [
-        { field: "platform", headerName: "Платформа" },
-        { field: "channel", headerName: "Канал/Аккаунт" },
-        { field: "total_launches", headerName: "Общее количество запусков чат-бота" },
-        { field: "unique_users", headerName: "Количество уникальных пользователей, запустивших чат-бот" },
-        { field: "total_web_app_launches", headerName: "Общее количество запусков Web-App" },
-        { field: "unique_web_app_users", headerName: "Количество уникальных пользователей, запустивших Web-App" },
-        { field: "game_sessions", headerName: "Количество пользователей, завершивших игровую сессию" },
-    ];
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const gridDiv = document.querySelector('#myGrid');
 
-     const gridOptions = {
-        columnDefs: columnDefs,
-        rowData: dataUsers
-    };
-    
-    document.addEventListener('DOMContentLoaded', () => {
-        const gridDiv = document.querySelector('#myGrid');
-        new agGrid.Grid(gridDiv, gridOptions);
-    }); 
+
+            const response = await fetch('/adminstats/getStatPlatform');
+            const { userActivityStats } = await response.json();
+
+            const columnDefs = [
+                { field: "platform", headerName: "Платформа" },
+                { field: "channel", headerName: "Канал/Аккаунт" },
+                { field: "total_launches", headerName: "Общее количество запусков чат-бота" },
+                { field: "unique_users", headerName: "Количество уникальных пользователей, запустивших чат-бот" },
+                { field: "total_web_app_launches", headerName: "Общее количество запусков Web-App" },
+                { field: "unique_web_app_users", headerName: "Количество уникальных пользователей, запустивших Web-App" },
+                { field: "game_sessions", headerName: "Количество пользователей, завершивших игровую сессию" },
+            ];
+
+            const gridOptions = {
+                columnDefs: columnDefs,
+                rowData: userActivityStats,
+            };
+
+            new agGrid.Grid(gridDiv, gridOptions);
+        });
     </script>
 
 </body>
