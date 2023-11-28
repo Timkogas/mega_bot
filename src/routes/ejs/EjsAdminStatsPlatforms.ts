@@ -13,82 +13,102 @@ export default class EjsAdminStatsPlatforms {
     private _app: core.Express;
 
     private async _fetchUserStats(): Promise<any[]> {
-        const platformsStats = await Db.query(`
+        // const platformsStats = await Db.query(`
+        // SELECT
+        //     platform AS id,
+        //     SUM(start) AS total_launches,
+        //     COUNT(DISTINCT id) AS unique_users,
+        //     SUM(web_app) AS total_web_app_launches,
+        //     COUNT(DISTINCT CASE WHEN web_app > 0 THEN id END) AS unique_web_app_users,
+        //     COUNT(DISTINCT CASE WHEN final = 1 THEN id END) AS game_sessions
+        // FROM
+        //     users
+        // WHERE
+        //     platform IS NOT NULL
+        // GROUP BY
+        //     platform;
+        // `);
+
+        // const channelsStatsPromises = platformsStats.map(async (platform) => {
+        //     const channelStats = await Db.query(`
+        //         SELECT
+        //             channel AS id,
+        //             SUM(start) AS total_launches,
+        //             COUNT(DISTINCT id) AS unique_users,
+        //             SUM(web_app) AS total_web_app_launches,
+        //             COUNT(DISTINCT CASE WHEN web_app > 0 THEN id END) AS unique_web_app_users,
+        //             COUNT(DISTINCT CASE WHEN final = 1 THEN id END) AS game_sessions
+        //         FROM
+        //             users
+        //         WHERE
+        //             platform = ?
+        //         GROUP BY
+        //             channel;
+        //     `, [platform.id]);
+
+        //     return {
+        //         ...platform,
+        //         channels: channelStats,
+        //     };
+        // });
+
+        // const platformsWithChannelsStats = await Promise.all(channelsStatsPromises);
+
+        // const channelsWithCreativesStatsPromises = platformsWithChannelsStats.map(async (platform) => {
+        //     const channelsWithCreativesStats = await Promise.all(platform.channels.map(async (channel) => {
+        //         const creativeStats = await Db.query(`
+        //             SELECT
+        //                 creative AS id,
+        //                 SUM(start) AS total_launches,
+        //                 COUNT(DISTINCT id) AS unique_users,
+        //                 SUM(web_app) AS total_web_app_launches,
+        //                 COUNT(DISTINCT CASE WHEN web_app > 0 THEN id END) AS unique_web_app_users,
+        //                 COUNT(DISTINCT CASE WHEN final = 1 THEN id END) AS game_sessions
+        //             FROM
+        //                 users
+        //             WHERE
+        //                 platform = ? AND channel = ?
+        //             GROUP BY
+        //                 creative;
+        //         `, [platform.id, channel.id]);
+
+        //         return {
+        //             ...channel,
+        //             creatives: creativeStats,
+        //         };
+        //     }));
+
+        //     return {
+        //         ...platform,
+        //         channels: channelsWithCreativesStats,
+        //     };
+        // });
+
+        // const platformsWithChannelsAndCreativesStats = await Promise.all(channelsWithCreativesStatsPromises);
+
+        // Logger.debug('platformsWithChannelsAndCreativesStats', JSON.stringify(platformsWithChannelsAndCreativesStats));
+
+        // return platformsWithChannelsAndCreativesStats;
+
+        const statsResult = await Db.query(`
         SELECT
-            platform AS id,
-            SUM(start) AS total_launches,
-            COUNT(DISTINCT id) AS unique_users,
-            SUM(web_app) AS total_web_app_launches,
-            COUNT(DISTINCT CASE WHEN web_app > 0 THEN id END) AS unique_web_app_users,
-            COUNT(DISTINCT CASE WHEN final = 1 THEN id END) AS game_sessions
-        FROM
-            users
-        WHERE
-            platform IS NOT NULL
-        GROUP BY
-            platform;
-        `);
+        platform,
+        channel,
+        creative,
+        SUM(start) AS total_launches,
+        COUNT(DISTINCT id) AS unique_users,
+        SUM(web_app) AS total_web_app_launches,
+        COUNT(DISTINCT CASE WHEN web_app > 0 THEN id END) AS unique_web_app_users,
+        COUNT(DISTINCT CASE WHEN final = 1 THEN id END) AS game_sessions
+    FROM
+        users
+    WHERE
+        platform IS NOT NULL AND channel IS NOT NULL AND creative IS NOT NULL
 
-        const channelsStatsPromises = platformsStats.map(async (platform) => {
-            const channelStats = await Db.query(`
-                SELECT
-                    channel AS id,
-                    SUM(start) AS total_launches,
-                    COUNT(DISTINCT id) AS unique_users,
-                    SUM(web_app) AS total_web_app_launches,
-                    COUNT(DISTINCT CASE WHEN web_app > 0 THEN id END) AS unique_web_app_users,
-                    COUNT(DISTINCT CASE WHEN final = 1 THEN id END) AS game_sessions
-                FROM
-                    users
-                WHERE
-                    platform = ?
-                GROUP BY
-                    channel;
-            `, [platform.id]);
-        
-            return {
-                ...platform,
-                channels: channelStats,
-            };
-        });
-        
-        const platformsWithChannelsStats = await Promise.all(channelsStatsPromises);
-
-        const channelsWithCreativesStatsPromises = platformsWithChannelsStats.map(async (platform) => {
-            const channelsWithCreativesStats = await Promise.all(platform.channels.map(async (channel) => {
-                const creativeStats = await Db.query(`
-                    SELECT
-                        creative AS id,
-                        SUM(start) AS total_launches,
-                        COUNT(DISTINCT id) AS unique_users,
-                        SUM(web_app) AS total_web_app_launches,
-                        COUNT(DISTINCT CASE WHEN web_app > 0 THEN id END) AS unique_web_app_users,
-                        COUNT(DISTINCT CASE WHEN final = 1 THEN id END) AS game_sessions
-                    FROM
-                        users
-                    WHERE
-                        platform = ? AND channel = ?
-                    GROUP BY
-                        creative;
-                `, [platform.id, channel.id]);
-                
-                return {
-                    ...channel,
-                    creatives: creativeStats,
-                };
-            }));
-            
-            return {
-                ...platform,
-                channels: channelsWithCreativesStats,
-            };
-        });
-        
-        const platformsWithChannelsAndCreativesStats = await Promise.all(channelsWithCreativesStatsPromises);
-        
-        Logger.debug('platformsWithChannelsAndCreativesStats', JSON.stringify(platformsWithChannelsAndCreativesStats));
-
-        return platformsWithChannelsAndCreativesStats;
+    GROUP BY
+        platform, channel, creative;`
+        )
+        return statsResult
     }
     private _init(): void {
         try {
