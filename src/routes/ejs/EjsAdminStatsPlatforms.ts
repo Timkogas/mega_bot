@@ -31,6 +31,33 @@ export default class EjsAdminStatsPlatforms {
 
         Logger.debug('platformsStats', JSON.stringify(platformsStats))
 
+        const channelsStatsPromises = platformsStats.map(async (platform) => {
+            const channelStats = await Db.query(`
+                SELECT
+                    channel AS id,
+                    SUM(start) AS total_launches,
+                    COUNT(DISTINCT id) AS unique_users,
+                    SUM(web_app) AS total_web_app_launches,
+                    COUNT(DISTINCT CASE WHEN web_app > 0 THEN id END) AS unique_web_app_users,
+                    COUNT(DISTINCT CASE WHEN final = 1 THEN id END) AS game_sessions
+                FROM
+                    users
+                WHERE
+                    platform = $1
+                GROUP BY
+                    channel;
+            `, [platform.id]);
+        
+            return {
+                ...platform,
+                channels: channelStats,
+            };
+        });
+        
+        const platformsWithChannelsStats = await Promise.all(channelsStatsPromises);
+        
+        Logger.debug('platformsWithChannelsStats', JSON.stringify(platformsWithChannelsStats));
+        
         const groupedStats: any[] = [];
 
         return groupedStats;
