@@ -328,7 +328,7 @@ class Helper {
         try {
             // Получение последней задачи со статусом 0
             const lastTask = await Db.query('SELECT * FROM users_tasks WHERE user_id = ? AND status = 0 ORDER BY id DESC LIMIT 1', [userId]);
-            Logger.debug('confirm task', userId, status, score, lastTask)
+            Logger.debug('confirm task', userId, status, score, JSON.stringify(lastTask))
             if (lastTask && lastTask.length > 0) {
                 const taskId = lastTask[0].id;
                 // Обновление статуса последней задачи на 1
