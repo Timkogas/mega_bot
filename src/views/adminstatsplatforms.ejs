@@ -30,13 +30,13 @@
             console.log(userActivityStats)
 
             const columnDefs = [
-                { field: "id", headerName: "Платформа" },
+                { field: "id", headerName: "Платформа", autoHeight: true},
                 // { field: "channel", headerName: "Канал/Аккаунт" },
-                { field: "total_launches", headerName: "Общее количество запусков чат-бота" },
-                { field: "unique_users", headerName: "Количество уникальных пользователей, запустивших чат-бот" },
-                { field: "total_web_app_launches", headerName: "Общее количество запусков Web-App" },
-                { field: "unique_web_app_users", headerName: "Количество уникальных пользователей, запустивших Web-App" },
-                { field: "game_sessions", headerName: "Количество пользователей, завершивших игровую сессию" },
+                { field: "total_launches", headerName: "Общее количество запусков чат-бота", autoHeight: true },
+                { field: "unique_users", headerName: "Количество уникальных пользователей, запустивших чат-бот", autoHeight: true },
+                { field: "total_web_app_launches", headerName: "Общее количество запусков Web-App", autoHeight: true },
+                { field: "unique_web_app_users", headerName: "Количество уникальных пользователей, запустивших Web-App", autoHeight: true },
+                { field: "game_sessions", headerName: "Количество пользователей, завершивших игровую сессию", autoHeight: true },
             ];
 
             const gridOptions = {
@@ -47,7 +47,7 @@
                 suppressMenu: true, 
                 suppressSorting: true, 
                 suppressFilter: true, 
-                wrapText: true,
+                autoHeight: true,
                 domLayout: 'autoHeight', 
             };
 
