@@ -14,81 +14,67 @@ export default class EjsAdminStatsPlatforms {
 
     private async _fetchUserStats(): Promise<any[]> {
         const statsResult = await Db.query(`
-        SELECT
-        platform AS id,
-        SUM(start) AS total_launches,
-        COUNT(DISTINCT id) AS unique_users,
-        SUM(web_app) AS total_web_app_launches,
-        COUNT(DISTINCT CASE WHEN web_app > 0 THEN id END) AS unique_web_app_users,
-        COUNT(DISTINCT CASE WHEN final = 1 THEN id END) AS game_sessions,
-        JSON_AGG(JSON_BUILD_OBJECT(
-            'id', channel,
-            'total_launches', SUM(start),
-            'unique_users', COUNT(DISTINCT id),
-            'total_web_app_launches', SUM(web_app),
-            'unique_web_app_users', COUNT(DISTINCT CASE WHEN web_app > 0 THEN id END),
-            'game_sessions', COUNT(DISTINCT CASE WHEN final = 1 THEN id END),
-            'creatives', JSON_AGG(JSON_BUILD_OBJECT(
-                'id', creative,
-                'total_launches', SUM(start),
-                'unique_users', COUNT(DISTINCT id),
-                'total_web_app_launches', SUM(web_app),
-                'unique_web_app_users', COUNT(DISTINCT CASE WHEN web_app > 0 THEN id END),
-                'game_sessions', COUNT(DISTINCT CASE WHEN final = 1 THEN id END)
-            ))
-        )) AS channels
-        FROM
-            users
-        GROUP BY
-            platform, channel, creative;
+            SELECT
+                platform,
+                channel,
+                creative,
+                SUM(start) AS total_launches,
+                COUNT(DISTINCT id) AS unique_users,
+                SUM(web_app) AS total_web_app_launches,
+                COUNT(DISTINCT CASE WHEN web_app > 0 THEN id END) AS unique_web_app_users,
+                COUNT(DISTINCT CASE WHEN final = 1 THEN id END) AS game_sessions
+            FROM
+                users
+            GROUP BY
+                platform, channel, creative;
         `);
 
-        Logger.debug('statsResult', JSON.stringify(statsResult))
+
         const groupedStats: any[] = [];
-        // statsResult.forEach((row: any) => {
-        //     if (row.platform !== null) {
-        //         let platformObj = groupedStats.find((platform) => platform.id === row.platform);
+        statsResult.forEach((row: any) => {
+            if (row.platform !== null) {
+                let platformObj = groupedStats.find((platform) => platform.id === row.platform);
 
-        //         if (!platformObj) {
-        //             platformObj = {
-        //                 id: row.platform,
-        //                 total_launches: row.total_launches,
-        //                 unique_users: row.unique_users,
-        //                 total_web_app_launches: row.total_web_app_launches,
-        //                 unique_web_app_users: row.unique_web_app_users,
-        //                 game_sessions: row.game_sessions,
-        //                 channels: [],
-        //             };
+                if (!platformObj) {
+                    platformObj = {
+                        id: row.platform,
+                        total_launches: row.total_launches,
+                        unique_users: row.unique_users,
+                        total_web_app_launches: row.total_web_app_launches,
+                        unique_web_app_users: row.unique_web_app_users,
+                        game_sessions: row.game_sessions,
+                        channels: [],
+                    };
 
-        //             groupedStats.push(platformObj);
-        //         }
+                    groupedStats.push(platformObj);
+                }
 
-        //         let channelObj = platformObj.channels.find((channel) => channel.id === row.channel);
+                let channelObj = platformObj.channels.find((channel) => channel.id === row.channel);
 
-        //         if (!channelObj) {
-        //             channelObj = {
-        //                 id: row.channel,
-        //                 total_launches: row.total_launches,
-        //                 unique_users: row.unique_users,
-        //                 total_web_app_launches: row.total_web_app_launches,
-        //                 unique_web_app_users: row.unique_web_app_users,
-        //                 game_sessions: row.game_sessions,
-        //                 creatives: [],
-        //             };
+                if (!channelObj) {
+                    channelObj = {
+                        id: row.channel,
+                        total_launches: row.total_launches,
+                        unique_users: row.unique_users,
+                        total_web_app_launches: row.total_web_app_launches,
+                        unique_web_app_users: row.unique_web_app_users,
+                        game_sessions: row.game_sessions,
+                        creatives: [],
+                    };
 
-        //             platformObj.channels.push(channelObj);
-        //         }
+                    platformObj.channels.push(channelObj);
+                }
 
-        //         channelObj.creatives.push({
-        //             id: row.creative,
-        //             total_launches: row.total_launches,
-        //             unique_users: row.unique_users,
-        //             total_web_app_launches: row.total_web_app_launches,
-        //             unique_web_app_users: row.unique_web_app_users,
-        //             game_sessions: row.game_sessions,
-        //         });
-        //     }
-        // });
+                channelObj.creatives.push({
+                    id: row.creative,
+                    total_launches: row.total_launches,
+                    unique_users: row.unique_users,
+                    total_web_app_launches: row.total_web_app_launches,
+                    unique_web_app_users: row.unique_web_app_users,
+                    game_sessions: row.game_sessions,
+                });
+            }
+        });
 
         return groupedStats;
     }
@@ -110,6 +96,7 @@ export default class EjsAdminStatsPlatforms {
         }
     }
 }
+
 
 
 const d = [
