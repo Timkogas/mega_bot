@@ -43,37 +43,31 @@
         document.addEventListener('DOMContentLoaded', async () => {
             const gridDiv = document.querySelector('#myGrid');
 
-
             const response = await fetch('/adminstats/getStatPlatform');
             const { userActivityStats } = await response.json();
-            console.log(userActivityStats)
+            console.log(userActivityStats);
 
             const columnDefs = [
-                { field: "id", headerName: "Платформа", suppressMovable: true, flex: 1, },
-                // { field: "channel", headerName: "Канал/Аккаунт" },
-                { field: "total_launches", headerName: "Общее количество запусков чат-бота", suppressMovable: true,   flex: 1},
-                { field: "unique_users", headerName: "Количество уникальных пользователей, запустивших чат-бот", suppressMovable: true,   flex: 1},
-                { field: "total_web_app_launches", headerName: "Общее количество запусков Web-App", suppressMovable: true,   flex: 1 },
-                { field: "unique_web_app_users", headerName: "Количество уникальных пользователей, запустивших Web-App", suppressMovable: true,   flex: 1 },
-                { field: "game_sessions", headerName: "Количество пользователей, завершивших игровую сессию", suppressMovable: true,   flex: 1 },
+                { field: "id", headerName: "Платформа", suppressMovable: true, flex: 1 },
+                { field: "total_launches", headerName: "Общее количество запусков чат-бота", suppressMovable: true, flex: 1 },
+                { field: "unique_users", headerName: "Количество уникальных пользователей, запустивших чат-бот", suppressMovable: true, flex: 1 },
+                { field: "total_web_app_launches", headerName: "Общее количество запусков Web-App", suppressMovable: true, flex: 1 },
+                { field: "unique_web_app_users", headerName: "Количество уникальных пользователей, запустивших Web-App", suppressMovable: true, flex: 1 },
+                { field: "game_sessions", headerName: "Количество пользователей, завершивших игровую сессию", suppressMovable: true, flex: 1 },
             ];
 
-            const autoGroupColumnDef = {
-                headerName: "Канал/Аккаунт",
-                field: "id",
-                cellRenderer: 'agGroupCellRenderer',
-                cellRendererParams: {
-                    checkbox: true
-                }
+            const createTree = (data, parent) => {
+                return data.map(item => ({
+                    ...item,
+                    children: item[parent] ? createTree(item[parent], "channels") : null,
+                }));
             };
 
+            const treeData = createTree(userActivityStats, null);
 
             const gridOptions = {
                 columnDefs: columnDefs,
-                autoGroupColumnDef: autoGroupColumnDef,
-                rowData: userActivityStats,
-                groupUseEntireRow: true,
-                groupDefaultExpanded: -1,
+                rowData: treeData,
                 suppressMenu: true,
                 suppressSorting: true,
                 suppressFilter: true,
@@ -81,10 +75,8 @@
                 autoHeight: true,
                 domLayout: 'autoHeight',
                 animateRows: true,
-                getDataPath: function(data) {
-                    return [data.id, data.channels, data.creatives];
-                }
             };
+
             const grid = new agGrid.Grid(gridDiv, gridOptions);
 
         });
