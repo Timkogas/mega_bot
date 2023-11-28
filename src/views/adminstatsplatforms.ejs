@@ -48,13 +48,13 @@
             console.log(userActivityStats)
 
             const columnDefs = [
-                { field: "id", headerName: "Платформа", suppressMovable: true },
+                { field: "id", headerName: "Платформа", suppressMovable: true,width: '100%' },
                 // { field: "channel", headerName: "Канал/Аккаунт" },
-                { field: "total_launches", headerName: "Общее количество запусков чат-бота", suppressMovable: true, width: 80  },
-                { field: "unique_users", headerName: "Количество уникальных пользователей, запустивших чат-бот", suppressMovable: true, width: 80 },
-                { field: "total_web_app_launches", headerName: "Общее количество запусков Web-App", suppressMovable: true, width: 80  },
-                { field: "unique_web_app_users", headerName: "Количество уникальных пользователей, запустивших Web-App", suppressMovable: true, width: 80  },
-                { field: "game_sessions", headerName: "Количество пользователей, завершивших игровую сессию", suppressMovable: true, width: 80 },
+                { field: "total_launches", headerName: "Общее количество запусков чат-бота", suppressMovable: true, width: '100%'  },
+                { field: "unique_users", headerName: "Количество уникальных пользователей, запустивших чат-бот", suppressMovable: true, width: '100%' },
+                { field: "total_web_app_launches", headerName: "Общее количество запусков Web-App", suppressMovable: true, width: '100%'  },
+                { field: "unique_web_app_users", headerName: "Количество уникальных пользователей, запустивших Web-App", suppressMovable: true, width: '100%'  },
+                { field: "game_sessions", headerName: "Количество пользователей, завершивших игровую сессию", suppressMovable: true, width: '100%' },
             ];
 
             const gridOptions = {
