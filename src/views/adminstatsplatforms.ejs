@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.css">
+    <script src="https://cdn.jsdelivr.net/npm/ag-grid-community/dist/ag-grid-community.min.js"></script>
     <style>
         /* Ваш CSS остается неизменным */
 
@@ -63,7 +63,8 @@
             background-color: #ddd;
         }
 
-        .channel, .creative {
+        .channel,
+        .creative {
             display: none;
         }
     </style>
@@ -74,8 +75,8 @@
     <h1>Статистика</h1>
 
     <h2>Результаты сессий сканирования чеков</h2>
-
-    <table id="statsTable" class="display">
+    <div id="myGrid" style="height: 100%; width:100%;" class="ag-theme-alpine"></div>
+    <!-- <table id="statsTable" class="display">
         <thead>
             <tr>
                 <th data-i18n="Platform">Платформа</th>
@@ -88,66 +89,35 @@
                 <th data-i18n="Game Sessions">Количество пользователей, завершивших игровую сессию</th>
             </tr>
         </thead>
-        <tbody>
-            <% for (const item of userActivityStats) { %>
-                <tr data-platform="<%= item.id || '' %>" class="platform">
-                    <td>
-                        <button type="button" class="toggleButton" data-platform="<%= item.id || '' %>">Toggle</button>
-                        <%= item.id || '' %>
-                    </td>
-                    <td></td>
-                    <td></td>
-                    <td><%= item.total_launches %></td>
-                    <td><%= item.unique_users %></td>
-                    <td><%= item.total_web_app_launches %></td>
-                    <td><%= item.unique_web_app_users %></td>
-                    <td><%= item.game_sessions %></td>
-                </tr>
-                <% for (const channel of item.channels) { %>
-                    <tr data-platform="<%= item.id || '' %>" data-channel="<%= channel.id || '' %>" class="channel">
-                        <td></td>
-                        <td>
-                            <%= channel.id || '' %>
-                        </td>
-                        <td></td>
-                        <td><%= channel.total_launches %></td>
-                        <td><%= channel.unique_users %></td>
-                        <td><%= channel.total_web_app_launches %></td>
-                        <td><%= channel.unique_web_app_users %></td>
-                        <td><%= channel.game_sessions %></td>
-                    </tr>
-                    <% for (const creative of channel.creatives) { %>
-                        <tr data-platform="<%= item.id || '' %>" data-channel="<%= channel.id || '' %>" data-creative="<%= creative.id || '' %>" class="creative">
-                            <td></td>
-                            <td></td>
-                            <td><%= creative.id || '' %></td>
-                            <td><%= creative.total_launches %></td>
-                            <td><%= creative.unique_users %></td>
-                            <td><%= creative.total_web_app_launches %></td>
-                            <td><%= creative.unique_web_app_users %></td>
-                            <td><%= creative.game_sessions %></td>
-                        </tr>
-                    <% } %>
-                <% } %>
-            <% } %>
-        </tbody>
-    </table>
+    </table> -->
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/plug-ins/1.10.24/i18n/Russian.json"></script>
     <script>
-        $(document).ready(function () {
-            const table = $('#statsTable').DataTable();
-            
-            // Добавляем обработчик события на кнопку Toggle
-            $('#statsTable tbody').on('click', 'button.toggleButton', function () {
-                const platformId = $(this).data('platform');
-                const channelRows = table.rows('.channel[data-platform="' + platformId + '"]');
-                
-                // Переключаем видимость каналов
-                channelRows.toggle();
-            });
+        const columnDefs = [
+            { field: "make" },
+            { field: "model" },
+            { field: "price" }
+        ];
+
+        // specify the data
+        const rowData = [
+            { make: "Toyota", model: "Celica", price: 35000 },
+            { make: "Ford", model: "Mondeo", price: 32000 },
+            { make: "Porsche", model: "Boxster", price: 72000 }
+        ];
+
+        // let the grid know which columns and what data to use
+        const gridOptions = {
+            columnDefs: columnDefs,
+            rowData: rowData
+        };
+
+        // setup the grid after the page has finished loading
+        document.addEventListener('DOMContentLoaded', () => {
+            const gridDiv = document.querySelector('#myGrid');
+            new agGrid.Grid(gridDiv, gridOptions);
         });
     </script>
 
