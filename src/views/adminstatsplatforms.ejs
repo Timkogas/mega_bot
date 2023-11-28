@@ -27,10 +27,11 @@
 
             const response = await fetch('/adminstats/getStatPlatform');
             const { userActivityStats } = await response.json();
+            console.log(userActivityStats)
 
             const columnDefs = [
                 { field: "platform", headerName: "Платформа" },
-                { field: "channel", headerName: "Канал/Аккаунт" },
+                // { field: "channel", headerName: "Канал/Аккаунт" },
                 { field: "total_launches", headerName: "Общее количество запусков чат-бота" },
                 { field: "unique_users", headerName: "Количество уникальных пользователей, запустивших чат-бот" },
                 { field: "total_web_app_launches", headerName: "Общее количество запусков Web-App" },
