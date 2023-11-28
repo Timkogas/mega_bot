@@ -132,11 +132,6 @@
     <script>
         $(document).ready(function () {
             var table = $('#statsTable').DataTable({
-                order: [
-                    [0, 'asc'],
-                    [1, 'asc'],
-                    [2, 'asc']
-                ],
                 rowGroup: {
                     dataSrc: ['platform', 'channel', 'creative'],
                     startRender: function (rows, group) {
