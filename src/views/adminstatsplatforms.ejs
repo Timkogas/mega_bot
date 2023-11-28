@@ -76,8 +76,8 @@
         <thead>
             <tr>
                 <th data-i18n="Platform">Платформа</th>
-                <th data-i18n="Channel">Канал</th>
-                <th data-i18n="Creative">Творческий</th>
+                <th data-i18n="Channel">Канал/Аккаунт</th>
+                <th data-i18n="Creative">Креатив</th>
                 <th data-i18n="Total Launches">Общее количество запусков чат-бота</th>
                 <th data-i18n="Unique Users">Количество уникальных пользователей, запустивших чат-бот</th>
                 <th data-i18n="Total Web App Launches">Общее количество запусков Web-App</th>
@@ -87,7 +87,17 @@
         </thead>
         <tbody>
             <% for (const item of userActivityStats) { %>
-                <% for (const channel of item.channels) { %>
+                <tr>
+                    <td><%= item.id || '' %></td>
+                    <td><%= '' %></td>
+                    <td><%= '' %></td>
+                    <td><%= item.total_launches %></td>
+                    <td><%= item.unique_users %></td>
+                    <td><%= item.total_web_app_launches %></td>
+                    <td><%= item.unique_web_app_users %></td>
+                    <td><%= item.game_sessions %></td>
+                </tr>
+                <!-- <% for (const channel of item.channels) { %>
                     <% for (const creative of channel.creatives) { %>
                         <tr data-platform="<%= item.id || '' %>" data-channel="<%= channel.id || '' %>" data-creative="<%= creative.id || '' %>">
                             <td><%= item.id || '' %></td>
@@ -100,7 +110,7 @@
                             <td><%= creative.game_sessions %></td>
                         </tr>
                     <% } %>
-                <% } %>
+                <% } %> -->
             <% } %>
         </tbody>
     </table>
@@ -111,32 +121,7 @@
     <script src="https://cdn.datatables.net/plug-ins/1.10.24/i18n/Russian.json"></script>
     <script>
         $(document).ready(function () {
-            var table = $('#statsTable').DataTable({
-                order: [
-                    [0, 'asc'],
-                    [1, 'asc'],
-                    [2, 'asc']
-                ],
-                rowGroup: {
-                    dataSrc: ['platform', 'channel'],
-                    startRender: function (rows, group) {
-                        return $('<tr/>')
-                            .append('<td colspan="8">' + group + ' (' + rows.count() + ' items)</td>');
-                    }
-                },
-                language: {
-                    url: 'https://cdn.datatables.net/plug-ins/1.10.24/i18n/Russian.json'
-                }
-            });
-
-            $('#statsTable tbody').on('click', 'tr.group', function () {
-                var currentOrder = table.order()[0];
-                if (currentOrder[0] === 0 && currentOrder[1] === 'asc') {
-                    table.order([0, 'desc']).draw();
-                } else {
-                    table.order([0, 'asc']).draw();
-                }
-            });
+            var table = $('#statsTable').DataTable({});
         });
     </script>
 

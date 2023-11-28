@@ -322,7 +322,6 @@ class TelegramBotApp {
     private async _sendMessageOnAbout(chatId: number, dbUser: IUserDb): Promise<void> {
         try {
             const videoPath = path.join(__dirname, '../assets/videos/2.mp4')
-            const imgPath = path.join(__dirname, '../assets/images/img1.jpg')
 
             const buttons: InlineKeyboardButton[][] = [
                 [{ text: 'Назад', callback_data: dbUser.final === EFinal.COMPLETE ? EMessages.FINAL : EMessages.START_SHORT }],
@@ -331,8 +330,7 @@ class TelegramBotApp {
             const text = `🌍 <b>«МЕГА Экополис»</b> — акция от МЕГИ Екатеринбург, посвященная заботе о планете и людях через сервисы, услуги и решения, применяемые в центрах.\n\nПравила нашей акции ориентированы на выполнение 5 заданий:\n1. Задание 1. Разделяй с МЕГОЙ\n2. Задание 2. МЕГА Место\n3. Задание 3. МЕГА Станция\n4. Задание 4. МЕГА Благотворительность\n5. Задание 4. МЕГА Эко-шопинг\n\nЗа каждое выполненное задание пользователю начисляются игровые баллы. Система начисления и количество баллов, призовой фонд и условия проведения определяются настоящими <a href='https://mega-ekb-game.ru/rules'>правилами акции.</a>\n\n<i>Организатор акции — ООО «АБК Сервис». ИНН 6671013489</i>\n\n© Все права защищены`
 
             await this.bot.sendVideoNote(chatId, videoPath)
-            await this.bot.sendPhoto(chatId, imgPath, {
-                caption: text,
+            await this.bot.sendMessage(chatId, text, {
                 parse_mode: 'HTML',
                 reply_markup: {
                     inline_keyboard: buttons,
