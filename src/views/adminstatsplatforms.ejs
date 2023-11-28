@@ -64,6 +64,7 @@
                 suppressMovable: true,
                 autoHeight: true,
                 domLayout: 'autoHeight',
+                onGridReady: (event) => event.api.sizeColumnsToFit(); 
             };
 
             new agGrid.Grid(gridDiv, gridOptions);
