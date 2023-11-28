@@ -88,11 +88,11 @@
             };
 
             const flattenedData = flattenData(userActivityStats);
-
+            console.log(flattenedData)
             const columnDefs = [
-                { field: "id", headerName: "Платформа", suppressMovable: true, flex: 1, rowGroup: true },
-                { field: "channel", headerName: "Канал/Аккаунт" },
-                { field: "creative", headerName: "Креатив" },
+                { field: "id", headerName: "Платформа", suppressMovable: true, flex: 1, rowGroupIndex: 1 },
+                { field: "channel", headerName: "Канал/Аккаунт", rowGroupIndex: 2 },
+                { field: "creative", headerName: "Креатив", rowGroupIndex: 3 },
                 { field: "total_launches", headerName: "Общее количество запусков чат-бота", suppressMovable: true, flex: 1 },
                 { field: "unique_users", headerName: "Количество уникальных пользователей, запустивших чат-бот", suppressMovable: true, flex: 1 },
                 { field: "total_web_app_launches", headerName: "Общее количество запусков Web-App", suppressMovable: true, flex: 1 },
