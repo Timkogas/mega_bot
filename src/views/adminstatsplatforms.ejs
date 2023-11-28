@@ -4,70 +4,15 @@
 <head>
     <script src="https://cdn.jsdelivr.net/npm/ag-grid-community/dist/ag-grid-community.min.js"></script>
     <style>
-        /* Ваш CSS остается неизменным */
 
         body {
             font-family: Arial, Helvetica, sans-serif;
             margin: 20px;
         }
 
-        h1,
-        h2 {
-            color: #333;
-        }
-
-        div {
-            margin-bottom: 20px;
-        }
-
-        table {
-            border-collapse: collapse;
-            width: 100%;
-        }
-
-        th,
-        td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-
-        th {
-            background-color: #f2f2f2;
-        }
-
-        tr:hover {
-            background-color: #f5f5f5;
-        }
-
-        .pagination {
-            display: flex;
-            justify-content: center;
-            margin-top: 20px;
-        }
-
-        .pagination a {
-            color: black;
-            padding: 8px 16px;
-            text-decoration: none;
-            transition: background-color .3s;
-            margin: 0 4px;
-        }
-
-        .pagination a.active {
-            background-color: #4CAF50;
-            color: white;
-        }
-
-        .pagination a:hover:not(.active) {
-            background-color: #ddd;
-        }
-
-        .channel,
-        .creative {
-            display: none;
-        }
     </style>
+
+    
 </head>
 
 <body style="font-family: Arial, Helvetica, sans-serif;">
@@ -75,7 +20,7 @@
     <h1>Статистика</h1>
 
     <h2>Результаты сессий сканирования чеков</h2>
-    <div id="myGrid" style="height: 70vh; width:100%;" class="ag-theme-alpine"></div>
+    <div id="myGrid" style="height: 200px; width:500px;" class="ag-theme-alpine"></div>
     <!-- <table id="statsTable" class="display">
         <thead>
             <tr>
