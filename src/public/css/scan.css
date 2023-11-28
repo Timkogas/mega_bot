@@ -44,6 +44,7 @@
 .promo_content_title {
     color: #05676A;
     font-size: 5.1em;
+    font-weight: 700;
 }
 
 .first_btn {
@@ -287,6 +288,7 @@ canvas {
 .container_result_content_block_status_subtitle {
     font-family: 'Lively-Headline', sans-serif;
     font-size: 2.4em;
+    font-weight: 700;
     margin-bottom: 0.7em;
 }
 
