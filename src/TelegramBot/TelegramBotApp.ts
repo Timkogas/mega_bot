@@ -477,7 +477,7 @@ class TelegramBotApp {
 
     private async _sendMessageOnTaskOne(chatId: number, dbUser: IUserDb): Promise<void> {
         try {
-            const imgPath = path.join(__dirname, '../assets/images/img1.jpg')
+            const imgPath = path.join(__dirname, '../assets/images/task_1.jpg')
 
             const buttons: InlineKeyboardButton[][] = [
                 [{ text: 'Ввести код', callback_data: EMessages.WRITE_CODE }],
@@ -651,7 +651,7 @@ class TelegramBotApp {
     private async _sendMessageOnWhereStation(chatId: number, dbUser: IUserDb): Promise<void> {
         try {
 
-            const imgPath = path.join(__dirname, '../assets/images/img1.jpg')
+            const imgPath = path.join(__dirname, '../assets/images/where_station.jpg')
 
             const buttons: InlineKeyboardButton[][] = [
                 [{ text: 'Ввести код', callback_data: EMessages.WRITE_CODE }],
@@ -989,7 +989,7 @@ class TelegramBotApp {
 
             const buttons: InlineKeyboardButton[][] = [
                 [{ text: 'Ввести код', callback_data: EMessages.WRITE_CODE }],
-                [{ text: 'Где находятся мастер-классы?', callback_data: EMessages.WHERE_MASTERS }],
+                [{ text: 'Где проходят мастер-классы?', callback_data: EMessages.WHERE_MASTERS }],
                 [{ text: 'Пропустить задание', callback_data: EMessages.SKIP_TASK }],
                 [{ text: 'Назад', callback_data: EMessages.MENU }],
             ]
@@ -1013,15 +1013,18 @@ class TelegramBotApp {
 
     private async _sendMessageOnWhereMasters(chatId: number, dbUser: IUserDb): Promise<void> {
         try {
+            const imgPath = path.join(__dirname, '../assets/images/where_master.jpg');
+
             const buttons: InlineKeyboardButton[][] = [
                 [{ text: 'Ввести код', callback_data: EMessages.WRITE_CODE }],
                 [{ text: 'Пропустить задание', callback_data: EMessages.SKIP_TASK }],
                 [{ text: 'Назад', callback_data: EMessages.TASK_2 }],
             ]
 
-            const text = `Мастер-классы проходят в открытом общественном пространстве МЕГА\n{Место}`
+            const text = `Мастер-классы проходят в открытом общественном пространстве МЕГА[Место]. Пространство находится на 1 этаже, рядом с магазинами «Читай-город» и Respect.\n\nВ МЕГА[Месте] есть уютный коворкинг с быстрым бесплатным Wi-Fi, что делает его идеальным местом для тех, кто ищет комфортное пространство для работы или проведения встреч. Здесь представлены несколько зон, предназначенных для общения или простого отдыха, где каждый сможет расслабиться и зарядиться энергией.`
 
-            await this.bot.sendMessage(chatId, text, {
+            await this.bot.sendPhoto(chatId, imgPath, {
+                caption: text,
                 parse_mode: 'HTML',
                 reply_markup: {
                     inline_keyboard: buttons,
@@ -1063,10 +1066,10 @@ class TelegramBotApp {
 
     private async _sendMessageOnAuthorizationGuide(chatId: number, dbUser: IUserDb): Promise<void> {
         try {
-            const imgPath1 = path.join(__dirname, '../assets/images/img1.jpg');
-            const imgPath2 = path.join(__dirname, '../assets/images/img1.jpg');
-            const imgPath3 = path.join(__dirname, '../assets/images/img1.jpg');
-            const imgPath4 = path.join(__dirname, '../assets/images/img1.jpg');
+            const imgPath1 = path.join(__dirname, '../assets/images/guide_1.jpg');
+            const imgPath2 = path.join(__dirname, '../assets/images/guide_2.jpg');
+            const imgPath3 = path.join(__dirname, '../assets/images/guide_3.jpg');
+            const imgPath4 = path.join(__dirname, '../assets/images/guide_4.jpg');
 
             const media: InputMediaPhoto[] = [
                 { type: 'photo', media: imgPath1 },
@@ -1225,7 +1228,7 @@ class TelegramBotApp {
 
     private async _sendMessageOnWhereFood(chatId: number, dbUser: IUserDb): Promise<void> {
         try {
-            const imgPath = path.join(__dirname, '../assets/images/img1.jpg')
+            const imgPath = path.join(__dirname, '../assets/images/where_food.jpg')
 
             const buttons: InlineKeyboardButton[][] = [
                 [{ text: 'Ввести код', callback_data: EMessages.WRITE_CODE }],
@@ -1279,7 +1282,7 @@ class TelegramBotApp {
 
     private async _sendMessageOnWhereStork(chatId: number, dbUser: IUserDb): Promise<void> {
         try {
-            const imgPath = path.join(__dirname, '../assets/images/img1.jpg')
+            const imgPath = path.join(__dirname, '../assets/images/where_stork.jpg')
 
             const buttons: InlineKeyboardButton[][] = [
                 [{ text: 'Загрузить чек', web_app: { url: webAppScan } }],
@@ -1287,7 +1290,7 @@ class TelegramBotApp {
                 [{ text: 'Назад', callback_data: EMessages.MENU }],
             ]
 
-            const text = `<b>«Аистенок» можно найти на…</b>\n\n<b>Обрати внимание:</b> на чеке должен обязательно присутствовать QR-код. Без него отсканировать чек и заработать баллы не получится 😢`
+            const text = `<b>«Аистенок» можно найти на 0 этаже рядом с магазином «Балдёжики» и Центром «Мои документы» (вход с улицы напротив автобусного терминала)</b>\n\n<b>Обрати внимание:</b> на чеке должен обязательно присутствовать QR-код. Без него отсканировать чек и заработать баллы не получится 😢`
 
             await this.bot.sendPhoto(chatId, imgPath, {
                 caption: text,
@@ -1315,7 +1318,7 @@ class TelegramBotApp {
                 [{ text: 'Назад', callback_data: EMessages.MENU }],
             ]
 
-            const text = `<b>Задание #5. Сходите в магазин с шоппером и загрузите чек на N рублей без позиции «пакет»</b>\n\n🛍️ Собрался(ась) за покупками? Мы помогаем сделать шаг навстречу экологичному образу жизни — получи от МЕГИ в подарок шоппер на столе информации, посети любой магазин и загрузи чек без пакета, чтобы получить баллы.\n\nЕсли ты действительно хочешь вносить свой вклад в экологию и приобщиться к осознанному потреблению, то использование качественного шоппера вместо пакета из пластика — это хорошее начало! ⚡\n\nP.S.: Чеки из магазинов можно сканировать неограниченное раз. Как только отсканируешь все-все чеки, жми на кнопку «Завершить задание»`
+            const text = `<b>Задание #5. Сходите в магазин с шоппером и загрузите чек на N рублей без позиции «пакет»</b>\n\n🛍️ Собрался(ась) за покупками? Мы помогаем сделать шаг навстречу экологичному образу жизни — получи от МЕГИ в подарок шоппер на столе информации, посети любой магазин и загрузи чек без пакета, чтобы получить баллы.\n\nЕсли ты действительно хочешь вносить свой вклад в экологию и приобщиться к осознанному потреблению, то использование качественного шоппера вместо пакета из пластика — это хорошее начало! ⚡\n\nP.S.: Чеки из магазинов можно сканировать неограниченное количество раз. Как только отсканируешь все-все чеки, жми на кнопку «Завершить задание»`
 
             await this.bot.sendVideoNote(chatId, videoPath)
             await this.bot.sendMessage(chatId, text, {
@@ -1334,7 +1337,7 @@ class TelegramBotApp {
 
     private async _sendMessageOnWhereShoppers(chatId: number, dbUser: IUserDb): Promise<void> {
         try {
-            const imgPath = path.join(__dirname, '../assets/images/img1.jpg')
+            const imgPath = path.join(__dirname, '../assets/images/where_shoppers.jpg')
 
             const buttons: InlineKeyboardButton[][] = [
                 [{ text: 'Загрузить чек', web_app: { url: webAppScan } }],
@@ -1424,7 +1427,7 @@ class TelegramBotApp {
 
     private async _sendMessageOnInviteFinal(chatId: number, dbUser: IUserDb): Promise<void> {
         try {
-            const imgPath = path.join(__dirname, '../assets/images/img1.jpg')
+            const imgPath = path.join(__dirname, '../assets/images/invite.jpg')
 
             const text = `Поделись этим сообщением с другом 👇`
             const textTwo = `<b>Мне так понравилось путешествовать по МЕГА Экополису! Приглашаю попробовать вместе со мной!</b>\n\n<a href="http://t.me/mega_ekb_bot?start=${dbUser.id}">Скорее запускай бота!</a>`
