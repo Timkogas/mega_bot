@@ -39,10 +39,11 @@ export default class ScanCheck {
                 let sValue = queryParams.get('s');
                 let fnValue = queryParams.get('fn');
                 let iValue = queryParams.get('i');
+                let nValue = queryParams.get('n');
                 let fpValue = queryParams.get('fp');
 
 
-                if (tValue && sValue && fnValue && iValue && fpValue && userDb) {
+                if (tValue && sValue && fnValue && iValue && fpValue && userDb && nValue) {
                     const lastTask = await Helper.getLastPendingTask(userDb.id)
 
                     if (lastTask.type === EMessages.TASK_1 || lastTask.type === EMessages.TASK_2 || lastTask.type === EMessages.TASK_3) {
@@ -57,11 +58,8 @@ export default class ScanCheck {
 
                     let points
 
-                    if (queryParams.get('n')) {
-                        queryParams.delete('n')
-                    }
                     const newQr = queryParams.toString()
-                    console.log(newQr)
+
                     const isExist = await Helper.checkIfCheckExists(newQr)
 
                     if (isExist) {
@@ -88,7 +86,8 @@ export default class ScanCheck {
                                 "FnNumber": fnValue,
                                 "DocNumber": iValue,
                                 "DocFiscalSign": fpValue,
-                                "tokenSecret": process.env.OFD_TOKEN
+                                "tokenSecret": process.env.OFD_TOKEN,
+                                "ReceiptOperationType": nValue,
                             }).then(async (response) => {
                                 Logger.debug('res')
                                 Logger.debug(JSON.stringify(response.data))
@@ -174,7 +173,8 @@ export default class ScanCheck {
                             "FnNumber": fnValue,
                             "DocNumber": iValue,
                             "DocFiscalSign": fpValue,
-                            "tokenSecret": process.env.OFD_TOKEN
+                            "tokenSecret": process.env.OFD_TOKEN,
+                            "ReceiptOperationType": nValue,
                         }).then(async (response) => {
                             Logger.debug('res')
                             Logger.debug(JSON.stringify(response.data))
