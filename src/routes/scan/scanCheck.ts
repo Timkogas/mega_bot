@@ -60,9 +60,9 @@ export default class ScanCheck {
                     try {
 
                     } catch {
-                        
+
                     }
-                
+
                     const newQr = queryParams.toString()
 
                     const isExist = await Helper.checkIfCheckExists(newQr)
@@ -88,10 +88,10 @@ export default class ScanCheck {
                         const day = tValue.substring(6, 8);
                         const hours = tValue.substring(9, 11);
                         const minutes = tValue.substring(11, 13);
-    
+
                         originalDate = `${year}-${month}-${day}T${hours}:${minutes}:00.000`;
                     } catch {
-                        await Helper.updateCheck(newQr, { status: ECheckStatus.VALID_ERROR})
+                        await Helper.updateCheck(newQr, { status: ECheckStatus.VALID_ERROR })
                         res.json({
                             error: true,
                             error_text: 'valid error',
@@ -168,15 +168,16 @@ export default class ScanCheck {
                                 }
 
                             }).catch(async (err) => {
-                                Logger.debug('err', JSON.stringify(err.response.data))
-                                await Helper.updateCheck(newQr, { status: ECheckStatus.OFD_ERROR, amount: sValidValueNumber, receipt_info: JSON.stringify(err.response.data) })
-                                res.json({
-                                    error: true,
-                                    error_text: 'valid error',
-                                    error_type: EScanErrors.VALID_ERROR,
-                                    data: {}
-                                })
                                 try {
+                                    Logger.debug('err', JSON.stringify(err.response.data))
+                                    await Helper.updateCheck(newQr, { status: ECheckStatus.OFD_ERROR, amount: sValidValueNumber, receipt_info: JSON.stringify(err.response.data) })
+                                    res.json({
+                                        error: true,
+                                        error_text: 'valid error',
+                                        error_type: EScanErrors.VALID_ERROR,
+                                        data: {}
+                                    })
+
                                     return await TelegramBotApp.sendMessageOnScanIncorrect(userDb.id, userDb)
                                 } catch (e) {
                                     Logger.error('ofd error', e)
@@ -302,17 +303,17 @@ export default class ScanCheck {
                             }
 
                         }).catch(async (err) => {
-
-                            Logger.debug('err');
-                            Logger.debug(JSON.stringify(err.response.data))
-                            await Helper.updateCheck(newQr, { status: ECheckStatus.OFD_ERROR, amount: sValidValueNumber, receipt_info: JSON.stringify(err.response.data) })
-                            res.json({
-                                error: true,
-                                error_text: 'valid error',
-                                error_type: EScanErrors.VALID_ERROR,
-                                data: {}
-                            })
                             try {
+                                Logger.debug('err');
+                                Logger.debug(JSON.stringify(err.response.data))
+                                await Helper.updateCheck(newQr, { status: ECheckStatus.OFD_ERROR, amount: sValidValueNumber, receipt_info: JSON.stringify(err.response.data) })
+                                res.json({
+                                    error: true,
+                                    error_text: 'valid error',
+                                    error_type: EScanErrors.VALID_ERROR,
+                                    data: {}
+                                })
+
                                 return await TelegramBotApp.sendMessageOnScanIncorrect(userDb.id, userDb)
                             } catch (e) {
                                 Logger.error('ofd error', e)
