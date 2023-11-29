@@ -169,8 +169,8 @@ export default class ScanCheck {
 
                             }).catch(async (err) => {
                                 try {
-                                    Logger.debug('err', JSON.stringify(err.response.data))
-                                    await Helper.updateCheck(newQr, { status: ECheckStatus.OFD_ERROR, amount: sValidValueNumber, receipt_info: JSON.stringify(err.response.data) })
+                                    Logger.debug('err', JSON.stringify(err))
+                                    await Helper.updateCheck(newQr, { status: ECheckStatus.OFD_ERROR, amount: sValidValueNumber, receipt_info: JSON.stringify(err) })
                                     res.json({
                                         error: true,
                                         error_text: 'valid error',
@@ -306,8 +306,8 @@ export default class ScanCheck {
                         }).catch(async (err) => {
                             try {
                                 Logger.debug('err');
-                                Logger.debug(JSON.stringify(err.response.data))
-                                await Helper.updateCheck(newQr, { status: ECheckStatus.OFD_ERROR, amount: sValidValueNumber, receipt_info: JSON.stringify(err.response.data) })
+                                Logger.debug(JSON.stringify(err))
+                                await Helper.updateCheck(newQr, { status: ECheckStatus.OFD_ERROR, amount: sValidValueNumber, receipt_info: JSON.stringify(err) })
                                 res.json({
                                     error: true,
                                     error_text: 'valid error',

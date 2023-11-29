@@ -147,7 +147,6 @@
                     <th>Количество баллов</th>
                     <th>Дата и время сканирования</th>
                     <th>Информация из чека</th>
-                    <th>Ответ ОФД</th>
                 </tr>
             </thead>
             <tbody>
@@ -182,9 +181,6 @@
                             <td>
                                 <%= scanResult?.qrCode %>
                             </td>
-                            <td>
-                                <%= scanResult?.receipt_info %>
-                            </td>
                         </tr>
                         <% } %>
             </tbody>
@@ -195,19 +191,7 @@
     <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
     <script>
         $(document).ready(function () {
-            $('#statsTable').DataTable({
-                "columnDefs": [
-                    { "width": "10%", "targets": 0 },
-                    { "width": "10%", "targets": 1 }, 
-                    { "width": "10%", "targets": 2 }, 
-                    { "width": "10%", "targets": 3 }, 
-                    { "width": "6%", "targets": 4 }, 
-                    { "width": "10%", "targets": 5 }, 
-                    { "width": "22%", "targets": 6 }, 
-                    { "width": "22%", "targets": 7 }, 
-
-                ]
-            });
+            $('#statsTable').DataTable();
         });
     </script>
 
