@@ -105,15 +105,16 @@ export default class ScanCheck {
                         const sValidValueNumber = Number(sValidValue)
 
                         if (sValidValueNumber > 10000) {
-                            axios.post(urlOFD, {
-                                "TotalSum": sValidValue,
-                                "DocDateTime": originalDate,
-                                "FnNumber": fnValue,
-                                "DocNumber": iValue,
-                                "DocFiscalSign": fpValue,
-                                "tokenSecret": process.env.OFD_TOKEN,
-                                "ReceiptOperationType": nValue,
-                            }).then(async (response) => {
+                            try {
+                                const response = await axios.post(urlOFD, {
+                                    "TotalSum": sValidValue,
+                                    "DocDateTime": originalDate,
+                                    "FnNumber": fnValue,
+                                    "DocNumber": iValue,
+                                    "DocFiscalSign": fpValue,
+                                    "tokenSecret": process.env.OFD_TOKEN,
+                                    "ReceiptOperationType": nValue,
+                                })
                                 Logger.debug('res')
                                 Logger.debug(JSON.stringify(response.data))
 
@@ -167,7 +168,7 @@ export default class ScanCheck {
                                     return await TelegramBotApp.sendMessageOnScanIncorrect(userDb.id, userDb)
                                 }
 
-                            }).catch(async (err) => {
+                            } catch (err) {
                                 try {
                                     Logger.debug('err', JSON.stringify(err))
                                     await Helper.updateCheck(newQr, { status: ECheckStatus.OFD_ERROR, amount: sValidValueNumber, receipt_info: JSON.stringify(err) })
@@ -182,7 +183,7 @@ export default class ScanCheck {
                                 } catch (e) {
                                     Logger.error('ofd error', e)
                                 }
-                            });
+                            }
                         } else {
                             await Helper.updateCheck(newQr, { status: ECheckStatus.VALID_ERROR_AMOUNT, amount: sValidValueNumber })
                             res.json({
