@@ -36,7 +36,7 @@
 
     <h1>Статистика</h1>
 
-    <h2>Результаты сессий сканирования чеков</h2>
+    <h2>Статистика посевов</h2>
     <div id="myGrid" class="ag-theme-alpine"></div>
 
     <script>
@@ -69,7 +69,7 @@
                             total_web_app_launches: channel.total_web_app_launches,
                             unique_web_app_users: channel.unique_web_app_users,
                             game_sessions: channel.game_sessions,
-                            ...creatives[0], // Взять данные из первого креатива
+                            ...creatives[0], 
                         };
                     });
 
@@ -99,7 +99,7 @@
                 { field: 'unique_web_app_users', headerName: 'Количество уникальных пользователей, запустивших Web-App', suppressMovable: true, flex: 1 },
                 { field: 'game_sessions', headerName: 'Количество пользователей, завершивших игровую сессию', suppressMovable: true, flex: 1 },
             ];
-
+            console.log(userActivityStats)
             console.log(flattenedData)
 
             const gridOptions = {

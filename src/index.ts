@@ -123,8 +123,6 @@ class App {
        score INT DEFAULT 0,
        time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
        receipt_info JSON DEFAULT NULL,
-       url VARCHAR(250) DEFAULT NULL,
-       img VARCHAR(100) DEFAULT NULL,
        FOREIGN KEY (check_id) REFERENCES checks(id),
        FOREIGN KEY (user_id) REFERENCES users(id)
     );

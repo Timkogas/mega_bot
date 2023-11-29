@@ -39,7 +39,7 @@ export default class ScanCheck {
                 let fnValue = queryParams.get('fn');
                 let iValue = queryParams.get('i');
                 let fpValue = queryParams.get('fp');
-                
+
 
                 if (tValue && sValue && fnValue && iValue && fpValue && userDb) {
                     const lastTask = await Helper.getLastPendingTask(userDb.id)
@@ -53,7 +53,7 @@ export default class ScanCheck {
                         })
                         return await TelegramBotApp.sendMessageOnScanIncorrect(userDb.id, userDb)
                     }
-                    
+
                     let points
 
                     if (queryParams.get('n')) {
@@ -81,82 +81,84 @@ export default class ScanCheck {
                         const sValidValueNumber = Number(sValidValue)
 
                         if (sValidValueNumber > 10000) {
-                            points = Math.round(Math.round(sValidValueNumber / 100) / 10)
-                            const authorization = await Helper.checkAuthorization(userDb.id)
-                            if (authorization) points = Math.round(points * 1.5)
-                            await Helper.updateCheck(newQr, { status: ECheckStatus.CONFIRM, amount: sValidValueNumber, score: points })
-                            res.json({
-                                error: false,
-                                error_text: '',
-                                error_type: EScanErrors.NO,
-                                data: {
-                                    type: 4,
-                                    points: points
-                                }
-                            })
-                            return await TelegramBotApp.sendMessageOnTaskCorrect(userDb.id, userDb, points)
-                            // axios.post(urlOFD, {
-                            //     "TotalSum": sValidValue,
-                            //     "DocDateTime": tValue,
-                            //     "FnNumber": fnValue,
-                            //     "DocNumber": iValue,
-                            //     "DocFiscalSign": fpValue,
-                            //     "tokenSecret": process.env.OFD_TOKEN
-                            // }).then(async (response) => {
-                            //     Logger.debug('res')
-                            //     Logger.debug(response.data)
-
-                            //     if (response.data.Success) {
-
-                            //         if (true) {
-                            //             points = Math.round(Math.round(sValidValueNumber / 100) / 10)
-                            //             if (userDb.authorization === EAuthorization.COMPLETE) points = Math.round(points * 1.5)
-                            //             await Helper.updateCheck(newQr, { status: ECheckStatus.CONFIRM, amount: sValidValueNumber, receipt_info: JSON.stringify(response.data), score: points })
-                            //             res.json({
-                            //                 error: false,
-                            //                 error_text: '',
-                            //                 error_type: EScanErrors.NO,
-                            //                 data: {
-                            //                     points: points
-                            //                 }
-                            //             })
-                            //             return await TelegramBotApp.sendMessageOnTaskCorrect(userDb.id, userDb, points)
-                            //         } else {
-                            //             await Helper.updateCheck(newQr, { status: ECheckStatus.VALID_ERROR, amount: sValidValueNumber, receipt_info: JSON.stringify(response.data) })
-                            //             res.json({
-                            //                 error: true,
-                            //                 error_text: 'valid error',
-                            //                 error_type: EScanErrors.VALID_ERROR,
-                            //                 data: {}
-                            //             })
-                            //             return await TelegramBotApp.sendMessageOnScanIncorrect(userDb.id, userDb)
-                            //         }
-                            //     } else {
-                            //         await Helper.updateCheck(newQr, { status: ECheckStatus.OFD_ERROR, amount: sValidValueNumber, receipt_info: JSON.stringify(response.data) })
-                            //         res.json({
-                            //             error: true,
-                            //             error_text: 'valid error',
-                            //             error_type: EScanErrors.VALID_ERROR,
-                            //             data: {}
-                            //         })
-                            //         return await TelegramBotApp.sendMessageOnScanIncorrect(userDb.id, userDb)
+                            // points = Math.round(Math.round(sValidValueNumber / 100) / 10)
+                            // const authorization = await Helper.checkAuthorization(userDb.id)
+                            // if (authorization) points = Math.round(points * 1.5)
+                            // await Helper.updateCheck(newQr, { status: ECheckStatus.CONFIRM, amount: sValidValueNumber, score: points })
+                            // res.json({
+                            //     error: false,
+                            //     error_text: '',
+                            //     error_type: EScanErrors.NO,
+                            //     data: {
+                            //         type: 4,
+                            //         points: points
                             //     }
+                            // })
+                            // return await TelegramBotApp.sendMessageOnTaskCorrect(userDb.id, userDb, points)
+                            axios.post(urlOFD, {
+                                "TotalSum": sValidValue,
+                                "DocDateTime": tValue,
+                                "FnNumber": fnValue,
+                                "DocNumber": iValue,
+                                "DocFiscalSign": fpValue,
+                                "tokenSecret": process.env.OFD_TOKEN
+                            }).then(async (response) => {
+                                Logger.debug('res')
+                                Logger.debug(response.data)
 
-                            // }).catch(async (err) => {
+                                if (response.data.Success) {
+                                    if (
+                                        ['665809349631'].includes(response?.data?.Data?.UserInn?.trim()) ||
+                                        ['ИП Иванова М. М.'.toLowerCase(), 'ИП Иванова Марина Михайловна'.toLowerCase(), 'Индивидуальный предприниматель Иванова Марина Михайловна'.toLowerCase()]
+                                            .includes(response?.data?.Data?.Document?.User?.trim()?.toLowerCase())
+                                    ) {
+                                        points = Math.round(Math.round(sValidValueNumber / 100) / 10)
+                                        const authorization = await Helper.checkAuthorization(userDb.id)
+                                        if (authorization) points = Math.round(points * 1.5)
+                                        await Helper.updateCheck(newQr, { status: ECheckStatus.CONFIRM, amount: sValidValueNumber, receipt_info: JSON.stringify(response.data), score: points })
+                                        res.json({
+                                            error: false,
+                                            error_text: '',
+                                            error_type: EScanErrors.NO,
+                                            data: {
+                                                points: points
+                                            }
+                                        })
+                                        return await TelegramBotApp.sendMessageOnTaskCorrect(userDb.id, userDb, points)
+                                    } else {
+                                        await Helper.updateCheck(newQr, { status: ECheckStatus.VALID_ERROR_TASK_4, amount: sValidValueNumber, receipt_info: JSON.stringify(response.data) })
+                                        res.json({
+                                            error: true,
+                                            error_text: 'valid error',
+                                            error_type: EScanErrors.VALID_ERROR,
+                                            data: {}
+                                        })
+                                        return await TelegramBotApp.sendMessageOnScanIncorrect(userDb.id, userDb)
+                                    }
+                                } else {
+                                    await Helper.updateCheck(newQr, { status: ECheckStatus.OFD_ERROR, amount: sValidValueNumber, receipt_info: JSON.stringify(response.data) })
+                                    res.json({
+                                        error: true,
+                                        error_text: 'valid error',
+                                        error_type: EScanErrors.VALID_ERROR,
+                                        data: {}
+                                    })
+                                    return await TelegramBotApp.sendMessageOnScanIncorrect(userDb.id, userDb)
+                                }
 
-                            //     Logger.debug('err');
-                            //     Logger.debug(err.response.data)
-                            //     await Helper.updateCheck(newQr, { status: ECheckStatus.OFD_ERROR, amount: sValidValueNumber, receipt_info: JSON.stringify(err.response.data) })
-                            //     res.json({
-                            //         error: true,
-                            //         error_text: 'valid error',
-                            //         error_type: EScanErrors.VALID_ERROR,
-                            //         data: {}
-                            //     })
-                            //     return await TelegramBotApp.sendMessageOnScanIncorrect(userDb.id, userDb)
-                            // });
+                            }).catch(async (err) => {
+                                Logger.error('err', err.response.data)
+                                await Helper.updateCheck(newQr, { status: ECheckStatus.OFD_ERROR, amount: sValidValueNumber, receipt_info: JSON.stringify(err.response.data) })
+                                res.json({
+                                    error: true,
+                                    error_text: 'valid error',
+                                    error_type: EScanErrors.VALID_ERROR,
+                                    data: {}
+                                })
+                                return await TelegramBotApp.sendMessageOnScanIncorrect(userDb.id, userDb)
+                            });
                         } else {
-                            await Helper.updateCheck(newQr, { status: ECheckStatus.VALID_ERROR, amount: sValidValueNumber })
+                            await Helper.updateCheck(newQr, { status: ECheckStatus.VALID_ERROR_AMOUNT, amount: sValidValueNumber })
                             res.json({
                                 error: true,
                                 error_text: 'valid error',
@@ -170,82 +172,102 @@ export default class ScanCheck {
                     if (lastTask.type === EMessages.TASK_5) {
                         const sValidValueNumber = Number(sValidValue)
 
-                        points = Math.round(Math.round(sValidValueNumber / 100) / 10)
-                        const authorization = await Helper.checkAuthorization(userDb.id)
-                        if (authorization) points = Math.round(points * 1.5)
-                        await Helper.updateCheck(newQr, { status: ECheckStatus.CONFIRM, amount: sValidValueNumber, score: points })
-                        res.json({
-                            error: false,
-                            error_text: '',
-                            error_type: EScanErrors.NO,
-                            data: {
-                                type: 5,
-                                points: points
+                    
+                        axios.post(urlOFD, {
+                            "TotalSum": sValidValue,
+                            "DocDateTime": tValue,
+                            "FnNumber": fnValue,
+                            "DocNumber": iValue,
+                            "DocFiscalSign": fpValue,
+                            "tokenSecret": process.env.OFD_TOKEN
+                        }).then(async (response) => {
+                            Logger.debug('res')
+                            Logger.debug(response.data)
+
+                            if (response?.data?.Success) {
+
+                                if (response?.data?.Data?.RegAddresss?.trim()?.toLowerCase().includes('екатеринбург')) {
+                                    if (response?.data?.Data?.RegAddresss?.trim()?.toLowerCase().includes('металлургов')) {
+                                        if (response?.data?.Data?.RegAddresss?.trim()?.toLowerCase().includes('87')) {
+                                            if (Helper.hasNoPackage(response?.data?.Data?.Document?.Items)) {
+                                                points = Math.round(Math.round(sValidValueNumber / 100) / 10)
+                                                const authorization = await Helper.checkAuthorization(userDb.id)
+                                                if (authorization) points = Math.round(points * 1.5)
+        
+                                                await Helper.updateCheck(newQr, { status: ECheckStatus.CONFIRM, amount: sValidValueNumber, receipt_info: JSON.stringify(response.data), score: points })
+                                                res.json({
+                                                    error: false,
+                                                    error_text: '',
+                                                    error_type: EScanErrors.NO,
+                                                    data: {
+                                                        points: points
+                                                    }
+                                                })
+                                                return await TelegramBotApp.sendMessageOnTaskCorrect(userDb.id, userDb, points)
+                                            } else {
+                                                await Helper.updateCheck(newQr, { status: ECheckStatus.VALID_ERROR_PACKAGE, amount: sValidValueNumber, receipt_info: JSON.stringify(response.data) })
+                                                res.json({
+                                                    error: true,
+                                                    error_text: 'valid error',
+                                                    error_type: EScanErrors.VALID_ERROR,
+                                                    data: {}
+                                                })
+                                                return await TelegramBotApp.sendMessageOnScanIncorrect(userDb.id, userDb)
+                                            }
+                                        } else {
+                                            await Helper.updateCheck(newQr, { status: ECheckStatus.VALID_ERROR_ADDRESS, amount: sValidValueNumber, receipt_info: JSON.stringify(response.data) })
+                                            res.json({
+                                                error: true,
+                                                error_text: 'valid error',
+                                                error_type: EScanErrors.VALID_ERROR,
+                                                data: {}
+                                            })
+                                            return await TelegramBotApp.sendMessageOnScanIncorrect(userDb.id, userDb)
+                                        }
+                                    } else {
+                                        await Helper.updateCheck(newQr, { status: ECheckStatus.VALID_ERROR_ADDRESS, amount: sValidValueNumber, receipt_info: JSON.stringify(response.data) })
+                                        res.json({
+                                            error: true,
+                                            error_text: 'valid error',
+                                            error_type: EScanErrors.VALID_ERROR,
+                                            data: {}
+                                        })
+                                        return await TelegramBotApp.sendMessageOnScanIncorrect(userDb.id, userDb)
+                                    }
+                                } else {
+                                    await Helper.updateCheck(newQr, { status: ECheckStatus.VALID_ERROR_ADDRESS, amount: sValidValueNumber, receipt_info: JSON.stringify(response.data) })
+                                    res.json({
+                                        error: true,
+                                        error_text: 'valid error',
+                                        error_type: EScanErrors.VALID_ERROR,
+                                        data: {}
+                                    })
+                                    return await TelegramBotApp.sendMessageOnScanIncorrect(userDb.id, userDb)
+                                }
+                            } else {
+                                await Helper.updateCheck(newQr, { status: ECheckStatus.OFD_ERROR, amount: sValidValueNumber, receipt_info: JSON.stringify(response.data) })
+                                res.json({
+                                    error: true,
+                                    error_text: 'valid error',
+                                    error_type: EScanErrors.VALID_ERROR,
+                                    data: {}
+                                })
+                                return await TelegramBotApp.sendMessageOnScanIncorrect(userDb.id, userDb)
                             }
-                        })
-                        return await TelegramBotApp.sendMessageOnTaskCorrect(userDb.id, userDb, points)
-                        // axios.post(urlOFD, {
-                        //     "TotalSum": sValidValue,
-                        //     "DocDateTime": tValue,
-                        //     "FnNumber": fnValue,
-                        //     "DocNumber": iValue,
-                        //     "DocFiscalSign": fpValue,
-                        //     "tokenSecret": process.env.OFD_TOKEN
-                        // }).then(async (response) => {
-                        //     Logger.debug('res')
-                        //     Logger.debug(response.data)
 
-                        //     if (response.data.Success) {
+                        }).catch(async (err) => {
 
-                        //         if (true) {
-                        //             if (Helper.hasNoPackage(response.data.Data.Items)) {
-                        //                 points = Math.round(Math.round(sValidValueNumber / 100) / 10)
-                        //                 if (userDb.authorization === EAuthorization.COMPLETE) points = Math.round(points * 1.5)
-                        //                 await Helper.updateCheck(newQr, { status: ECheckStatus.CONFIRM, amount: sValidValueNumber, receipt_info: JSON.stringify(response.data), score: points })
-                        //                 res.json({
-                        //                     error: false,
-                        //                     error_text: '',
-                        //                     error_type: EScanErrors.NO,
-                        //                     data: {
-                        //                         points: points
-                        //                     }
-                        //                 })
-                        //                 return await TelegramBotApp.sendMessageOnTaskCorrect(userDb.id, userDb, points)
-                        //             }
-                        //         } else {
-                        //             await Helper.updateCheck(newQr, { status: ECheckStatus.VALID_ERROR, amount: sValidValueNumber, receipt_info: JSON.stringify(response.data) })
-                        //             res.json({
-                        //                 error: true,
-                        //                 error_text: 'valid error',
-                        //                 error_type: EScanErrors.VALID_ERROR,
-                        //                 data: {}
-                        //             })
-                        //             return await TelegramBotApp.sendMessageOnScanIncorrect(userDb.id, userDb)
-                        //         }
-                        //     } else {
-                        //         await Helper.updateCheck(newQr, { status: ECheckStatus.OFD_ERROR, amount: sValidValueNumber, receipt_info: JSON.stringify(response.data) })
-                        //         res.json({
-                        //             error: true,
-                        //             error_text: 'valid error',
-                        //             error_type: EScanErrors.VALID_ERROR,
-                        //             data: {}
-                        //         })
-                        //         return await TelegramBotApp.sendMessageOnScanIncorrect(userDb.id, userDb)
-                        //     }
-
-                        // }).catch(async (err) => {
-
-                        //     Logger.debug('err');
-                        //     Logger.debug(err.response.data)
-                        //     await Helper.updateCheck(newQr, { status: ECheckStatus.OFD_ERROR, amount: sValidValueNumber, receipt_info: JSON.stringify(err.response.data) })
-                        //     res.json({
-                        //         error: true,
-                        //         error_text: 'valid error',
-                        //         error_type: EScanErrors.VALID_ERROR,
-                        //         data: {}
-                        //     })
-                        //     return await TelegramBotApp.sendMessageOnScanIncorrect(userDb.id, userDb)
-                        // });
+                            Logger.debug('err');
+                            Logger.debug(err.response.data)
+                            await Helper.updateCheck(newQr, { status: ECheckStatus.OFD_ERROR, amount: sValidValueNumber, receipt_info: JSON.stringify(err.response.data) })
+                            res.json({
+                                error: true,
+                                error_text: 'valid error',
+                                error_type: EScanErrors.VALID_ERROR,
+                                data: {}
+                            })
+                            return await TelegramBotApp.sendMessageOnScanIncorrect(userDb.id, userDb)
+                        });
 
                     }
 

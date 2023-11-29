@@ -635,8 +635,11 @@ class Helper {
      */
     static hasNoPackage(items: any) {
         for (const item of items) {
-            if (item.Name.toLowerCase().includes('пакет')) {
-                return false;
+            const itemName = item.Name.toLowerCase();
+            if (
+              /пакет|пакет-майка|майка|пакетик|упаковка|пак\.|пак\. майка/.test(itemName)
+            ) {
+              return false;
             }
         }
         return true;
