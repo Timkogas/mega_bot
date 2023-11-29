@@ -58,6 +58,16 @@ export default class ScanCheck {
 
                     let points
 
+                    const year = tValue.substring(0, 4);
+                    const month = tValue.substring(4, 6);
+                    const day = tValue.substring(6, 8);
+                    const hours = tValue.substring(9, 11);
+                    const minutes = tValue.substring(11, 13);
+
+                    const originalDate = new Date(`${year}-${month}-${day}T${hours}:${minutes}:00.000`);
+
+                    const formattedDateTimeString = originalDate.toISOString();
+
                     const newQr = queryParams.toString()
 
                     const isExist = await Helper.checkIfCheckExists(newQr)
@@ -74,7 +84,7 @@ export default class ScanCheck {
                         await Helper.createCheck(newQr, userDb.id)
                     }
 
-                    const sValidValue = Number(sValue.replace('.', ''))
+                    const sValidValue = sValue.replace('.', '')
 
                     if (lastTask.type === EMessages.TASK_4) {
                         const sValidValueNumber = Number(sValidValue)
@@ -82,7 +92,7 @@ export default class ScanCheck {
                         if (sValidValueNumber > 10000) {
                             axios.post(urlOFD, {
                                 "TotalSum": sValidValue,
-                                "DocDateTime": tValue,
+                                "DocDateTime": formattedDateTimeString,
                                 "FnNumber": fnValue,
                                 "DocNumber": iValue,
                                 "DocFiscalSign": fpValue,
@@ -153,7 +163,7 @@ export default class ScanCheck {
                                 })
                                 try {
                                     return await TelegramBotApp.sendMessageOnScanIncorrect(userDb.id, userDb)
-                                } catch (e){
+                                } catch (e) {
                                     Logger.error('ofd error', e)
                                 }
                             });
@@ -173,12 +183,12 @@ export default class ScanCheck {
                         const sValidValueNumber = Number(sValidValue)
                         axios.post(urlOFD, {
                             "TotalSum": sValidValue,
-                            "DocDateTime": tValue,
+                            "DocDateTime": formattedDateTimeString,
                             "FnNumber": fnValue,
                             "DocNumber": iValue,
                             "DocFiscalSign": fpValue,
-                            "tokenSecret": process.env.OFD_TOKEN,
                             "ReceiptOperationType": nValue,
+                            "tokenSecret": process.env.OFD_TOKEN,
                         }).then(async (response) => {
                             Logger.debug('res')
                             Logger.debug(JSON.stringify(response.data))
@@ -289,7 +299,7 @@ export default class ScanCheck {
                             })
                             try {
                                 return await TelegramBotApp.sendMessageOnScanIncorrect(userDb.id, userDb)
-                            } catch (e){
+                            } catch (e) {
                                 Logger.error('ofd error', e)
                             }
                         });
