@@ -610,6 +610,8 @@
                         document.querySelector('.container_error_scan').classList.remove('hidden');
                     } else if (data.error_type === 2) {
                         document.querySelector('.container_not_confirm_scan').classList.remove('hidden');
+                    } else if (data.error_type === 3) {
+                        tg.close()
                     } else {
                         document.querySelector('.container_error_scan').classList.remove('hidden');
                     }
@@ -662,6 +664,8 @@
                         document.querySelector('.container_error_write').classList.remove('hidden');
                     } else if (data.error_type === 2) {
                         document.querySelector('.container_not_confirm_write').classList.remove('hidden');
+                    } else if (data.error_type === 3) {
+                        tg.close()
                     } else {
                         document.querySelector('.container_error_write').classList.remove('hidden');
                     }

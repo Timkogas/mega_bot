@@ -14,4 +14,5 @@ export enum EScanErrors {
     NO = 0,
     SERVER_ERROR = 1,
     VALID_ERROR = 2,
+    ERROR_AUTO = 3,
 } 

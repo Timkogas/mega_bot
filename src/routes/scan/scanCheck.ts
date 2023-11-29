@@ -86,6 +86,15 @@ export default class ScanCheck {
                             const authorization = await Helper.checkAuthorization(userDb.id)
                             if (authorization === 'error') {
                                 await Helper.confirmLastTask(userDb.id, ETaskStatus.WAIT, points)
+                                res.json({
+                                    error: false,
+                                    error_text: '',
+                                    error_type: EScanErrors.ERROR_AUTO,
+                                    data: {
+                                        type: 4,
+                                        points: points
+                                    }
+                                })
                                 return await TelegramBotApp.sendMessageOnCheckAuthorizationError(userDb.id, userDb)
                             }
                             if (authorization) points = Math.round(points * 1.5)
@@ -186,6 +195,15 @@ export default class ScanCheck {
                         const authorization = await Helper.checkAuthorization(userDb.id)
                         if (authorization === 'error') {
                             await Helper.confirmLastTask(userDb.id, ETaskStatus.WAIT, points)
+                            res.json({
+                                error: false,
+                                error_text: '',
+                                error_type: EScanErrors.ERROR_AUTO,
+                                data: {
+                                    type: 4,
+                                    points: points
+                                }
+                            })
                             return await TelegramBotApp.sendMessageOnCheckAuthorizationError(userDb.id, userDb)
                         }
                         if (authorization) points = Math.round(points * 1.5)
