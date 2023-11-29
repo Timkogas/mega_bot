@@ -91,7 +91,7 @@ export default class ScanCheck {
                                 "tokenSecret": process.env.OFD_TOKEN
                             }).then(async (response) => {
                                 Logger.debug('res')
-                                Logger.debug(response.data)
+                                Logger.debug(JSON.stringify(response.data))
 
                                 if (response.data.Success) {
                                     if (
@@ -144,7 +144,7 @@ export default class ScanCheck {
                                 }
 
                             }).catch(async (err) => {
-                                Logger.error('err', err.response.data)
+                                Logger.debug('err', JSON.stringify(err.response.data))
                                 await Helper.updateCheck(newQr, { status: ECheckStatus.OFD_ERROR, amount: sValidValueNumber, receipt_info: JSON.stringify(err.response.data) })
                                 res.json({
                                     error: true,
@@ -177,7 +177,7 @@ export default class ScanCheck {
                             "tokenSecret": process.env.OFD_TOKEN
                         }).then(async (response) => {
                             Logger.debug('res')
-                            Logger.debug(response.data)
+                            Logger.debug(JSON.stringify(response.data))
 
                             if (response?.data?.Success) {
                                 const innCheck = Helper.checkNumberOfChecksByInn(userDb.id, response?.data?.Data?.UserInn?.trim())
@@ -275,7 +275,7 @@ export default class ScanCheck {
                         }).catch(async (err) => {
 
                             Logger.debug('err');
-                            Logger.debug(err.response.data)
+                            Logger.debug(JSON.stringify(err.response.data))
                             await Helper.updateCheck(newQr, { status: ECheckStatus.OFD_ERROR, amount: sValidValueNumber, receipt_info: JSON.stringify(err.response.data) })
                             res.json({
                                 error: true,
