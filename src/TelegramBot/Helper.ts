@@ -392,7 +392,7 @@ class Helper {
                 if (user?.authorization_id) {
                     try {
                         Logger.debug('check', user.id, user.authorization_id)
-                        const checkAuthorization = await axios.post('https://omniapi-dev.mega.ru/telegram/registerUser',
+                        const checkAuthorization = await axios.post('https://omniapi.mega.ru/telegram/registerUser',
                             {
                                 telegramId: `${user.id}`,
                                 keycloakId: user.authorization_id

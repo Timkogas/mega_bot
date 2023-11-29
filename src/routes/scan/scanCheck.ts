@@ -82,33 +82,6 @@ export default class ScanCheck {
                         const sValidValueNumber = Number(sValidValue)
 
                         if (sValidValueNumber > 10000) {
-                            points = Math.round(Math.round(sValidValueNumber / 100) / 10)
-                            const authorization = await Helper.checkAuthorization(userDb.id)
-                            if (authorization === 'error') {
-                                await Helper.confirmLastTask(userDb.id, ETaskStatus.WAIT, points)
-                                res.json({
-                                    error: false,
-                                    error_text: '',
-                                    error_type: EScanErrors.ERROR_AUTO,
-                                    data: {
-                                        type: 4,
-                                        points: points
-                                    }
-                                })
-                                return await TelegramBotApp.sendMessageOnCheckAuthorizationError(userDb.id, userDb)
-                            }
-                            if (authorization) points = Math.round(points * 1.5)
-                            await Helper.updateCheck(newQr, { status: ECheckStatus.CONFIRM, amount: sValidValueNumber, score: points })
-                            res.json({
-                                error: false,
-                                error_text: '',
-                                error_type: EScanErrors.NO,
-                                data: {
-                                    type: 4,
-                                    points: points
-                                }
-                            })
-                            return await TelegramBotApp.sendMessageOnTaskCorrect(userDb.id, userDb, points)
                             axios.post(urlOFD, {
                                 "TotalSum": sValidValue,
                                 "DocDateTime": tValue,
@@ -130,6 +103,11 @@ export default class ScanCheck {
                                         const authorization = await Helper.checkAuthorization(userDb.id)
                                         if (authorization === 'error') {
                                             await Helper.confirmLastTask(userDb.id, ETaskStatus.WAIT, points)
+                                            res.json({
+                                                error: true,
+                                                error_text: '',
+                                                error_type: EScanErrors.ERROR_AUTO,
+                                            })
                                             return await TelegramBotApp.sendMessageOnCheckAuthorizationError(userDb.id, userDb)
                                         }
                                         if (authorization) points = Math.round(points * 1.5)
@@ -190,35 +168,6 @@ export default class ScanCheck {
 
                     if (lastTask.type === EMessages.TASK_5) {
                         const sValidValueNumber = Number(sValidValue)
-
-                        points = Math.round(Math.round(sValidValueNumber / 100) / 10)
-                        const authorization = await Helper.checkAuthorization(userDb.id)
-                        if (authorization === 'error') {
-                            await Helper.confirmLastTask(userDb.id, ETaskStatus.WAIT, points)
-                            res.json({
-                                error: false,
-                                error_text: '',
-                                error_type: EScanErrors.ERROR_AUTO,
-                                data: {
-                                    type: 4,
-                                    points: points
-                                }
-                            })
-                            return await TelegramBotApp.sendMessageOnCheckAuthorizationError(userDb.id, userDb)
-                        }
-                        if (authorization) points = Math.round(points * 1.5)
-                        await Helper.updateCheck(newQr, { status: ECheckStatus.CONFIRM, amount: sValidValueNumber, score: points })
-                        res.json({
-                            error: false,
-                            error_text: '',
-                            error_type: EScanErrors.NO,
-                            data: {
-                                type: 4,
-                                points: points
-                            }
-                        })
-                        return await TelegramBotApp.sendMessageOnTaskCorrect(userDb.id, userDb, points)
-
                         axios.post(urlOFD, {
                             "TotalSum": sValidValue,
                             "DocDateTime": tValue,
@@ -251,6 +200,11 @@ export default class ScanCheck {
                                                 const authorization = await Helper.checkAuthorization(userDb.id)
                                                 if (authorization === 'error') {
                                                     await Helper.confirmLastTask(userDb.id, ETaskStatus.WAIT, points)
+                                                    res.json({
+                                                        error: true,
+                                                        error_text: '',
+                                                        error_type: EScanErrors.ERROR_AUTO,
+                                                    })
                                                     return await TelegramBotApp.sendMessageOnCheckAuthorizationError(userDb.id, userDb)
                                                 }
                                                 if (authorization) points = Math.round(points * 1.5)
