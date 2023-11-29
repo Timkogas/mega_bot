@@ -74,7 +74,7 @@ export default class ScanCheck {
                         await Helper.createCheck(newQr, userDb.id)
                     }
 
-                    const sValidValue = sValue.replace('.', '')
+                    const sValidValue = Number(sValue.replace('.', ''))
 
                     if (lastTask.type === EMessages.TASK_4) {
                         const sValidValueNumber = Number(sValidValue)
@@ -151,7 +151,11 @@ export default class ScanCheck {
                                     error_type: EScanErrors.VALID_ERROR,
                                     data: {}
                                 })
-                                return await TelegramBotApp.sendMessageOnScanIncorrect(userDb.id, userDb)
+                                try {
+                                    return await TelegramBotApp.sendMessageOnScanIncorrect(userDb.id, userDb)
+                                } catch (e){
+                                    Logger.error('ofd error', e)
+                                }
                             });
                         } else {
                             await Helper.updateCheck(newQr, { status: ECheckStatus.VALID_ERROR_AMOUNT, amount: sValidValueNumber })
@@ -283,7 +287,11 @@ export default class ScanCheck {
                                 error_type: EScanErrors.VALID_ERROR,
                                 data: {}
                             })
-                            return await TelegramBotApp.sendMessageOnScanIncorrect(userDb.id, userDb)
+                            try {
+                                return await TelegramBotApp.sendMessageOnScanIncorrect(userDb.id, userDb)
+                            } catch (e){
+                                Logger.error('ofd error', e)
+                            }
                         });
 
                     }
