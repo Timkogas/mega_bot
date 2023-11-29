@@ -52,7 +52,8 @@ export default class EjsAdminStatsAll {
                     users_checks.amount,
                     users_checks.score AS checkScore,
                     users_checks.time AS scanTime,
-                    checks.qr AS qrCode
+                    checks.qr AS qrCode,
+                    users_checks.receipt_info AS receipt_info
                 FROM
                     users_checks
                 JOIN
