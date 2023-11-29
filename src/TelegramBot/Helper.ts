@@ -278,14 +278,15 @@ class Helper {
     * @param userId - ID пользователя из базы данных
     * @returns Объект с информацией о задаче
     */
-    static async getLastPendingTask(userId: number): Promise<{ id: number, type: EMessages }> {
+    static async getLastPendingTask(userId: number): Promise<{ id: number, type: EMessages, status: ETaskStatus }> {
         try {
             // Получение последней задачи со статусом 0
-            const lastTask = await Db.query('SELECT * FROM users_tasks WHERE user_id = ? AND status = 0 ORDER BY id DESC LIMIT 1', [userId]);
+            const lastTask = await Db.query('SELECT * FROM users_tasks WHERE user_id = ? AND (status = 0 OR status = 3) ORDER BY id DESC LIMIT 1', [userId]);
 
             if (lastTask && lastTask.length > 0) {
                 return {
                     id: lastTask[0].task_id,
+                    status: lastTask[0].status,
                     type: taskIdToEMessagesMap[lastTask[0].task_id] || null,
                 };
             }
@@ -297,6 +298,7 @@ class Helper {
             const nextTaskId = lastUserTask && lastUserTask.length > 0 ? lastUserTask[0].lastTaskId + 1 : 1;
             if (nextTaskId > 5) return {
                 id: 6,
+                status: ETaskStatus.NO,
                 type: EMessages.FINAL,
             };
             // Если нет задач со статусом 0, создаем новую задачу со статусом 0
@@ -307,6 +309,7 @@ class Helper {
 
             if (newTask && newTask.length > 0) {
                 return {
+                    status: newTask.status,
                     id: newTask.task_id,
                     type: taskIdToEMessagesMap[newTask[0].task_id] || null,
                 };
@@ -327,11 +330,19 @@ class Helper {
     static async confirmLastTask(userId: number, status: ETaskStatus, score: number): Promise<void> {
         try {
             // Получение последней задачи со статусом 0
-            const lastTask = await Db.query('SELECT * FROM users_tasks WHERE user_id = ? AND status = 0 ORDER BY id DESC LIMIT 1', [userId]);
+            const lastTask = await Db.query('SELECT * FROM users_tasks WHERE user_id = ? AND (status = 0 OR status = 3) ORDER BY id DESC LIMIT 1', [userId]);
             Logger.debug('confirm task', userId, status, score, JSON.stringify(lastTask))
             if (lastTask && lastTask.length > 0) {
                 const taskId = lastTask[0].id;
                 // Обновление статуса последней задачи на 1
+
+
+                if (status === ETaskStatus.WAIT) {
+                    await Db.query('UPDATE users SET paused_score = ? WHERE id = ?', [score, userId]);
+                } else {
+                    await Db.query('UPDATE users SET paused_score = ? WHERE id = ?', [0, userId]);
+                }
+
                 if (taskId === 5) {
                     await Db.query('UPDATE users_tasks SET status = ? WHERE id = ?', [status, taskId]);
                 } else {
@@ -373,7 +384,7 @@ class Helper {
      * @param userId - ID пользователя в Telegram
      * @returns true, если запрос успешен и есть данные пользователя, иначе false
      */
-    static async checkAuthorization(userId: number): Promise<boolean> {
+    static async checkAuthorization(userId: number): Promise<boolean | 'error'> {
         try {
             const user = await Helper.getUserById(userId);
 
@@ -381,7 +392,7 @@ class Helper {
                 if (user?.authorization_id) {
                     try {
                         Logger.debug('check', user.id, user.authorization_id)
-                        const checkAuthorization = await axios.post('https://omniapi.mega.ru/telegram/registerUser',
+                        const checkAuthorization = await axios.post('https://omniapi-dev.mega.ru/telegram/registerUser',
                             {
                                 telegramId: `${user.id}`,
                                 keycloakId: user.authorization_id
@@ -396,14 +407,14 @@ class Helper {
                         if (checkAuthorization?.data?.username || checkAuthorization?.data?.firstName || checkAuthorization?.data?.email) {
                             return true
                         } else {
-                            return false
+                            return 'error'
                         }
                     } catch (error) {
                         Logger.error('[Helper] Error checkAuthorization:', error);
-                        return false;
+                        return 'error';
                     }
                 } else {
-                    return false
+                    return 'error'
                 }
             } else {
                 return false

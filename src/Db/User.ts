@@ -18,13 +18,15 @@ export interface IUserDb {
     activity: EActivity
     final: number
     skip_task: Date
+    paused_score: number
   }
 
 export enum EActivity {
     BUTTONS = 'buttons',
     CODE = 'code',
     PROBLEM = 'problem',
-    AUTHORIZATION = "authorization"
+    AUTHORIZATION = "authorization",
+    AUTHORIZATION_ERROR = "authorization_error"
 };
 
 export enum EAuthorization {

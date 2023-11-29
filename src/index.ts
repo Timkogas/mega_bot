@@ -93,6 +93,7 @@ class App {
         score INT,
         agree TINYINT DEFAULT 0,
         disagree TINYINT DEFAULT 0,
+        paused_score INT DEFAULT 0,
         time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
     `
