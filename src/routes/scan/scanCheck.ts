@@ -81,7 +81,7 @@ export default class ScanCheck {
                     }
 
                     const sValidValue = sValue.replace('.', '')
-                    let formattedDateTimeString
+                    let originalDate
                     try {
                         const year = tValue.substring(0, 4);
                         const month = tValue.substring(4, 6);
@@ -89,9 +89,7 @@ export default class ScanCheck {
                         const hours = tValue.substring(9, 11);
                         const minutes = tValue.substring(11, 13);
     
-                        const originalDate = new Date(`${year}-${month}-${day}T${hours}:${minutes}:00.000`);
-    
-                        formattedDateTimeString = originalDate.toISOString();
+                        originalDate = `${year}-${month}-${day}T${hours}:${minutes}:00.000`;
                     } catch {
                         await Helper.updateCheck(newQr, { status: ECheckStatus.VALID_ERROR})
                         res.json({
@@ -109,7 +107,7 @@ export default class ScanCheck {
                         if (sValidValueNumber > 10000) {
                             axios.post(urlOFD, {
                                 "TotalSum": sValidValue,
-                                "DocDateTime": formattedDateTimeString,
+                                "DocDateTime": originalDate,
                                 "FnNumber": fnValue,
                                 "DocNumber": iValue,
                                 "DocFiscalSign": fpValue,
@@ -200,7 +198,7 @@ export default class ScanCheck {
                         const sValidValueNumber = Number(sValidValue)
                         axios.post(urlOFD, {
                             "TotalSum": sValidValue,
-                            "DocDateTime": formattedDateTimeString,
+                            "DocDateTime": originalDate,
                             "FnNumber": fnValue,
                             "DocNumber": iValue,
                             "DocFiscalSign": fpValue,
