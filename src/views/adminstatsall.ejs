@@ -61,6 +61,12 @@
             background-color: #ddd;
         }
 
+        #statsTableContainer {
+            width: 100%;
+            overflow: auto;
+        }
+
+
         #statsTable {
             width: 100% !important;
             max-width: 100% !important;
@@ -101,7 +107,7 @@
     </div>
 
     <h2>Результаты сессий сканирования чеков</h2>
-
+    <div id="statsTableContainer">
     <table id="statsTable" class="display">
         <thead>
             <tr>
@@ -141,6 +147,7 @@
                     <% } %>
         </tbody>
     </table>
+</div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>

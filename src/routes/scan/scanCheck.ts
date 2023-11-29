@@ -319,7 +319,6 @@ export default class ScanCheck {
                                 Logger.error('ofd error', e)
                             }
                         });
-
                     }
 
                     await Helper.updateCheck(newQr, { status: ECheckStatus.VALID_ERROR })
