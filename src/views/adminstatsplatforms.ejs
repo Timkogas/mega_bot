@@ -49,6 +49,18 @@
             console.log(userActivityStats)
             const flattenData = (data) => {
                 return data.reduce((result, platform) => {
+
+                    const platformData = {
+                        platform_id: platform.id,
+                        total_launches: platform.total_launches,
+                        unique_users: platform.unique_users,
+                        total_web_app_launches: platform.total_web_app_launches,
+                        unique_web_app_users: platform.unique_web_app_users,
+                        game_sessions: platform.game_sessions,
+                    };
+
+                    result.push(platformData);
+
                     const channels = platform.channels.reduce((channelResult, channel) => {
                         const channelData = {
                             platform_id: platform.id,

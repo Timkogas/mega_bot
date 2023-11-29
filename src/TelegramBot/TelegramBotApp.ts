@@ -774,7 +774,7 @@ class TelegramBotApp {
                     break;
             }
 
-            const text = `Введи уникальный код ниже 👇🏻 (1 - correct)`
+            const text = `Введи уникальный код ниже 👇🏻`
 
             await this.bot.sendMessage(chatId, text, {
                 parse_mode: 'HTML',
