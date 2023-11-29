@@ -57,20 +57,16 @@ export default class ScanCheck {
                     }
 
                     let points
+                    try {
 
-                    const year = tValue.substring(0, 4);
-                    const month = tValue.substring(4, 6);
-                    const day = tValue.substring(6, 8);
-                    const hours = tValue.substring(9, 11);
-                    const minutes = tValue.substring(11, 13);
-
-                    const originalDate = new Date(`${year}-${month}-${day}T${hours}:${minutes}:00.000`);
-
-                    const formattedDateTimeString = originalDate.toISOString();
-
+                    } catch {
+                        
+                    }
+                
                     const newQr = queryParams.toString()
 
                     const isExist = await Helper.checkIfCheckExists(newQr)
+
 
                     if (isExist) {
                         res.json({
@@ -85,6 +81,27 @@ export default class ScanCheck {
                     }
 
                     const sValidValue = sValue.replace('.', '')
+                    let formattedDateTimeString
+                    try {
+                        const year = tValue.substring(0, 4);
+                        const month = tValue.substring(4, 6);
+                        const day = tValue.substring(6, 8);
+                        const hours = tValue.substring(9, 11);
+                        const minutes = tValue.substring(11, 13);
+    
+                        const originalDate = new Date(`${year}-${month}-${day}T${hours}:${minutes}:00.000`);
+    
+                        formattedDateTimeString = originalDate.toISOString();
+                    } catch {
+                        await Helper.updateCheck(newQr, { status: ECheckStatus.VALID_ERROR})
+                        res.json({
+                            error: true,
+                            error_text: 'valid error',
+                            error_type: EScanErrors.VALID_ERROR,
+                            data: {}
+                        })
+                        return await TelegramBotApp.sendMessageOnScanIncorrect(userDb.id, userDb)
+                    }
 
                     if (lastTask.type === EMessages.TASK_4) {
                         const sValidValueNumber = Number(sValidValue)
