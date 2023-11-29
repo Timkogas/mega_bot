@@ -57,11 +57,6 @@ export default class ScanCheck {
                     }
 
                     let points
-                    try {
-
-                    } catch {
-
-                    }
 
                     const newQr = queryParams.toString()
 
