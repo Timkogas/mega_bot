@@ -60,100 +60,154 @@
         .pagination a:hover:not(.active) {
             background-color: #ddd;
         }
-
-        #statsTableContainer {
-            width: 100%;
-            overflow: auto;
-        }
-
-
-        #statsTable {
-            width: 100% !important;
-            max-width: 100% !important;
-        }
     </style>
 </head>
 
 <body style="font-family: Arial, Helvetica, sans-serif;">
-    
+
     <h1>Статистика</h1>
 
     <div>
-        <p>Общее количество запусков чат-бота: <%= totalBotLaunches %></p>
-        <p>Количество уникальных пользователей, запустивших чат-бот: <%= uniqueUsersCount %></p>
-        <p>Общее количество запусков Web-App: <%= totalWebAppLaunches %></p>
-        <p>Количество уникальных пользователей, запустивших Web-App: <%= uniqueWebAppUsersCount %></p>
-        <p>Количество сканирований чеков: <%= totalScans %></p>
-        <p>Количество принятых чеков: <%= acceptedChecks %></p>
-        <p>Количество не принятых чеков: <%= rejectedChecks %></p>
+        <p>Общее количество запусков чат-бота: <%= totalBotLaunches %>
+        </p>
+        <p>Количество уникальных пользователей, запустивших чат-бот: <%= uniqueUsersCount %>
+        </p>
+        <p>Общее количество запусков Web-App: <%= totalWebAppLaunches %>
+        </p>
+        <p>Количество уникальных пользователей, запустивших Web-App: <%= uniqueWebAppUsersCount %>
+        </p>
+        <p>Количество сканирований чеков: <%= totalScans %>
+        </p>
+        <p>Количество принятых чеков: <%= acceptedChecks %>
+        </p>
+        <p>Количество не принятых чеков: <%= rejectedChecks %>
+        </p>
         <br>
-        <p>Общее количество уникальных пользователей, запустивших чат-бот по реферальной ссылке: <%= totalReferralUsers %></p>
-        <p>Общее количество уникальных пользователей, нажавших на кнопку «Не хочу» в приветственном сообщении: <%= totalDisagreeUsers %></p>
-        <p>Общее количество уникальных пользователей, нажавших на кнопку «Я согласен(на)»: <%= totalAgreeUsers %></p>
-        <p>Общее количество уникальных пользователей, нажавших на кнопку «Задания», в навигационном сообщении чат-бота: <%= totalTaskUsers %></p>
-        <p>Общее количество уникальных пользователей, успешно завершивших выполнение первого задания: <%= totalSuccessfulFirstTaskUsers %></p>
-        <p>Общее количество уникальных пользователей, пропустивших выполнение первого задания: <%= totalSkippedFirstTaskUsers %></p>
-        <p>Общее количество уникальных пользователей, прошедших проверку подписки на телеграм-канал бренда: <%= totalSubscriptionPassedUsers %></p>
-        <p>Общее количество уникальных пользователей, успешно завершивших выполнение второго задания: <%= totalSuccessfulSecondTaskUsers %></p>
-        <p>Общее количество уникальных пользователей, пропустивших выполнение второго задания: <%= totalSkippedSecondTaskUsers %></p>
-        <p>Общее количество уникальных пользователей, прошедших авторизацию в системе MEGA Friends: <%= totalMegaFriendsAuthorizedUsers %></p>
-        <p>Общее количество уникальных пользователей, пропустивших этап авторизации в системе MEGA Friends: <%= totalMegaFriendsSkippedUsers %></p>
-        <p>Общее количество уникальных пользователей, успешно завершивших выполнение третьего задания: <%= totalSuccessfulThirdTaskUsers %></p>
-        <p>Общее количество уникальных пользователей, пропустивших выполнение третьего задания: <%= totalSkippedThirdTaskUsers %></p>
-        <p>Общее количество уникальных пользователей, успешно завершивших выполнение четвертого задания: <%= totalSuccessfulFourthTaskUsers %></p>
-        <p>Общее количество уникальных пользователей, пропустивших выполнение четвертого задания: <%= totalSkippedFourthTaskUsers %></p>
-        <p>Общее количество уникальных пользователей, успешно завершивших выполнение пятого задания: <%= totalSuccessfulFifthTaskUsers %></p>
-        <p>Общее количество уникальных пользователей, пропустивших выполнение пятого задания: <%= totalSkippedFifthTaskUsers %></p>
+        <p>Общее количество уникальных пользователей, запустивших чат-бот по реферальной ссылке: <%= totalReferralUsers
+                %>
+        </p>
+        <p>Общее количество уникальных пользователей, нажавших на кнопку «Не хочу» в приветственном сообщении: <%=
+                totalDisagreeUsers %>
+        </p>
+        <p>Общее количество уникальных пользователей, нажавших на кнопку «Я согласен(на)»: <%= totalAgreeUsers %>
+        </p>
+        <p>Общее количество уникальных пользователей, нажавших на кнопку «Задания», в навигационном сообщении чат-бота:
+            <%= totalTaskUsers %>
+        </p>
+        <p>Общее количество уникальных пользователей, успешно завершивших выполнение первого задания: <%=
+                totalSuccessfulFirstTaskUsers %>
+        </p>
+        <p>Общее количество уникальных пользователей, пропустивших выполнение первого задания: <%=
+                totalSkippedFirstTaskUsers %>
+        </p>
+        <p>Общее количество уникальных пользователей, прошедших проверку подписки на телеграм-канал бренда: <%=
+                totalSubscriptionPassedUsers %>
+        </p>
+        <p>Общее количество уникальных пользователей, успешно завершивших выполнение второго задания: <%=
+                totalSuccessfulSecondTaskUsers %>
+        </p>
+        <p>Общее количество уникальных пользователей, пропустивших выполнение второго задания: <%=
+                totalSkippedSecondTaskUsers %>
+        </p>
+        <p>Общее количество уникальных пользователей, прошедших авторизацию в системе MEGA Friends: <%=
+                totalMegaFriendsAuthorizedUsers %>
+        </p>
+        <p>Общее количество уникальных пользователей, пропустивших этап авторизации в системе MEGA Friends: <%=
+                totalMegaFriendsSkippedUsers %>
+        </p>
+        <p>Общее количество уникальных пользователей, успешно завершивших выполнение третьего задания: <%=
+                totalSuccessfulThirdTaskUsers %>
+        </p>
+        <p>Общее количество уникальных пользователей, пропустивших выполнение третьего задания: <%=
+                totalSkippedThirdTaskUsers %>
+        </p>
+        <p>Общее количество уникальных пользователей, успешно завершивших выполнение четвертого задания: <%=
+                totalSuccessfulFourthTaskUsers %>
+        </p>
+        <p>Общее количество уникальных пользователей, пропустивших выполнение четвертого задания: <%=
+                totalSkippedFourthTaskUsers %>
+        </p>
+        <p>Общее количество уникальных пользователей, успешно завершивших выполнение пятого задания: <%=
+                totalSuccessfulFifthTaskUsers %>
+        </p>
+        <p>Общее количество уникальных пользователей, пропустивших выполнение пятого задания: <%=
+                totalSkippedFifthTaskUsers %>
+        </p>
     </div>
 
     <h2>Результаты сессий сканирования чеков</h2>
     <div id="statsTableContainer">
-    <table id="statsTable" class="display">
-        <thead>
-            <tr>
-                <th>Chat ID</th>
-                <th>Username</th>
-                <th>Статус валидации</th>
-                <th>Сумма чека (копейки)</th>
-                <th>Количество баллов</th>
-                <th>Дата и время сканирования</th>
-                <th>Информация из чека</th>
-                <th>Ответ ОФД</th>
-            </tr>
-        </thead>
-        <tbody>
-            <% function translateCheckStatus(status) { switch (status) { 
-                case 0: return 'NO' ; 
-                case 1: return 'прошел полную проверку'; 
-                case 2: return 'не прошел проверку ОФД' ; 
-                case 3: return 'не прошел внутреннюю проверку'; 
-                case 4: return 'не прошел внутреннюю проверку(не тот адресс)'; 
-                case 5: return 'не прошел внутреннюю проверку(есть пакет)'; 
-                case 6: return 'не прошел внутреннюю проверку(более 3 чеков из одного магазина)'; 
-                case 7: return 'не прошел внутреннюю проверку(сумма чека)'; 
-                case 8: return 'не прошел внутреннюю проверку(4 задание)'; 
-                default: return 'UNKNOWN' ; } } %>
-                <% for (const scanResult of scanResults) { %>
-                    <tr>
-                        <td><%= scanResult.chatID %></td>
-                        <td><%= scanResult.username %></td>
-                        <td><%= translateCheckStatus(scanResult?.checkStatus) %></td>
-                        <td><%= scanResult.amount %></td>
-                        <td><%= scanResult.checkScore %></td>
-                        <td><%= new Date(scanResult.scanTime).toLocaleString()%></td>
-                        <td><%= scanResult?.qrCode %></td>
-                        <td><%= scanResult?.receipt_info %></td>
-                    </tr>
-                    <% } %>
-        </tbody>
-    </table>
-</div>
+        <table id="statsTable" class="display">
+            <thead>
+                <tr>
+                    <th>Chat ID</th>
+                    <th>Username</th>
+                    <th>Статус валидации</th>
+                    <th>Сумма чека (копейки)</th>
+                    <th>Количество баллов</th>
+                    <th>Дата и время сканирования</th>
+                    <th>Информация из чека</th>
+                    <th>Ответ ОФД</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% function translateCheckStatus(status) { switch (status) { case 0: return 'NO' ; case 1:
+                    return 'прошел полную проверку' ; case 2: return 'не прошел проверку ОФД' ; case 3:
+                    return 'не прошел внутреннюю проверку' ; case 4:
+                    return 'не прошел внутреннюю проверку(не тот адресс)' ; case 5:
+                    return 'не прошел внутреннюю проверку(есть пакет)' ; case 6:
+                    return 'не прошел внутреннюю проверку(более 3 чеков из одного магазина)' ; case 7:
+                    return 'не прошел внутреннюю проверку(сумма чека)' ; case 8:
+                    return 'не прошел внутреннюю проверку(4 задание)' ; default: return 'UNKNOWN' ; } } %>
+                    <% for (const scanResult of scanResults) { %>
+                        <tr>
+                            <td>
+                                <%= scanResult.chatID %>
+                            </td>
+                            <td>
+                                <%= scanResult.username %>
+                            </td>
+                            <td>
+                                <%= translateCheckStatus(scanResult?.checkStatus) %>
+                            </td>
+                            <td>
+                                <%= scanResult.amount %>
+                            </td>
+                            <td>
+                                <%= scanResult.checkScore %>
+                            </td>
+                            <td>
+                                <%= new Date(scanResult.scanTime).toLocaleString()%>
+                            </td>
+                            <td>
+                                <%= scanResult?.qrCode %>
+                            </td>
+                            <td>
+                                <%= scanResult?.receipt_info %>
+                            </td>
+                        </tr>
+                        <% } %>
+            </tbody>
+        </table>
+    </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
     <script>
         $(document).ready(function () {
-            $('#statsTable').DataTable();
+            $('#statsTable').DataTable({
+                "columnDefs": [
+                    { "width": "10%", "targets": 0 },
+                    { "width": "10%", "targets": 1 }, 
+                    { "width": "10%", "targets": 2 }, 
+                    { "width": "10%", "targets": 3 }, 
+                    { "width": "6%", "targets": 4 }, 
+                    { "width": "10%", "targets": 5 }, 
+                    { "width": "22%", "targets": 6 }, 
+                    { "width": "22%", "targets": 7 }, 
+
+                ]
+            });
         });
     </script>
 

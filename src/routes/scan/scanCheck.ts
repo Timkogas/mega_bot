@@ -25,7 +25,7 @@ export default class ScanCheck {
             this._route(req, res);
         });
     }
-
+    
     private async _route(req: core.Request<any>, res: core.Response<any>): Promise<void> {
         try {
             const { id, qr } = req.body
@@ -250,6 +250,7 @@ export default class ScanCheck {
 
                                                     }
                                                 })
+                                                Logger.debug('send')
                                                 return await TelegramBotApp.sendMessageOnTaskCorrect(userDb.id, userDb, points)
                                             } else {
                                                 await Helper.updateCheck(newQr, { status: ECheckStatus.VALID_ERROR_PACKAGE, amount: sValidValueNumber, receipt_info: JSON.stringify(response.data) })
