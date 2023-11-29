@@ -123,6 +123,7 @@ class App {
        score INT DEFAULT 0,
        time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
        receipt_info JSON DEFAULT NULL,
+       inn VARCHAR(50) DEFAULT NULL,
        FOREIGN KEY (check_id) REFERENCES checks(id),
        FOREIGN KEY (user_id) REFERENCES users(id)
     );

@@ -121,6 +121,7 @@ export default class ScanCheck {
                                             error_text: '',
                                             error_type: EScanErrors.NO,
                                             data: {
+                                                type: 4,
                                                 points: points
                                             }
                                         })
@@ -185,7 +186,18 @@ export default class ScanCheck {
                             Logger.debug(response.data)
 
                             if (response?.data?.Success) {
-
+                                const innCheck = Helper.checkNumberOfChecksByInn(userDb.id, response?.data?.Data?.UserInn?.trim())
+                                if (!innCheck) {
+                                    await Helper.updateCheck(newQr, { status: ECheckStatus.VALID_ERROR_INN, amount: sValidValueNumber, receipt_info: JSON.stringify(response.data) })
+                                    res.json({
+                                        error: true,
+                                        error_text: 'valid error',
+                                        error_type: EScanErrors.VALID_ERROR,
+                                        data: {}
+                                    })
+                                    return await TelegramBotApp.sendMessageOnScanIncorrect(userDb.id, userDb)
+                                }
+                                
                                 if (response?.data?.Data?.RegAddresss?.trim()?.toLowerCase().includes('екатеринбург')) {
                                     if (response?.data?.Data?.RegAddresss?.trim()?.toLowerCase().includes('металлургов')) {
                                         if (response?.data?.Data?.RegAddresss?.trim()?.toLowerCase().includes('87')) {
@@ -194,13 +206,15 @@ export default class ScanCheck {
                                                 const authorization = await Helper.checkAuthorization(userDb.id)
                                                 if (authorization) points = Math.round(points * 1.5)
         
-                                                await Helper.updateCheck(newQr, { status: ECheckStatus.CONFIRM, amount: sValidValueNumber, receipt_info: JSON.stringify(response.data), score: points })
+                                                await Helper.updateCheck(newQr, { status: ECheckStatus.CONFIRM, amount: sValidValueNumber, receipt_info: JSON.stringify(response.data), score: points, inn: response?.data?.Data?.UserInn?.trim() })
                                                 res.json({
                                                     error: false,
                                                     error_text: '',
                                                     error_type: EScanErrors.NO,
                                                     data: {
+                                                        type: 5,
                                                         points: points
+                                                        
                                                     }
                                                 })
                                                 return await TelegramBotApp.sendMessageOnTaskCorrect(userDb.id, userDb, points)

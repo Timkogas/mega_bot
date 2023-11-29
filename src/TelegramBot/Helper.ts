@@ -583,8 +583,7 @@ class Helper {
         amount?: number,
         score?: number,
         receipt_info?: any,
-        url?: string,
-        img?: string
+        inn?: string
     }): Promise<boolean> {
         try {
             // Проверяем, существует ли чек с заданным QR-кодом
@@ -602,8 +601,7 @@ class Helper {
                 (updateData.amount !== undefined ? 'amount = ?, ' : '') +
                 (updateData.score !== undefined ? 'score = ?, ' : '') +
                 (updateData.receipt_info !== undefined ? 'receipt_info = ?, ' : '') +
-                (updateData.url !== undefined ? 'url = ?, ' : '') +
-                (updateData.img !== undefined ? 'img = ?, ' : '') +
+                (updateData.inn !== undefined ? 'inn = ?, ' : '') +
                 'time = CURRENT_TIMESTAMP ' +
                 'WHERE check_id IN (SELECT id FROM checks WHERE qr = ?)';
 
@@ -614,8 +612,7 @@ class Helper {
             if (updateData.amount !== undefined) values.push(updateData.amount);
             if (updateData.score !== undefined) values.push(updateData.score);
             if (updateData.receipt_info !== undefined) values.push(JSON.stringify(updateData.receipt_info));
-            if (updateData.url !== undefined) values.push(updateData.url);
-            if (updateData.img !== undefined) values.push(updateData.img);
+            if (updateData.inn !== undefined) values.push(updateData.inn);
             values.push(qrCode);
 
             // Выполняем SQL-запрос
@@ -629,6 +626,31 @@ class Helper {
     }
 
     /**
+     * Проверка количества чеков с заданным ИНН у пользователя
+     * @param userId - ID пользователя
+     * @param inn - ИНН для проверки
+     * @returns true, если количество чеков меньше 3; false, если больше или равно 3
+     */
+    static async checkNumberOfChecksByInn(userId: number, inn: string): Promise<boolean> {
+        try {
+            // Генерируем SQL-запрос для подсчета количества чеков с заданным ИНН у пользователя
+            const countQuery = 'SELECT COUNT(*) as count FROM users_checks WHERE user_id = ? AND inn = ?';
+
+            // Выполняем SQL-запрос
+            const result = await Db.query(countQuery, [userId, inn]);
+
+            // Получаем количество чеков из результата запроса
+            const count = result[0]?.count || 0;
+
+            // Возвращаем результат проверки (true, если количество меньше 3; false, если больше или равно 3)
+            return count <= 3;
+        } catch (error) {
+            Logger.error('[Helper] Error checking number of checks by INN:', error);
+            return false;
+        }
+    }
+
+    /**
      * Проверка на пакет в товарах чека, если он есть возвращает false
      * @param items - товары
      * @returns true, если обновление прошло успешно; false в противном случае
@@ -637,9 +659,9 @@ class Helper {
         for (const item of items) {
             const itemName = item.Name.toLowerCase();
             if (
-              /пакет|пакет-майка|майка|пакетик|упаковка|пак\.|пак\. майка/.test(itemName)
+                /пакет|пакет-майка|майка|пакетик|упаковка|пак\.|пак\. майка/.test(itemName)
             ) {
-              return false;
+                return false;
             }
         }
         return true;
