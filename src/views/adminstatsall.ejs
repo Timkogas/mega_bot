@@ -110,8 +110,26 @@
             </tr>
         </thead>
         <tbody>
-            <% function translateCheckStatus(status) { switch (status) { case 0: return 'NO' ; case 1: return 'прошел полную проверку'
-                    ; case 2: return 'не прошел проверку ОФД' ; case 3: return 'не прошел внутреннюю проверку' ; default: return 'UNKNOWN' ; } } %>
+            NO = 0,
+            CONFIRM = 1,
+            OFD_ERROR = 2,
+            VALID_ERROR = 3,
+            VALID_ERROR_ADDRESS = 4,
+            VALID_ERROR_PACKAGE = 5,
+            VALID_ERROR_INN = 6,
+            VALID_ERROR_AMOUNT = 7,
+            VALID_ERROR_TASK_4 = 8,
+            <% function translateCheckStatus(status) { switch (status) { 
+                case 0: return 'NO' ; 
+                case 1: return 'прошел полную проверку'; 
+                case 2: return 'не прошел проверку ОФД' ; 
+                case 3: return 'не прошел внутреннюю проверку'; 
+                case 4: return 'не прошел внутреннюю проверку(не тот адресс)'; 
+                case 5: return 'не прошел внутреннюю проверку(есть пакет)'; 
+                case 6: return 'не прошел внутреннюю проверку(более 3 чеков из одного магазина)'; 
+                case 7: return 'не прошел внутреннюю проверку(сумма чека)'; 
+                case 8: return 'не прошел внутреннюю проверку(4 задание)'; 
+                default: return 'UNKNOWN' ; } } %>
                 <% for (const scanResult of scanResults) { %>
                     <tr>
                         <td><%= scanResult.chatID %></td>
