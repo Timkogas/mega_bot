@@ -39,7 +39,7 @@ export default class ScanCheck {
                 let sValue = queryParams.get('s');
                 let fnValue = queryParams.get('fn');
                 let iValue = queryParams.get('i');
-                let nValue = queryParams.get('n');
+                let nValue = queryParams.get('n') || '1';
                 let fpValue = queryParams.get('fp');
 
 
