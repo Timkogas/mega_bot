@@ -43,7 +43,7 @@ export default class EjsAdminStatsAll {
                 const acceptedChecksResult = await Db.query('SELECT COUNT(*) AS accepted_checks FROM users_checks WHERE status = 1');
 
                 // Количество не принятых чеков (где статус равен 2 или 3)
-                const rejectedChecksResult = await Db.query('SELECT COUNT(*) AS rejected_checks FROM users_checks WHERE status IN (2, 8)');
+                const rejectedChecksResult = await Db.query('SELECT COUNT(*) AS rejected_checks FROM users_checks WHERE status NOT IN (1)');
                 const scanResults = await Db.query(`
                 SELECT
                     users.id AS chatID,
