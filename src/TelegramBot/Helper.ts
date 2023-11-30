@@ -371,7 +371,6 @@ class Helper {
             const formattedCurrentDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
 
             const task = await this.getLastPendingTask(user.id)
-            if (value === '1') return true
 
             const code = await Db.query(`SELECT * FROM codes WHERE name = ? AND type = ? AND start_date <= ? AND end_date >= ?`,
                 [value, task.id, formattedCurrentDate, formattedCurrentDate]);

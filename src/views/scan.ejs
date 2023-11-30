@@ -427,6 +427,19 @@
             });
         }
 
+        document.addEventListener('DOMContentLoaded', function () {
+            document.body.addEventListener('click', function () {
+                document.activeElement.blur();
+            });
+
+            const inputs = document.querySelectorAll('input');
+            inputs.forEach(function (input) {
+                input.addEventListener('click', function (event) {
+                    event.stopPropagation();
+                });
+            });
+        });
+
         function isValidValues() {
             const fnValue = document.getElementById('fn-check').value;
             const fdValue = document.getElementById('fd-check').value;
