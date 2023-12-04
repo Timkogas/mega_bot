@@ -9,6 +9,7 @@ import EjsAdminStatsPlatforms from './ejs/EjsAdminStatsPlatforms';
 import EjsAdminStatsResults from './ejs/EjsAdminStatsResults';
 import EjsAdminStatsDetail from './ejs/EjsAdminStatsDetail';
 import EjsAdminStatsProblems from './ejs/EjsAdminStatsProblems';
+import EjsAdminStatsSend from './ejs/EjsAdminStatsSend';
 
 
 class Routes {
@@ -34,6 +35,7 @@ class Routes {
     new EjsAdminStatsResults(this._app)
     new EjsAdminStatsDetail(this._app)
     new EjsAdminStatsProblems(this._app)
+    new EjsAdminStatsSend(this._app)
   }
 
   private _userRoutes(): void {

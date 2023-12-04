@@ -46,6 +46,7 @@ class App {
     await this._createTableCodes()
     await this._insertAllCodes()
     await this._createTableMessages()
+    await this._createFilesTable()
   }
 
   private async _initBot(): Promise<void> {
@@ -115,6 +116,18 @@ class App {
     await Db.query(table);
   }
 
+  private async _createFilesTable(): Promise<void> {
+    const query = `
+        CREATE TABLE IF NOT EXISTS files (
+            id INT PRIMARY KEY AUTO_INCREMENT,
+            message_id INT,
+            file_name VARCHAR(255),
+            FOREIGN KEY (message_id) REFERENCES messages(id)
+        );
+    `;
+    await Db.query(query);
+  }
+
   private async _createTableChecks(): Promise<void> {
     const table =
       `
@@ -175,6 +188,7 @@ class App {
     const insertCodesQueries = [
       // Codes of Type 1
       "INSERT IGNORE INTO codes (num, name, start_date, end_date, type) VALUES (1, 'ECOEXPSY69O', '2023-11-30 00:00:00', '2023-12-07 07:59:00', 1);",
+      "INSERT IGNORE INTO codes (num, name, start_date, end_date, type) VALUES (1, 'ECOEXPSY690', '2023-11-30 00:00:00', '2023-12-07 07:59:00', 1);",
       "INSERT IGNORE INTO codes (num, name, start_date, end_date, type) VALUES (2, 'ECOTZ4DYOP3', '2023-12-07 08:00:00', '2023-12-14 07:59:00', 1);",
       "INSERT IGNORE INTO codes (num, name, start_date, end_date, type) VALUES (3, 'ECOG427NBJR', '2023-12-14 08:00:00', '2023-12-21 07:59:00', 1);",
       "INSERT IGNORE INTO codes (num, name, start_date, end_date, type) VALUES (4, 'ECOLZN5QHWN', '2023-12-21 08:00:00', '2023-12-30 18:00:00', 1);",

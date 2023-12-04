@@ -93,7 +93,7 @@ class Helper {
                     await Db.query('UPDATE users SET refs = ? WHERE id = ?', [currentRefs + 1, referralId]);
                 } else {
                     const refUser = await Db.query('SELECT * FROM users WHERE id = ?', [referralId]);
-                    const text = 'Ты пригласил всех друзей! Лимит на использование реферальной ссылки закончился.'
+                    const text = 'Вы пригласили всех друзей! Лимит на использование реферальной ссылки закончился.'
                     bot.sendMessage(referralId, text, {
                         parse_mode: 'HTML',
                         reply_markup: {

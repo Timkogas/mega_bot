@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.css">
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            margin: 20px;
+        }
+
+        h1,
+        h2 {
+            color: #333;
+        }
+
+        #message-input {
+            width: 400px;
+            height: 200px;
+            resize: none;
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            padding: 8px;
+            font-family: Arial, sans-serif;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+
+<body style="font-family: Arial, Helvetica, sans-serif;">
+    <div style="display: flex; gap: 10px;">
+        <a href="https://server.mega.irsapp.ru/adminstats/all">Вся Статистика</a>
+        <a href="https://server.mega.irsapp.ru/adminstats/results">Результаты юзеров</a>
+        <a href="https://server.mega.irsapp.ru/adminstats/detail">Детальная статистика</a>
+        <a href="https://server.mega.irsapp.ru/adminstats/problems">Проблемы</a>
+        <a href="https://server.mega.irsapp.ru/adminstats/platforms">Статистика посевов</a>
+        <a href="https://server.mega.irsapp.ru/adminstats/send">Отправка уведомлений</a>
+    </div>
+    <h1>Уведомления</h1>
+    <h2>Время сервера: <%= time %>
+    </h2>
+    <p>
+        Время отправки уведомления (дата обязательно должна быть такого формата):
+    </p>
+    <input placeholder="2023-12-01 11:06:20" id='send-time-input'>
+    <br>
+    <textarea id='message-input' style="width: 400px; height: 500px; resize: none; margin-top: 20px;"
+        placeholder="Текст сообщения"></textarea>
+    <br>
+
+    <input type="file" id="file-input" accept="image/*,video/*,audio/*" multiple="multiple" />
+    <br>
+    <label>
+        <input type="checkbox" id="is-gif-checkbox" disabled> GIF
+    </label>
+    <label>
+        <input type="checkbox" id="is-multimedia-checkbox" disabled> Multimedia
+    </label>
+    <label>
+        <input type="checkbox" id="is-photo-checkbox" disabled> Photo
+    </label>
+    <label>
+        <input type="checkbox" id="is-video-checkbox" disabled> Video
+    </label>
+    <label>
+        <input type="checkbox" id="is-audio-checkbox" disabled> Audio
+    </label>
+    <br>
+    <button onclick="sendMessage()">Отправить</button>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const textarea = document.getElementById('message-input');
+
+
+            textarea.innerHTML = '<b>Жирный текст</b>\n\n<i>Текст курсивом</i>\n\n<code>Текст, который можно скопировать нажатием на него</code>\n\n<s>Перечеркнутый текст</s>\n\n<u>Подчеркнутый текст</u>\n\n<pre language="язык">Текст с оформлением кода</pre>\n\n<a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ">Текст-гиперссылка</a>';
+
+            const fileInput = document.getElementById('file-input');
+
+            fileInput.addEventListener('change', handleFileSelection);
+        });
+
+        async function sendMessage() {
+
+            const messageText = document.querySelector('#message-input').value;
+
+            const sendTime = document.querySelector('#send-time-input').value;
+
+            const fileInput = document.getElementById('file-input');
+            const selectedFiles = fileInput.files;
+
+            const isGifCheckbox = document.getElementById('is-gif-checkbox');
+            const isMultimediaCheckbox = document.getElementById('is-multimedia-checkbox');
+            const isPhotoCheckbox = document.getElementById('is-photo-checkbox');
+            const isVideoCheckbox = document.getElementById('is-video-checkbox');
+            const isAudioCheckbox = document.getElementById('is-audio-checkbox');
+
+            let selectedType = 0;
+
+            if (isPhotoCheckbox.checked) {
+                selectedType = 1;
+            } else if (isVideoCheckbox.checked) {
+                selectedType = 2;
+            } else if (isGifCheckbox.checked) {
+                selectedType = 3;
+            } else if (isAudioCheckbox.checked) {
+                selectedType = 4;
+            } else if (isMultimediaCheckbox.checked) {
+                selectedType = 5;
+            }
+
+            try {
+                const formData = new FormData();
+                formData.append('text', messageText);
+                formData.append('time', sendTime);
+                formData.append('type', selectedType);
+
+                for (let i = 0; i < selectedFiles.length; i++) {
+                    formData.append('files', selectedFiles[i]);
+                }
+
+                const response = await fetch('http://localhost:4000/adminstats/sendMessage', {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                if (response.ok) {
+                    console.log('Message sent successfully');
+                } else {
+                    console.error('Failed to send message');
+                }
+            } catch (error) {
+                console.error('Error sending message:', error);
+            }
+        }
+
+        function handleFileSelection() {
+            const fileInput = document.getElementById('file-input');
+            const isGifCheckbox = document.getElementById('is-gif-checkbox');
+            const isMultimediaCheckbox = document.getElementById('is-multimedia-checkbox');
+            const isPhotoCheckbox = document.getElementById('is-photo-checkbox');
+            const isVideoCheckbox = document.getElementById('is-video-checkbox');
+            const isAudioCheckbox = document.getElementById('is-audio-checkbox');
+
+            const selectedFiles = fileInput.files;
+
+            if (selectedFiles.length === 1) {
+                const selectedFile = selectedFiles[0];
+                const isGif = selectedFile.type.startsWith('image/gif');
+                const isPhoto = selectedFile.type.startsWith('image/');
+                if (isGif) {
+                    isGifCheckbox.checked = isGif
+                    isPhotoCheckbox.checked = false
+                } else {
+                    isPhotoCheckbox.checked = isPhoto
+                    isGifCheckbox.checked = false
+                }
+
+                const isVideo = selectedFile.type.startsWith('video/');
+                const isAudio = selectedFile.type.startsWith('audio/');
+
+                isVideoCheckbox.checked = isVideo;
+                isAudioCheckbox.checked = isAudio;
+                isMultimediaCheckbox.checked = false;
+            } else if (selectedFiles.length > 1) {
+                isGifCheckbox.checked = false;
+                isMultimediaCheckbox.checked = true;
+                isPhotoCheckbox.checked = false;
+                isVideoCheckbox.checked = false;
+                isAudioCheckbox.checked = false;
+            }
+        }
+    </script>
+</body>
+
+</html>
