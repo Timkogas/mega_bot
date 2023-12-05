@@ -1,7 +1,6 @@
 import * as core from 'express-serve-static-core';
 import Logger from '../../Logger/Logger';
 import Db from '../../Db/Db';
-import TelegramBotApp from '../../TelegramBot/TelegramBotApp';
 import multer from 'multer'
 import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
@@ -37,17 +36,36 @@ export default class EjsAdminStatsSend {
             this._app.get('/adminstats/send', async (req, res) => {
                 const currentDate = new Date();
                 currentDate.setHours(currentDate.getHours() + 3);
-        
+
                 const formattedCurrentDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
 
-                res.render('adminstatssend', { time: formattedCurrentDate  });
+                res.render('adminstatssend', { time: formattedCurrentDate });
             });
 
             this._app.post('/adminstats/sendMessage', upload.array('files'), async (req: any, res) => {
                 try {
                     const { text, time, type } = req.body;
-
-                    TelegramBotApp.sendNotifications(369689336,text, req.files, type)
+                    if (text && time && type) {
+                        const messageInsertQuery = `
+                            INSERT INTO messages (text, time, type, sended)
+                            VALUES (?, ?, ?, ?);
+                        `;
+                        const messageValues = [text, time, type, 0]; 
+                        const messageResult = await Db.query(messageInsertQuery, messageValues);
+    
+    
+                        const messageId = messageResult.insertId;
+    
+                        if (req.files && req.files.length > 0) {
+                            const filesInsertQuery = `
+                            INSERT INTO messages_files (message_id, file_name)
+                            VALUES (?, ?);
+                        `;
+                            const filesValues = req.files.map((file: any) => [messageId, file.filename]);
+    
+                            await Promise.all(filesValues.map((values: any) => Db.query(filesInsertQuery, values)));
+                        }
+                    }
                 } catch (error) {
                     Logger.error('Error fetching user stats:', error);
                     res.status(500).send('Internal Server Error');

@@ -142,15 +142,15 @@ class TelegramBotApp {
                         return await this._onProblemSend(message, chatId, dbUser)
                     case EActivity.AUTHORIZATION:
 
-                        console.log( {
+                        console.log({
                             telegramId: `${dbUser.id}`,
                             keycloakId: text
                         },
-                        {
-                            headers: {
-                                'x-api-key': process.env.API_KEY
-                            }
-                        })
+                            {
+                                headers: {
+                                    'x-api-key': process.env.API_KEY
+                                }
+                            })
 
                         try {
                             const checkAuthorization = await axios.post('https://omniapi.mega.ru/telegram/registerUser',
@@ -436,7 +436,7 @@ class TelegramBotApp {
             if (hasTasks) {
                 taskData = await Helper.getLastPendingTask(dbUser.id)
                 if (taskData.status === ETaskStatus.WAIT) {
-                    taskData = {type: EMessages.AUTHORIZATION_ERROR}
+                    taskData = { type: EMessages.AUTHORIZATION_ERROR }
                 }
             }
 
@@ -1838,14 +1838,46 @@ class TelegramBotApp {
         }
     }
 
-    public async sendNotifications(chatId: number, text: string, files: any[], selectedType: number): Promise<void> {
+    public async sendNotifications(chatId: number, text: string, file: string, selectedType: number): Promise<void> {
         try {
-           
-            await this.bot.sendMessage(chatId, text, {
-                parse_mode: 'HTML',
-                disable_web_page_preview: true,
-            })
-
+            const filePath = path.join(__dirname, `../uploads/messages/${file}`)
+            switch (selectedType) {
+                case 0:
+                    await this.bot.sendMessage(chatId, text, {
+                        parse_mode: 'HTML',
+                        disable_web_page_preview: true,
+                    })
+                    break;
+                case 1:
+                    await this.bot.sendPhoto(chatId, filePath, {
+                        parse_mode: 'HTML',
+                        caption: text,
+                    })
+                    break;
+                case 2:
+                    await this.bot.sendVideo(chatId, filePath, {
+                        parse_mode: 'HTML',
+                        caption: text,
+                    })
+                    break;
+                case 3:
+                    await this.bot.sendAnimation(chatId, filePath, {
+                        parse_mode: 'HTML',
+                        caption: text,
+                    })
+                    break;
+                case 4:
+                    await this.bot.sendAudio(chatId, filePath, {
+                        parse_mode: 'HTML',
+                        caption: text,
+                    })
+                    break;
+                default:
+                    await this.bot.sendMessage(chatId, text, {
+                        parse_mode: 'HTML',
+                        disable_web_page_preview: true,
+                    })
+            }
         } catch (e) {
             Logger.error('[BOT] _sendMessageOnWriteAuthorizationError error', e)
         }

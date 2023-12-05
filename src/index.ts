@@ -8,14 +8,14 @@ import path from 'path';
 import Routes from './routes';
 import cors from 'cors';
 import TelegramBotApp from './TelegramBot/TelegramBotApp';
-
+import cron from 'node-cron';
 
 dotenv.config();
 
 class App {
   private _server: http.Server;
   private _app: core.Express;
-  private _telegramBot: any
+  private _telegramBot: typeof TelegramBotApp
 
 
   constructor() {
@@ -28,6 +28,7 @@ class App {
     try {
       await this._initDb()
       await this._initBot()
+      this._initCronJobs()
       this._startServer();
     } catch (error) {
       Logger.error('Error during initialization:', error);
@@ -118,7 +119,7 @@ class App {
 
   private async _createFilesTable(): Promise<void> {
     const query = `
-        CREATE TABLE IF NOT EXISTS files (
+        CREATE TABLE IF NOT EXISTS messages_files (
             id INT PRIMARY KEY AUTO_INCREMENT,
             message_id INT,
             file_name VARCHAR(255),
@@ -325,6 +326,70 @@ class App {
     const string = "INSERT IGNORE INTO main (id, total, webapp) VALUES (1, 0, 0)"
     await Db.query(table);
     await Db.query(string);
+  }
+
+
+  private _initCronJobs(): void {
+    cron.schedule('*/1 * * * *', async () => {
+      try {
+        await this._processPendingMessages();
+      } catch (error) {
+        console.error('Ошибка при обработке уведомлений:', error);
+      }
+    });
+  }
+
+  private async _processPendingMessages(): Promise<void> {
+    const currentDate = new Date();
+    currentDate.setHours(currentDate.getHours() + 3);
+    const currentTime = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+
+    const selectQuery = `
+      SELECT messages.id, messages.text, messages.type, messages.sended, messages_files.file_name
+      FROM messages
+      LEFT JOIN messages_files ON messages.id = messages_files.message_id
+      WHERE messages.time <= ? AND messages.sended = 0;
+    `;
+    const messagesToProcess = await Db.query(selectQuery, [currentTime]);
+
+    for (const message of messagesToProcess) {
+      const updateQuery = `
+        UPDATE messages
+        SET sended = 1
+        WHERE id = ?;
+      `;
+      await Db.query(updateQuery, [message.id]);
+
+      const usersQuery = `
+        SELECT id
+        FROM users;
+      `;
+      const users = await Db.query(usersQuery);
+
+      for (const user of users) {
+        await this.sendNotificationWithDelay(message, user);
+      }
+
+    }
+  }
+
+  private async sendNotificationWithDelay(message, user): Promise<void> {
+    const { id, text, file_name, type } = message;
+
+    try {
+      await this._telegramBot.sendNotifications(user.id, text, file_name, type);
+
+      const updateNotificationsQuery = `
+        UPDATE users
+        SET notification = ?
+        WHERE id = ?;
+      `;
+      await Db.query(updateNotificationsQuery, [id, user.id]);
+
+      await new Promise(resolve => setTimeout(resolve, 500));
+    } catch (e) {
+      Logger.error('[BOT] _sendMessageOnWriteAuthorizationError error', e);
+    }
   }
 }
 

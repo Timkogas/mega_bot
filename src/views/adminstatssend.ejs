@@ -48,13 +48,10 @@
         placeholder="Текст сообщения"></textarea>
     <br>
 
-    <input type="file" id="file-input" accept="image/*,video/*,audio/*" multiple="multiple" />
+    <input type="file" id="file-input" accept="image/*,video/*,audio/*"/>
     <br>
     <label>
         <input type="checkbox" id="is-gif-checkbox" disabled> GIF
-    </label>
-    <label>
-        <input type="checkbox" id="is-multimedia-checkbox" disabled> Multimedia
     </label>
     <label>
         <input type="checkbox" id="is-photo-checkbox" disabled> Photo
@@ -90,7 +87,6 @@
             const selectedFiles = fileInput.files;
 
             const isGifCheckbox = document.getElementById('is-gif-checkbox');
-            const isMultimediaCheckbox = document.getElementById('is-multimedia-checkbox');
             const isPhotoCheckbox = document.getElementById('is-photo-checkbox');
             const isVideoCheckbox = document.getElementById('is-video-checkbox');
             const isAudioCheckbox = document.getElementById('is-audio-checkbox');
@@ -105,8 +101,6 @@
                 selectedType = 3;
             } else if (isAudioCheckbox.checked) {
                 selectedType = 4;
-            } else if (isMultimediaCheckbox.checked) {
-                selectedType = 5;
             }
 
             try {
@@ -137,7 +131,6 @@
         function handleFileSelection() {
             const fileInput = document.getElementById('file-input');
             const isGifCheckbox = document.getElementById('is-gif-checkbox');
-            const isMultimediaCheckbox = document.getElementById('is-multimedia-checkbox');
             const isPhotoCheckbox = document.getElementById('is-photo-checkbox');
             const isVideoCheckbox = document.getElementById('is-video-checkbox');
             const isAudioCheckbox = document.getElementById('is-audio-checkbox');
@@ -162,12 +155,6 @@
                 isVideoCheckbox.checked = isVideo;
                 isAudioCheckbox.checked = isAudio;
                 isMultimediaCheckbox.checked = false;
-            } else if (selectedFiles.length > 1) {
-                isGifCheckbox.checked = false;
-                isMultimediaCheckbox.checked = true;
-                isPhotoCheckbox.checked = false;
-                isVideoCheckbox.checked = false;
-                isAudioCheckbox.checked = false;
             }
         }
     </script>
