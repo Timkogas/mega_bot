@@ -115,7 +115,7 @@ export default class ScanCheck {
 
                                 if (response.data.Success) {
                                     if (
-                                        ['665809349631'].includes(response?.data?.Data?.UserInn?.trim()) ||
+                                        ['665910071102'].includes(response?.data?.Data?.UserInn?.trim()) ||
                                         ['ИП Иванова М. М.'.toLowerCase(), 'ИП Иванова Марина Михайловна'.toLowerCase(), 'Индивидуальный предприниматель Иванова Марина Михайловна'.toLowerCase(), 'ИВАНОВА МАРИНА МИХАЙЛОВНА'.toLowerCase()]
                                             .includes(response?.data?.Data?.Document?.User?.trim()?.toLowerCase())
                                     ) {
