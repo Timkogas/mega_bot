@@ -389,6 +389,7 @@ class TelegramBotApp {
             await this.bot.sendVideoNote(chatId, videoPath)
             await this.bot.sendMessage(chatId, text, {
                 parse_mode: 'HTML',
+                disable_web_page_preview: true,
                 reply_markup: {
                     inline_keyboard: buttons,
                 }
@@ -1879,7 +1880,7 @@ class TelegramBotApp {
                     })
             }
         } catch (e) {
-            Logger.error('[BOT] _sendMessageOnWriteAuthorizationError error', e)
+            Logger.error('[BOT] sendNotifications error', e)
         }
     }
 }
