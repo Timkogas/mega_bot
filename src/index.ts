@@ -362,9 +362,10 @@ class App {
 
       const usersQuery = `
         SELECT id
-        FROM users;
+        FROM users
+        WHERE notification = ?;
       `;
-      const users = await Db.query(usersQuery);
+      const users = await Db.query(usersQuery, [message.id - 1]);
 
       for (const user of users) {
         await this.sendNotificationWithDelay(message, user);
