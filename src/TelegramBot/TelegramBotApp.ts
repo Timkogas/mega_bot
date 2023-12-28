@@ -458,7 +458,6 @@ class TelegramBotApp {
                     inline_keyboard: buttons,
                 }
             })
-
             await Helper.setButtons(dbUser, buttons)
         } catch (e) {
             Logger.error('[BOT] sendMessageOnMenu error', e)
@@ -824,21 +823,21 @@ class TelegramBotApp {
             const twentyFourHours = 24 * 60 * 60 * 1000
 
             // if (currentDate - lastSkipDate >= twentyFourHours) {
-                await Helper.updateSkipTaskTime(newDbUser.id, new Date())
-                const taskData = await Helper.getLastPendingTask(dbUser.id)
-                await Helper.confirmLastTask(dbUser.id, ETaskStatus.SKIP, 0)
-                switch (taskData.type) {
-                    case EMessages.TASK_1:
-                        return await this._sendMessageOnSubscribe(chatId, dbUser)
-                    case EMessages.TASK_2:
-                        return await this._sendMessageOnAuthorization(chatId, dbUser)
-                    case EMessages.TASK_3:
-                        return await this._sendMessageOnTaskFour(chatId, dbUser)
-                    case EMessages.TASK_4:
-                        return await this._sendMessageOnTaskFive(chatId, dbUser)
-                    case EMessages.TASK_5:
-                        return await this._sendMessageOnFinal(chatId, dbUser)
-                }
+            await Helper.updateSkipTaskTime(newDbUser.id, new Date())
+            const taskData = await Helper.getLastPendingTask(dbUser.id)
+            await Helper.confirmLastTask(dbUser.id, ETaskStatus.SKIP, 0)
+            switch (taskData.type) {
+                case EMessages.TASK_1:
+                    return await this._sendMessageOnSubscribe(chatId, dbUser)
+                case EMessages.TASK_2:
+                    return await this._sendMessageOnAuthorization(chatId, dbUser)
+                case EMessages.TASK_3:
+                    return await this._sendMessageOnTaskFour(chatId, dbUser)
+                case EMessages.TASK_4:
+                    return await this._sendMessageOnTaskFive(chatId, dbUser)
+                case EMessages.TASK_5:
+                    return await this._sendMessageOnFinal(chatId, dbUser)
+            }
             // } else {
             //     return await this._sendMessageOnSkipLimit(chatId, dbUser)
             // }
@@ -1479,7 +1478,7 @@ class TelegramBotApp {
                 [{ text: 'Об акции', callback_data: EMessages.ABOUT }],
             ]
 
-            const text = `<b>Ваше путешествие по МЕГА Экополису закончилось!</b> 🥳\n\nЭто был увлекательный путь. Вам удалось подарить вещам новую жизнь, научиться сортировать отходы, принятие участие в благотворительности и приобрести классный шопер! ❤️‍🔥\n\nСпасибо! <b>За всё время вам удалось набрать ${currentUser.score || 0} баллов.</b> Смотрите вашу позицию среди всех участников конкурса в таблице лидеров.\n\n💃🏻🕺🏽 Приглашаем вас на праздничный концерт в МЕГУ 30 декабря в 17:00, на котором мы подведем итоги и наградим победителей и призеров Экополиса! Гость концерта – наша несравненная Марита Плиева.\n\nДо встречи!`
+            const text = `<b>Ваше путешествие по МЕГА Экополису закончилось!</b> 🥳\n\nЭто был увлекательный путь. Вам удалось подарить вещам новую жизнь, научиться сортировать отходы, принятие участие в благотворительности и приобрести классный шопер! ❤️‍🔥\n\nСпасибо! <b>За всё время вам удалось набрать ${currentUser.score || 0} баллов.</b> Смотрите вашу позицию среди всех участников конкурса в таблице лидеров.\n\n💃🏻🕺🏽 Приглашаем вас на праздничный концерт в МЕГУ 30 декабря в 15:00, на котором мы подведем итоги и наградим победителей и призеров Экополиса! Гость концерта – наша несравненная Марита Плиева.\n\nДо встречи!`
 
             await this.bot.sendVideoNote(chatId, videoPathFirst)
             await this.bot.sendMessage(chatId, text, {
@@ -1842,6 +1841,7 @@ class TelegramBotApp {
     public async sendNotifications(chatId: number, text: string, file: string, selectedType: number): Promise<void> {
         try {
             const filePath = path.join(__dirname, `../uploads/messages/${file}`)
+
             switch (selectedType) {
                 case 0:
                     await this.bot.sendMessage(chatId, text, {
@@ -1879,6 +1879,9 @@ class TelegramBotApp {
                         disable_web_page_preview: true,
                     })
             }
+            const sticker = 'megaeco_by_fStikBot'
+            const result = await this.bot.getStickerSet(sticker)
+            await this.bot.sendSticker(chatId, result?.stickers[0]?.file_id)
         } catch (e) {
             Logger.error('[BOT] sendNotifications error', e)
         }
