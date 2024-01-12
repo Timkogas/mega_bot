@@ -39,7 +39,25 @@ export default class EjsAdminStatsSend {
 
                 const formattedCurrentDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
 
-                res.render('adminstatssend', { time: formattedCurrentDate });
+                const messagesQuery = `
+                SELECT messages.id, messages.text, messages.time, messages.sended, COUNT(users.id) AS users
+                FROM messages
+                LEFT JOIN messages_files ON messages.id = messages_files.message_id
+                LEFT JOIN users ON users.notification = messages.id
+                GROUP BY messages.id, messages.text, messages.time, messages.sended;
+            `;
+                const messages = await Db.query(messagesQuery);
+
+                const messagesArray = messages.map((message) => ({
+                    id: message.id,
+                    text: message.text,
+                    time: message.time,
+                    sended: message.sended,
+                    file_name: message.file_name,
+                    users: message.users
+                }));
+
+                res.render('adminstatssend', { time: formattedCurrentDate, messages: messagesArray });
             });
 
             this._app.post('/adminstats/sendMessage', upload.array('files'), async (req: any, res) => {
@@ -50,19 +68,19 @@ export default class EjsAdminStatsSend {
                             INSERT INTO messages (text, time, type, sended)
                             VALUES (?, ?, ?, ?);
                         `;
-                        const messageValues = [text, time, type, 0]; 
+                        const messageValues = [text, time, type, 0];
                         const messageResult = await Db.query(messageInsertQuery, messageValues);
-    
-    
+
+
                         const messageId = messageResult.insertId;
-    
+
                         if (req.files && req.files.length > 0) {
                             const filesInsertQuery = `
                             INSERT INTO messages_files (message_id, file_name)
                             VALUES (?, ?);
                         `;
                             const filesValues = req.files.map((file: any) => [messageId, file.filename]);
-    
+
                             await Promise.all(filesValues.map((values: any) => Db.query(filesInsertQuery, values)));
                         }
                     }

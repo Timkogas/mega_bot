@@ -65,6 +65,26 @@
     <br>
     <button onclick="sendMessage()">Отправить</button>
 
+    <div>
+        <% if (messages && messages.length > 0) { %>
+            <h3>Сообщения:</h3>
+            <ul>
+                <% messages.reverse().forEach(message => { %>
+                    <li>
+                        <strong>ID:</strong> <%= message.id %><br>
+                        <strong>Текст:</strong> <%= message.text %><br>
+                        <strong>Время:</strong> <%= message.time.toISOString().slice(0, 19).replace('T', ' ') %><br>
+                        <strong>Отправлено:</strong> <%= message.sended === 1 ? 'да' : 'нет' %><br>
+                        <strong>Количество пользователей, которым это уведомление было отправлено последним:</strong> <%= message.users %><br>
+                        <hr>
+                    </li>
+                <% }); %>
+            </ul>
+        <% } else { %>
+            <p>Нет сообщений.</p>
+        <% } %>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const textarea = document.getElementById('message-input');
