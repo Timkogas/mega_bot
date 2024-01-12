@@ -1879,9 +1879,9 @@ class TelegramBotApp {
                         disable_web_page_preview: true,
                     })
             }
-            const sticker = 'mega_ecology'
-            const result = await this.bot.getStickerSet(sticker)
-            await this.bot.sendSticker(chatId, result?.stickers[6]?.file_id)
+            // const sticker = 'mega_ecology'
+            // const result = await this.bot.getStickerSet(sticker)
+            // await this.bot.sendSticker(chatId, result?.stickers[6]?.file_id)
         } catch (e) {
             Logger.error('[BOT] sendNotifications error', e)
         }
